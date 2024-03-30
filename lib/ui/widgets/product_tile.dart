@@ -92,9 +92,9 @@ class _ProductTileState extends State<ProductTile>
                 ],
               ),
               const Spacer(),
-              if (!product['isInCart'])
+              if (product['isInCart'])
                 SvgIcon(
-                  AppAssets.addCart,
+                  AppAssets.succcessCart,
                   size: 25.sp,
                   color: AppColors.greenColor,
                 ),
@@ -122,7 +122,8 @@ class _ProductTileState extends State<ProductTile>
         children: [
           AppSlidableaction(
             isRight: true,
-            icon: AppAssets.addCart,
+            
+            icon: product['isInCart'] ? AppAssets.addtocart : AppAssets.addCart,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
               widget.onAddToCart?.call();
@@ -133,7 +134,9 @@ class _ProductTileState extends State<ProductTile>
             isRight: true,
             icon: AppAssets.delete,
             onTap: () {
-              _showDeleteSheet(product,);
+              _showDeleteSheet(
+                product,
+              );
             },
             forgroundColor: AppColors.whiteColor,
             backgroundColor: AppColors.redColor,

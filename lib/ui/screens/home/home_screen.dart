@@ -214,6 +214,18 @@ class _HomeScreenState extends State<HomeScreen>
                           itemBuilder: (BuildContext context, int index) {
                             return ProductTile(
                               product: provider.products[index],
+                             
+                              onAddToCart: () {
+                                bool value =
+                                    provider.products[index]['isInCart'];
+
+                                value = !value;
+
+                                provider.addtoCart(
+                                    provider.products[index]['title'],
+                                    value,
+                                    context);
+                              },
                               onTap: () {
                                 context.pushNamed(AppRoute.productDetail.name,
                                     extra: provider.products[index]);

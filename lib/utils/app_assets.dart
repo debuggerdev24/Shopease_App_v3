@@ -19,6 +19,7 @@ class AppAssets {
   static const String joe = "assets/images/joe.png";
   static const String invoice = "assets/images/invoice.png";
 
+  static const String errorWarning = 'assets/icons/error_warning.svg';
 
   static const String lucy = "assets/images/lucy.png";
   static const String noUser = "assets/images/noUser.png";
@@ -36,6 +37,7 @@ class AppAssets {
   static const String index = "assets/icons/index.svg";
   static const String addtocart = "assets/icons/addtocart.svg";
   static const String addCart = "assets/icons/addCart.svg";
+  static const String succcessCart = "assets/icons/succcessCart.svg";
   static const String menu = "assets/icons/menu.svg";
   static const String notification = "assets/icons/notification.svg";
   static const String person = "assets/icons/person.svg";
@@ -58,15 +60,10 @@ class AppAssets {
   static const String toastCheck = "assets/icons/toastCheck.svg";
   static const String errorToast = "assets/icons/errorToast.svg";
 
-
-
-
-
   static const String scanner = "assets/icons/scanner.svg";
   static const String search = "assets/icons/search.svg";
   static const String add = "assets/icons/add.svg";
   static const String userEdit = "assets/icons/userEdit.svg";
-
 }
 
 class SvgIcon extends StatelessWidget {
