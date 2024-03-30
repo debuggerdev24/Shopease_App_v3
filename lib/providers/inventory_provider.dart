@@ -33,7 +33,7 @@ class InventoryProvider extends ChangeNotifier {
       'inventoryLevel': InventoryType.low,
       'category': 'Fresh Vegetables',
       'storage': 'Fridge Rack',
-      'isInCart': true,
+      'isInCart': false,
       'desc':
           'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
     },
@@ -44,7 +44,7 @@ class InventoryProvider extends ChangeNotifier {
       'inventoryLevel': InventoryType.high,
       'category': 'Fresh Fruits',
       'storage': 'Fridge Rack',
-      'isInCart': true,
+      'isInCart': false,
       'desc':
           'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
     },
@@ -104,6 +104,20 @@ class InventoryProvider extends ChangeNotifier {
     product['inventoryLevel'] = newType;
 
     CustomToast.showSuccess(context, 'Successfully changed inventory type ');
+
+    notifyListeners();
+  }
+
+  void addtoCart(String title, bool isInCart, BuildContext context) {
+    final product =
+        _productList.firstWhere((element) => element['title'] == title);
+    product['isInCart'] = isInCart;
+
+    if (isInCart) {
+      CustomToast.showSuccess(context, 'Successfully add into Cart');
+    } else {
+      CustomToast.showError(context, 'Remove Product from Cart');
+    }
 
     notifyListeners();
   }

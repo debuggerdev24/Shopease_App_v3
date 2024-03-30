@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
+import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 
 import '../../../utils/app_assets.dart';
@@ -90,14 +92,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             textStyle18SemiBold.copyWith(fontSize: 19.sp),
                       ),
                       Spacer(),
-                      SvgIcon(
-                        AppAssets.addtocart,
-                        color: AppColors.blackColor,
-                        size: 20.sp,
-                      ),
+                      widget.product!['isInCart']
+                          ? SvgIcon(
+                              AppAssets.succcessCart,
+                              color: AppColors.greenColor,
+                              size: 20.sp,
+                            )
+                          : SizedBox(),
                       15.w.horizontalSpace,
                       SvgPicture.asset(
-                        widget.product!['categoryImage'] ?? '',
+                        widget.product!['inventoryLevel'] == InventoryType.high
+                            ? AppAssets.inventoryHigh
+                            : widget.product!['inventoryLevel'] ==
+                                    InventoryType.medium
+                                ? AppAssets.inventoryMid
+                                : AppAssets.inventoryLow,
                         width: 18.h,
                         height: 18.h,
                       ),
@@ -119,11 +128,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Wrap(
                 children: [
                   10.horizontalSpace,
-                  buildCustomContainer(widget.product!['brand'] ?? ''),
+                  AppChip(text: widget.product!['brand']),
+                  // buildCustomContainer(widget.product!['brand'] ?? ''),
                   10.horizontalSpace,
-                  buildCustomContainer(widget.product!['category'] ?? ''),
+                  AppChip(text: widget.product!['category']),
                   10.horizontalSpace,
-                  buildCustomContainer('Fresh Fruits' ?? ''),
+                  AppChip(text: widget.product!['storage']),
                 ],
               ),
               15.verticalSpace,
@@ -153,18 +163,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       floatingActionButton: Padding(
         padding: EdgeInsets.symmetric(vertical: 25, horizontal: 5),
         child: AppButton(
-            icon: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
-              child: SvgIcon(
-                AppAssets.checkList,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
+            colorType: widget.product!['isInCart']
+                ? AppButtonColorType.secondary
+                : AppButtonColorType.primary,
+            icon: widget.product!['isInCart']
+                ? SizedBox()
+                : Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
+                    child: SvgIcon(
+                      AppAssets.checkList,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
             onPressed: () {
-              context.pushReplacementNamed(AppRoute.viewInventory.name);
+              context.goNamed(AppRoute.home.name);
             },
-            text: 'Add to Checklist'),
+            text: widget.product!['isInCart']
+                ? 'Remove from Checklist'
+                : 'Add to Checklist'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );

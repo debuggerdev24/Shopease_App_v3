@@ -104,7 +104,8 @@ class _OtpScreenState extends State<OtpScreen> {
                     : AppButtonColorType.primary,
               ),
               20.verticalSpace,
-              if (!_showResendOTPText) _buildRetryLine(context),
+              if (_otpController.text.isEmpty)
+                if (!_showResendOTPText) _buildRetryLine(context),
             ],
           ),
         );

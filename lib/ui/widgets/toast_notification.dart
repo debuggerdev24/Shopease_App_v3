@@ -7,8 +7,6 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:toastification/toastification.dart';
 
 class CustomToast {
-
-  
   static void showWarning(BuildContext context, String message) {
     toastification.show(
       backgroundColor: AppColors.lightYellowColor,
@@ -25,6 +23,27 @@ class CustomToast {
       ),
       autoCloseDuration: const Duration(seconds: 4),
     );
+  }
+
+  static void showError(BuildContext context, String message) {
+    toastification.show(
+        backgroundColor: AppColors.redColor,
+        context: context,
+        icon: SvgPicture.asset(
+          AppAssets.errorToast,
+          color: AppColors.whiteColor,
+        ),
+        closeButtonShowType: CloseButtonShowType.always,
+        type: ToastificationType.error,
+        style: ToastificationStyle.flat,
+        margin: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
+        showProgressBar: false,
+        title: Text(
+          message,
+          style: textStyle14.copyWith(color: AppColors.whiteColor),
+        ),
+        autoCloseDuration: const Duration(seconds: 4),
+        primaryColor: Colors.white);
   }
 
   static void showSuccess(BuildContext context, String message) {

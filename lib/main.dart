@@ -3,10 +3,10 @@ import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
-import 'package:shopease_app_flutter/providers/scanner_provider.dart';
+import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/providers/theme_provider.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
-import 'package:shopease_app_flutter/services/demo_service.dart';
+import 'package:shopease_app_flutter/services/scanner_service.dart';
 import 'package:shopease_app_flutter/utils/app_themes.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
@@ -27,14 +27,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider(DemoService()),
-        ),
         ChangeNotifierProvider<ThemeProvider>(
           create: (_) => ThemeProvider(),
         ),
         ChangeNotifierProvider<ScannerProvider>(
-          create: (_) => ScannerProvider(),
+          create: (_) => ScannerProvider(ScannerService()),
         ),
         ChangeNotifierProvider<InventoryProvider>(
           create: (_) => InventoryProvider(),

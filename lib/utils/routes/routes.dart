@@ -16,11 +16,12 @@ import 'package:shopease_app_flutter/ui/screens/auth/congratilations_screen.dart
 import 'package:shopease_app_flutter/ui/screens/auth/mobile_login_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/auth/nick_name_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/auth/otp_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/home/fetch_product_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/home_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/home/inventory/view_inventory_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory/add_inventroy_form.dart';
 import 'package:shopease_app_flutter/ui/screens/home/product_detail_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/scan_and_addscreen.dart';
+import 'package:shopease_app_flutter/ui/screens/home/scan_not_found_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/scan_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/on_boarding/on_board_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/splash/splash_screen.dart';
@@ -38,8 +39,9 @@ enum AppRoute {
   scanAndAddScreen,
   scanScreen,
   addinventoryForm,
-  viewInventory,
   productDetail,
+  fetchProduct,
+  scanNotFoundScreen,
 
   ////////// BRANCH 2 //////////
   checkList,
@@ -108,16 +110,13 @@ class AppNavigator {
         parentNavigatorKey: rootNavigator,
         path: AppRoute.otpScreen.path,
         name: AppRoute.otpScreen.name,
-      
-
-
-         builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>;
-                      return OtpScreen(
-                        isEdit: extra['isEdit'] as bool,
-                        mobile: extra['mobile'] as String,
-                      );
-                    },
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return OtpScreen(
+            isEdit: extra['isEdit'] as bool,
+            mobile: extra['mobile'] as String,
+          );
+        },
       ),
       GoRoute(
         path: AppRoute.nickNameScreen.path,
@@ -170,19 +169,15 @@ class AppNavigator {
                     },
                   ),
                   GoRoute(
-                    path: AppRoute.viewInventory.name,
-                    name: AppRoute.viewInventory.name,
-                    builder: (context, state) => const ViewInventoryScreen(),
-                  ),
-                  GoRoute(
                     path: AppRoute.addinventoryForm.name,
                     name: AppRoute.addinventoryForm.name,
                     builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>;
+                      final extra = (state.extra ?? {}) as Map<String, dynamic>;
                       return Addinventory(
-                        isEdit: extra['isEdit'] as bool,
-                        details: extra['details'] ?? {},
-                        isReplace: extra['isReplace'] as bool,
+                        isEdit: (extra['isEdit'] ?? false) as bool,
+                        details:
+                            (extra['details'] ?? {}) as Map<String, dynamic>,
+                        isReplace: (extra['isReplace'] ?? false) as bool,
                       );
                     },
                   ),
@@ -192,6 +187,21 @@ class AppNavigator {
                     builder: (context, state) => ProductDetailScreen(
                       product: state.extra as Map<String, dynamic>,
                     ),
+                  ),
+                  GoRoute(
+                    path: AppRoute.fetchProduct.name,
+                    name: AppRoute.fetchProduct.name,
+                    // builder: (context, state) => FetchProduct(
+                    //   product: state.extra as Map<String, dynamic>,
+                    // ),
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const FetchProductScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoute.scanNotFoundScreen.name,
+                    name: AppRoute.scanNotFoundScreen.name,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const ScanNotFoundScreen(),
                   ),
                 ],
               ),

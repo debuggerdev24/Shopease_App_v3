@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
-import 'package:shopease_app_flutter/providers/scanner_provider.dart';
+import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -16,11 +16,10 @@ import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
-import 'package:toastification/toastification.dart';
 
 class SaveInvoiceScreen extends StatefulWidget {
   const SaveInvoiceScreen({
-    Key? key,
+    super.key,
     required this.shop,
     required this.total,
   });
@@ -31,23 +30,14 @@ class SaveInvoiceScreen extends StatefulWidget {
 }
 
 class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _totalController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _totalController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     log('shop:${widget.shop}:::total:${widget.total}');
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ScannerProvider>(
-          create: (_) => ScannerProvider(),
-        ),
-        ChangeNotifierProvider<ChecklistProvider>(
-          create: (_) => ChecklistProvider(),
-        ),
-      ],
-      child: Consumer2<ScannerProvider, ChecklistProvider>(
-          builder: (context, scannerProvider, checklistProvider, _) {
+    return Consumer2<ScannerProvider, ChecklistProvider>(
+      builder: (context, scannerProvider, checklistProvider, _) {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: true,
@@ -72,7 +62,7 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                   Container(
                       height: 80.sp,
                       width: 80.sp,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(AppAssets.invoice)),
                       )),
@@ -112,7 +102,7 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     controller: _nameController,
 
                     name: "Shop Name",
-                    hintText: '${widget.shop}',
+                    hintText: widget.shop,
                     hintStyle: textStyle16.copyWith(
                         color: AppColors.blackColor,
                         fontWeight: FontWeight.w400),
@@ -127,27 +117,26 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
             ),
           ),
           bottomNavigationBar: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: AppButton(
                 onPressed: () {
                   Map<String, dynamic> newData = {
                     'shop': widget.shop,
                     'total': widget.total,
                     'img': AppAssets.invoice,
-                    'products':4
+                    'products': 4
                   };
 
-                  log("history ${newData}");
+                  log("history $newData");
                   checklistProvider.addToHistory(newData);
                   CustomToast.showSuccess(context, 'Invoice added');
 
-           
                   context.goNamed(AppRoute.checkList.name);
                 },
                 text: "Save",
               )),
         );
-      }),
+      },
     );
   }
 }

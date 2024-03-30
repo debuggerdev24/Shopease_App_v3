@@ -30,9 +30,9 @@ import '../../../widgets/app_button.dart';
 class Addinventory extends StatefulWidget {
   const Addinventory({
     super.key,
-    required this.isEdit,
+    this.isEdit = false,
     this.details = const {},
-    required this.isReplace,
+    this.isReplace = false,
   });
 
   final bool isEdit;

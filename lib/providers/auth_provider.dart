@@ -1,11 +1,9 @@
 import 'package:country_picker/country_picker.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:shopease_app_flutter/services/base_api_service.dart';
-import 'package:shopease_app_flutter/services/demo_service.dart';
+import 'package:shopease_app_flutter/services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final BaseDemoService services;
+  final BaseAuthService services;
 
   AuthProvider(this.services);
 
@@ -37,21 +35,5 @@ class AuthProvider extends ChangeNotifier {
   setSelectedCountry(Country newCountry) {
     _selectedCountry = newCountry;
     notifyListeners();
-  }
-
-  Future<void> demoFunction({dynamic data}) async {
-    try {
-      setLoading(true);
-      final response = await services.demoRequest(data: data);
-      final token = response['token'];
-      BaseRepository.instance.addToken(token);
-      setLoading(false);
-    } on DioException {
-      setLoading(false);
-      rethrow;
-    } catch (e) {
-      setLoading(false);
-      debugPrint("Error while logging in $e");
-    }
   }
 }

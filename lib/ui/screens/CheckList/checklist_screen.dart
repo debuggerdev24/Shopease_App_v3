@@ -314,7 +314,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
               ),
               const Spacer(),
               InkWell(
-                onTap: () => (context),
+                onTap: () => _showFilterSheet(context, provider),
                 child: SvgPicture.asset(
                   AppAssets.filterIcon,
                   width: 15.h,
