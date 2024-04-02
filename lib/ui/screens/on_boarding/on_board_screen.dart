@@ -82,8 +82,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                       //     curve: Curves.easeIn);
                       // });
 
-                      context.pushReplacementNamed(
-                          AppRoute.mobileLoginScreen.name,
+                      context.pushNamed(AppRoute.mobileLoginScreen.name,
                           extra: false);
                     },
                     child: Text('Skip',

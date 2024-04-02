@@ -172,11 +172,12 @@ class AppNavigator {
                     path: AppRoute.addinventoryForm.name,
                     name: AppRoute.addinventoryForm.name,
                     builder: (context, state) {
-                      final extra = (state.extra ?? {}) as Map<String, dynamic>;
+                      final extra =
+                          (state.extra ?? {}) as Map<dynamic, dynamic>;
                       return Addinventory(
                         isEdit: (extra['isEdit'] ?? false) as bool,
                         details:
-                            (extra['details'] ?? {}) as Map<String, dynamic>,
+                            (extra['details'] ?? {}) as Map<dynamic, dynamic>,
                         isReplace: (extra['isReplace'] ?? false) as bool,
                       );
                     },

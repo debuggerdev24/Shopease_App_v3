@@ -21,7 +21,7 @@ class ProductTile extends StatefulWidget {
     this.onAddToCart,
   });
 
-  final Map<String, dynamic> product;
+  final Map<dynamic, dynamic> product;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
   final VoidCallback? onAddToCart;
@@ -117,7 +117,7 @@ class _ProductTileState extends State<ProductTile>
     );
   }
 
-  _buildRightSwipeActions(Map<String, dynamic> product) => ActionPane(
+  _buildRightSwipeActions(Map<dynamic, dynamic> product) => ActionPane(
         motion: const DrawerMotion(),
         children: [
           AppSlidableaction(
@@ -144,7 +144,7 @@ class _ProductTileState extends State<ProductTile>
         ],
       );
 
-  _buildLeftSwipeActions(Map<String, dynamic> product) => ActionPane(
+  _buildLeftSwipeActions(Map<dynamic, dynamic> product) => ActionPane(
         motion: const ScrollMotion(),
         extentRatio: 0.75,
         children: [
@@ -175,7 +175,7 @@ class _ProductTileState extends State<ProductTile>
         ],
       );
 
-  _showDeleteSheet(Map<String, dynamic> product) {
+  _showDeleteSheet(Map<dynamic, dynamic> product) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(

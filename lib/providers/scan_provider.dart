@@ -136,7 +136,7 @@ class ScannerProvider extends ChangeNotifier {
   //   }
   // }
 
-  Future<void> fetchBarcodeData({
+  Future<void>  fetchBarcodeData({
     required String barcode,
     VoidCallback? onSuccess,
     VoidCallback? onError,

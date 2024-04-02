@@ -23,7 +23,7 @@ class _FetchProductScreenState extends State<FetchProductScreen> {
       return Scaffold(
         body: Column(
           children: [
-            const ProductTile(product: {}),
+             ProductTile(product: widget.product!),
             const Spacer(),
             AppButton(
               onPressed: () {},
