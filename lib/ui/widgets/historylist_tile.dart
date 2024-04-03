@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
@@ -45,6 +46,18 @@ class _HistorylistTileState extends State<HistorylistTile>
       controller: _slideController,
       endActionPane: _buildRightSwipeActions(widget.product),
       child: ListTile(
+          onTap: () {
+            widget.product['isInvoice'] == false
+                ? context.pushNamed(AppRoute.historyDetail.name, extra: {
+                    'invoice': widget.product,
+                    'count': widget.product['products']
+                  })
+                : context.pushNamed(AppRoute.saveInvoice.name, extra: {
+                    'shop': widget.product['shop'],
+                    'total': widget.product['total']
+                  });
+            ;
+          },
           contentPadding: EdgeInsets.zero,
           title: Container(
             color: Colors.grey[800]!.withOpacity(0.05),
@@ -52,20 +65,39 @@ class _HistorylistTileState extends State<HistorylistTile>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(width: 8),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 80.h,
-                    width: 80.h,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(widget.product['img'] ?? ''),
-                        fit: BoxFit.contain,
+                const SizedBox(width: 10),
+                if (widget.product['img'] == AppAssets.addInvoice)
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 70.h,
+                      width: 70.h,
+                      decoration: BoxDecoration(color: AppColors.whiteColor),
+                      child: Image.asset(
+                        widget.product['img'] ?? '',
+                        alignment: Alignment.center,
+                        height: 40.h,
+                      ),
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 70.h,
+                      width: 70.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        image: DecorationImage(
+                          image: AssetImage(widget.product['img'] ?? ''),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                   ),
-                ),
+
                 const SizedBox(
                     width: 8), // Assuming 8.horizontalSpace is a SizedBox
                 Column(
@@ -73,22 +105,33 @@ class _HistorylistTileState extends State<HistorylistTile>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 10),
-                    Text(
-                      '${widget.product['products'] ?? ''} products ',
-                      style: textStyle16.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        overflow: TextOverflow.ellipsis,
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.product['isInvoice'])
+                          context.pushNamed(AppRoute.saveInvoice.name, extra: {
+                            'shop': widget.product['shop'],
+                            'total': widget.product['total']
+                          });
+                      },
+                      child: Text(
+                        '${widget.product['products'] ?? ''} products ',
+                        style: textStyle16.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                     SizedBox(height: 10.h),
-                    Text(
-                      '\$ ${widget.product['total'] ?? ''}',
-                      style: textStyle16.copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                          overflow: TextOverflow.ellipsis),
-                    ),
+                    if (widget.product['isInvoice'])
+                      Text(
+                        '\$ ${widget.product['total']}',
+                        style: textStyle16.copyWith(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                    SizedBox(),
                   ],
                 ),
                 Spacer(), // Assuming 8.horizontalSpace is a SizedBox
@@ -123,13 +166,17 @@ class _HistorylistTileState extends State<HistorylistTile>
 
   _buildRightSwipeActions(Map<String, dynamic> product) => ActionPane(
         motion: const DrawerMotion(),
+        extentRatio: 0.3,
         children: [
           AppSlidableaction(
             isRight: true,
-            icon: AppAssets.addCart,
+            icon: AppAssets.addToCheck,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
-              context.pushNamed(AppRoute.historyDetail.name, extra: product);
+              context.pushNamed(AppRoute.historyDetail.name, extra: {
+                'invoice': widget.product,
+                'count': widget.product['products']
+              });
             },
           ),
         ],

@@ -8,6 +8,7 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider(this.services);
 
   bool _isLoading = false;
+
   Country _selectedCountry = Country.from(
     json: {
       "e164_cc": "61",
@@ -36,4 +37,40 @@ class AuthProvider extends ChangeNotifier {
     _selectedCountry = newCountry;
     notifyListeners();
   }
+
+  
+  //   Future<void> signUp(
+  //   String phone,
+  //   String temp, {
+  //   VoidCallback? onSuccess,
+  //   VoidCallback? onChangePassword,
+  //   VoidCallback? onError,
+  // }) async {
+  //   setLoading(true);
+  //   try {
+  //     final response = await AuthService().signUp(phone: phone, tempPass: tempPass, userName: userName)
+  //     if (response['code'] == 200) {
+        
+  //       log("response ====${response.toString()}");
+      
+  //       if (loginResp.data.tempPass == true) {
+  //         // SharedPrefs().setDocId(response['doctor']);
+  //         onChangePassword?.call();
+  //       } else {
+  //         onSuccess?.call();
+  //       }
+  //     } else {
+  //       onError?.call();
+  //     }
+  //   } on DioException {
+  //     onError?.call();
+  //     rethrow;
+  //   } catch (e, s) {
+  //     debugPrint('Error while login: $e');
+  //     debugPrint('Error while login: $s');
+  //   } finally  {
+  //   setLoading(false);
+  //   }
+  // }
+
 }

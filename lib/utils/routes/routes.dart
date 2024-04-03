@@ -257,9 +257,16 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.historyDetail.name,
                     name: AppRoute.historyDetail.name,
-                    builder: (context, state) => HistoryDetailScreen(
-                      invoice: state.extra as Map<String, dynamic>,
-                    ),
+                   
+
+
+                     builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>;
+                      return HistoryDetailScreen(
+                       invoice : extra['invoice'] as Map<String, dynamic>,
+                        count: extra['count'] as int,
+                      );
+                    },
                   ),
                 ],
               ),

@@ -6,7 +6,7 @@ import '../utils/shared_prefs.dart';
 class BaseRepository {
   BaseRepository._();
   static final _instance = BaseRepository._();
-  static const baseUrl = "http://3.105.32.43/api";
+  static const baseUrl = "https://devapi.shopeaseapp.com";
   static const socketUrl = "http://3.105.32.43.com";
   static BaseRepository get instance => _instance;
   intialize() {

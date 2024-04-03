@@ -95,7 +95,7 @@ class _ProductTileState extends State<ProductTile>
               if (product['isInCart'])
                 SvgIcon(
                   AppAssets.succcessCart,
-                  size: 25.sp,
+                  size: 20.sp,
                   color: AppColors.greenColor,
                 ),
               SizedBox(width: 25.sp),
@@ -122,8 +122,8 @@ class _ProductTileState extends State<ProductTile>
         children: [
           AppSlidableaction(
             isRight: true,
-            
-            icon: product['isInCart'] ? AppAssets.addtocart : AppAssets.addCart,
+            height: product['isInCart'] ? 29.sp : 18.sp,
+            icon: product['isInCart'] ? AppAssets.rmCart : AppAssets.addCart,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
               widget.onAddToCart?.call();

@@ -53,6 +53,13 @@ class _AddinventoryState extends State<Addinventory> {
   File? imagefile;
   String imageurl = '';
   String? uploadedFilePath;
+  bool check = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    InventoryProvider().clearUploadedFilePath();
+  }
 
   void _openFilePicker() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -100,7 +107,7 @@ class _AddinventoryState extends State<Addinventory> {
     });
   }
 
-  final _formKey = GlobalKey<FormState>();
+  var _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -110,8 +117,34 @@ class _AddinventoryState extends State<Addinventory> {
       _brandController.text = widget.details['brand'];
       _storageController.text = widget.details['storage'];
     }
+    var _formKey = GlobalKey<FormState>();
+    var isLoading = false;
 
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
+      String? validateImage() {
+        if (uploadedFilePath == null ||
+           uploadedFilePath!.isEmpty) {
+          return 'Please upload a photo';
+        }
+        return null;
+      }
+
+      void _submit() {
+        final isValid = _formKey.currentState!.validate();
+        final isImageValid = validateImage() == null;
+        if (!isValid || !isImageValid) {
+          CustomToast.showError(context, 'Please fill all required fields.');
+          return;
+        }
+        setState(() {
+          check = true;
+        });
+
+        context.pushNamed(AppRoute.home.name);
+      }
+ 
+
+    
       return Scaffold(
         backgroundColor: AppColors.whiteColor,
         appBar: AppBar(
@@ -122,206 +155,254 @@ class _AddinventoryState extends State<Addinventory> {
             style: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
-        body: _buildaddinventorylist(provider, context),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.sp, horizontal: 5.sp),
-          child: AppButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  context.pushNamed(AppRoute.home.name);
-                } else {
-                  CustomToast.showWarning(
-                      context, "Please fill required fields");
-                }
-              },
-              text: 'Save'),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding:
+                    EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: TextSpan(
+                            text: '*',
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 17),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Name',
+                                style: textStyle16.copyWith(
+                                    color: AppColors.blackColor,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      9.verticalSpace,
+                      AppTextField(
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Enter a valid name!';
+                          }
+                          return null;
+                        },
+                        controller: _nameController,
+                        name: "Enter product name",
+                        hintText: "Enter product name",
+                        // labelText: "  Product name",
+                        labelStyle: textStyle16.copyWith(
+                            color: AppColors.blackColor,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      12.h.verticalSpace,
+                      12.h.verticalSpace,
+                      AppTextField(
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Enter a valid description!';
+                          }
+                          return null;
+                        },
+                        controller: _descController,
+                        hintText: "Enter Description",
+                        maxLines: 3,
+                        name: "Name",
+                        labelText: "Description",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: const BorderSide(
+                            color: AppColors.mediumGreyColor,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 162, 4, 4),
+                          ),
+                        ),
+                      ),
+                      12.h.verticalSpace,
+                      AppTextField(
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Enter a valid name!';
+                          }
+                          return null;
+                        },
+                        controller: _brandController,
+                        hintText: "Enter brand name",
+                        name: "Name",
+                        labelText: "Brand",
+                      ),
+                      12.h.verticalSpace,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: GlobalText(
+                          'Inventory Level',
+                          textStyle: textStyle16.copyWith(
+                            color: AppColors.blackColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      18.verticalSpace,
+                      CardDropDownField(
+                        value: (widget.isEdit
+                                ? widget.details['inventoryLevel']
+                                    as InventoryType
+                                : InventoryType.low)
+                            .name,
+                        labelStyle: textStyle16.copyWith(
+                            color: AppColors.blackColor,
+                            fontWeight: FontWeight.w400),
+                        // labelText: 'Inventory Level',
+                        dropDownList: InventoryDropdownList(),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select an inventory level';
+                          }
+                          return null;
+                        },
+                      ),
+                      12.h.verticalSpace,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: RichText(
+                          text: TextSpan(
+                            text: '*',
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 17),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Select Category',
+                                style: textStyle16.copyWith(
+                                    color: AppColors.blackColor,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      18.verticalSpace,
+                      CardDropDownField(
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.toString() == 'Select Category') {
+                            return 'Please select a Category';
+                          }
+                          return null;
+                        },
+                        value: widget.isEdit
+                            ? widget.details['category'].toString()
+                            : 'Select Category',
+                        labelStyle: textStyle16.copyWith(
+                            color: AppColors.blackColor,
+                            fontWeight: FontWeight.w400),
+                        // labelText: 'Inventory Level',
+                        dropDownList: CategoryList(),
+                        trailing: SvgPicture.asset(AppAssets.dropDown),
+                      ),
+                      12.h.verticalSpace,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: GlobalText(
+                          ' Upload Photo',
+                          textStyle: textStyle16.copyWith(
+                            color: AppColors.blackColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      10.h.verticalSpace,
+                      GestureDetector(
+                        onTap: () async {
+                          _openFilePicker();
+                          await uploadFile();
+                        },
+                        child: Container(
+                          width: 450.h,
+                          padding: EdgeInsets.all(13.sp),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(36),
+                            border: Border.all(color: AppColors.darkGreyColor),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                fit: FlexFit.tight,
+                                flex: 5,
+                                child: Text(
+                                  
+                                      uploadedFilePath ?? "Select a photo",
+                                  style: textStyle14.copyWith(
+                                      color: AppColors.mediumGreyColor),
+                                ),
+                              ),
+                              Flexible(
+                                fit: FlexFit.tight,
+                                flex: 1,
+                                child: SvgIcon(
+                                  AppAssets.upload,
+                                  color: AppColors.blackColor,
+                                  size: 16.sp,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      2.h.verticalSpace,
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GlobalText(
+                          ' Max File Size:5MB',
+                          textStyle: textStyle12.copyWith(
+                            color: AppColors.mediumGreyColor,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      AppTextField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Enter a valid  storage details!';
+                          }
+                          return null;
+                        },
+                        controller: _storageController,
+                        hintText: "Enter storage detail",
+                        name: "Storage Details",
+                        labelText: "Storage Details",
+                      ),
+                      30.h.verticalSpace,
+
+                      AppButton(
+                        colorType: check
+                            ? AppButtonColorType.primary
+                            : AppButtonColorType.greyed,
+                        onPressed: () => _submit(),
+                        text: 'Save',
+                      ),
+                      //   // ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
   }
 
-  Widget _buildaddinventorylist(
-      InventoryProvider provider, BuildContext context) {
-    print("===========drop:${widget.details['category']}");
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: RichText(
-                  text: TextSpan(
-                    text: '*',
-                    style: const TextStyle(color: Colors.red, fontSize: 17),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'Name',
-                        style: textStyle16.copyWith(
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              9.verticalSpace,
-              AppTextField(
-                controller: _nameController,
-                name: "Enter product name",
-                hintText: "Enter product name",
-                // labelText: "  Product name",
-                labelStyle: textStyle16.copyWith(
-                    color: AppColors.blackColor, fontWeight: FontWeight.w400),
-              ),
-              12.h.verticalSpace,
-              AppTextField(
-                controller: _descController,
-                hintText: "Enter Description",
-                maxLines: 3,
-                name: "Name",
-                labelText: "Description",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.r),
-                  borderSide: const BorderSide(
-                    color: AppColors.mediumGreyColor,
-                  ),
-                ),
-              ),
-              12.h.verticalSpace,
-              AppTextField(
-                controller: _brandController,
-                hintText: "Enter brand name",
-                name: "Name",
-                labelText: "Brand",
-              ),
-              12.h.verticalSpace,
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GlobalText(
-                  'Inventory Level',
-                  textStyle: textStyle16.copyWith(
-                    color: AppColors.blackColor,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-              18.verticalSpace,
-              CardDropDownField(
-                value: (widget.isEdit
-                        ? widget.details['inventoryLevel'] as InventoryType
-                        : InventoryType.low)
-                    .name,
-                labelStyle: textStyle16.copyWith(
-                    color: AppColors.blackColor, fontWeight: FontWeight.w400),
-                // labelText: 'Inventory Level',
-                dropDownList: InventoryDropdownList(),
-              ),
-              12.h.verticalSpace,
-              Align(
-                alignment: Alignment.centerLeft,
-                child: RichText(
-                  text: TextSpan(
-                    text: '*',
-                    style: const TextStyle(color: Colors.red, fontSize: 17),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'Select Category',
-                        style: textStyle16.copyWith(
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              18.verticalSpace,
-              CardDropDownField(
-                value: widget.details['category'],
-                labelStyle: textStyle16.copyWith(
-                    color: AppColors.blackColor, fontWeight: FontWeight.w400),
-                // labelText: 'Inventory Level',
-                dropDownList: CategoryList(),
-                trailing: SvgPicture.asset(AppAssets.dropDown),
-              ),
-              12.h.verticalSpace,
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GlobalText(
-                  ' Upload Photo',
-                  textStyle: textStyle16.copyWith(
-                    color: AppColors.blackColor,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-              10.h.verticalSpace,
-              GestureDetector(
-                onTap: () async {
-                  provider.openFilePicker(context);
-                  await provider.uploadFile();
-                },
-                child: Container(
-                  width: 450.h,
-                  padding: EdgeInsets.all(13.sp),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(36),
-                    border: Border.all(color: AppColors.darkGreyColor),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        fit: FlexFit.tight,
-                        flex: 5,
-                        child: Text(
-                          uploadedFilePath ?? "Select a photo",
-                          style: textStyle14.copyWith(
-                              color: AppColors.mediumGreyColor),
-                        ),
-                      ),
-                      Flexible(
-                        fit: FlexFit.tight,
-                        flex: 1,
-                        child: SvgIcon(
-                          AppAssets.upload,
-                          color: AppColors.blackColor,
-                          size: 16.sp,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              2.h.verticalSpace,
-              Align(
-                alignment: Alignment.centerRight,
-                child: GlobalText(
-                  ' Max File Size:5MB',
-                  textStyle: textStyle12.copyWith(
-                    color: AppColors.mediumGreyColor,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-              AppTextField(
-                controller: _storageController,
-                hintText: "Enter storage detail",
-                name: "Storage Details",
-                labelText: "Storage Details",
-              ),
-              70.verticalSpace,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
+ 
   List<DropdownMenuItem<String>> InventoryDropdownList() =>
       ['Low', 'Medium', 'High']
           .asMap()
@@ -354,7 +435,7 @@ class _AddinventoryState extends State<Addinventory> {
   }
 
   List<DropdownMenuItem<String>> CategoryList() =>
-      ['Fresh Fruits', 'Fresh Vegetables', 'Other Category']
+      ['Select Category', 'Fresh Fruits', 'Fresh Vegetables', 'Other Category']
           .asMap()
           .entries
           .map(

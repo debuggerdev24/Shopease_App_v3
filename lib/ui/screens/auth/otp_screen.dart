@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
+import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
@@ -34,8 +35,9 @@ class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
   late Timer _resendOTPTimer;
   bool _showResendOTPText = false;
-  late Timer _timer;
 
+  late Timer _timer;
+  final AuthService authService = AuthService();
   int _remainingSeconds = 0;
   void initState() {
     super.initState();
@@ -84,9 +86,11 @@ class _OtpScreenState extends State<OtpScreen> {
               AppButton(
                 onPressed: () async {
                   if (_otpController.text.isNotEmpty) {
-                    widget.isEdit
-                        ? context.goNamed(AppRoute.profile.name)
-                        : context.pushNamed(AppRoute.nickNameScreen.name);
+                    authService.confirmSignUp(
+                        widget.mobile, _otpController.text,context);
+                    // widget.isEdit
+                    //     ? context.goNamed(AppRoute.profile.name)
+                    //     : context.pushNamed(AppRoute.nickNameScreen.name);
 
                     widget.isEdit
                         ? CustomToast.showSuccess(
@@ -99,7 +103,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 },
                 text: 'Continue',
                 isLoading: false,
-                colorType: (_otpController.text.length != 4)
+                colorType: (_otpController.text.length != 6)
                     ? AppButtonColorType.greyed
                     : AppButtonColorType.primary,
               ),
@@ -119,6 +123,7 @@ class _OtpScreenState extends State<OtpScreen> {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Pinput(
+          length: 6,
           onChanged: (value) {
             setState(() {});
           },
@@ -126,17 +131,17 @@ class _OtpScreenState extends State<OtpScreen> {
           controller: _otpController,
           focusedPinTheme: PinTheme(
             height: 50.sp,
-            width: 75.sp,
+            width: 85.sp,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30.h),
+                borderRadius: BorderRadius.circular(20.h),
                 border: const Border.fromBorderSide(
                     BorderSide(color: AppColors.orangeColor))),
           ),
           defaultPinTheme: PinTheme(
             height: 50.sp,
-            width: 75.sp,
+            width: 85.sp,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30.h),
+                borderRadius: BorderRadius.circular(20.h),
                 border: const Border.fromBorderSide(
                     BorderSide(color: AppColors.greyColor))),
           ),

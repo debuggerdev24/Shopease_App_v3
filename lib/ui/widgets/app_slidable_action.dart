@@ -12,7 +12,8 @@ class AppSlidableaction extends StatelessWidget {
       this.onTap,
       this.backgroundColor,
       this.forgroundColor,
-      this.isRight = false});
+      this.isRight = false,
+      this.height});
 
   final String icon;
   final String? labelText;
@@ -20,6 +21,7 @@ class AppSlidableaction extends StatelessWidget {
   final Color? backgroundColor;
   final Color? forgroundColor;
   final bool isRight;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,7 @@ class AppSlidableaction extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 icon,
+                height: height,
                 theme: SvgTheme(
                     currentColor: forgroundColor ?? AppColors.blackColor),
               ),

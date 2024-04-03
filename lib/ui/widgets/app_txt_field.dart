@@ -29,6 +29,7 @@ class AppTextField extends StatelessWidget {
       this.maxLength,
       this.suffix,
       this.prefix,
+      this.errorBorder,
       this.maxLines,
       this.outlineInputBorder,
       this.hintStyle,
@@ -52,6 +53,8 @@ class AppTextField extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final bool? obSecureText;
   final InputBorder? border;
+    final InputBorder? errorBorder;
+
   final OutlineInputBorder? outlineInputBorder;
   final EdgeInsetsGeometry? contentPadding;
   final int? maxLength;
@@ -126,7 +129,7 @@ class AppTextField extends StatelessWidget {
                     color: AppColors.mediumGreyColor,
                   ),
                 ),
-            errorBorder: OutlineInputBorder(
+            errorBorder: errorBorder ??OutlineInputBorder(
               borderRadius: BorderRadius.circular(100.r),
               borderSide: BorderSide(
                 color: Theme.of(context).colorScheme.error,

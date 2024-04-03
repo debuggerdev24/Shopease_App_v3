@@ -19,7 +19,7 @@ class _CongaratulationsScreenState extends State<CongaratulationsScreen> {
   @override
   void initState() {
     super.initState();
-     startTimer();
+      startTimer();
   }
 
   Widget build(BuildContext context) {
@@ -32,12 +32,14 @@ class _CongaratulationsScreenState extends State<CongaratulationsScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                height: 300.h,
+                height: 200.h,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  image: DecorationImage(image: AssetImage(AppAssets.congo)),
+                  image: DecorationImage(
+                      image: AssetImage(AppAssets.addInventory)),
                 ),
               ),
+              30.verticalSpace,
               Text(
                 'Congratulations!',
                 style: textStyle20SemiBold.copyWith(
@@ -52,7 +54,8 @@ class _CongaratulationsScreenState extends State<CongaratulationsScreen> {
             ],
           ),
         ),
-      )), );
+      )),
+    );
   }
 
   startTimer() {

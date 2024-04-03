@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
+import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -30,6 +31,7 @@ class MobileLoginscreen extends StatefulWidget {
 
 class _MobileLoginscreenState extends State<MobileLoginscreen> {
   final TextEditingController _phoneController = TextEditingController();
+  final AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +61,18 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
                             context, 'Please enter valid mobile number');
                       }
                     : () {
-                        context.pushNamed(AppRoute.otpScreen.name, extra: {
-                          'isEdit': widget.isEdit,
-                          'mobile': _phoneController.text,
-                        });
+                        // authService.signUp(
+                        //     phone: '+${provider.selectedCountry.phoneCode}' +
+                        //         _phoneController.text,
+                        //     tempPass: '45646rr',
+                        //     userName: 'hh');
+                        var phone = '+${provider.selectedCountry.phoneCode}' +
+                            _phoneController.text;
+
+                         authService.signUp(phone,context,widget.isEdit);
+                        // authService.signUp(phone: phone, context: context);
+                        // context.pushNamed(AppRoute.otpScreen.name,
+                        //     extra: {'isEdit': widget.isEdit, 'mobile': phone});
                       },
                 text: 'Get OTP',
                 isLoading: false,
@@ -88,6 +98,8 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
   }
 
   _buildMobileField(AuthProvider provider) => AppTextField(
+    
+
         name: 'Mobile Number',
         labelStyle: textStyle14,
         onChanged: (value) {
@@ -162,7 +174,7 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
               const TextSpan(text: ' and '),
               TextSpan(
                 text: 'privacy of policy',
-                style: textStyle16Bold,
+                style: textStyle16Bold, 
                 recognizer: TapGestureRecognizer()..onTap = () {},
               ),
             ],

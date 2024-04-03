@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -11,11 +12,18 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class NickNameScreen extends StatelessWidget {
-  NickNameScreen({super.key});
+class NickNameScreen extends StatefulWidget {
+  const NickNameScreen({super.key});
 
-  final TextEditingController _nameController = TextEditingController();
+  @override
+  State<NickNameScreen> createState() => _NickNameScreenState();
+}
 
+final TextEditingController _nameController = TextEditingController();
+
+bool check = false;
+
+class _NickNameScreenState extends State<NickNameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +44,13 @@ class NickNameScreen extends StatelessWidget {
                 ),
                 20.verticalSpace,
                 AppTextField(
+                  onChanged: (val) {
+                    if (_nameController.length > 0)
+                      setState(() {
+                        check = true;
+                      });
+                  },
+                  autoValidateMode: AutovalidateMode.onUserInteraction,
                   name: 'nickNameField',
                   controller: _nameController,
                   hintText: 'jonathan_peeres',
@@ -46,14 +61,24 @@ class NickNameScreen extends StatelessWidget {
                       EdgeInsets.symmetric(horizontal: 0.sp, vertical: 20.sp),
                   child: AppButton(
                       onPressed: () {
-                        if (_nameController.text.isNotEmpty)
+                        if (_nameController.text.isNotEmpty) {
+                          setState(() {
+                            check = true;
+                          });
+
                           context
                               .pushNamed(AppRoute.congratulationsScreen.name);
-                        else {
+                        } else {
+                          setState(() {
+                            check = false;
+                          });
                           CustomToast.showWarning(
-                              context, 'Please enter nick name');
+                              context, 'Please enter a nickname');
                         }
                       },
+                      colorType: _nameController.length == 0
+                          ? AppButtonColorType.greyed
+                          : AppButtonColorType.primary,
                       text: 'Continue'),
                 ),
               ],
