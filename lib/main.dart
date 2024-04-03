@@ -5,6 +5,7 @@ import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/providers/theme_provider.dart';
+import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 import 'package:shopease_app_flutter/services/scanner_service.dart';
 import 'package:shopease_app_flutter/utils/app_themes.dart';
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ThemeProvider>(
           create: (_) => ThemeProvider(),
         ),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(AuthService()),
+        ),
         ChangeNotifierProvider<ScannerProvider>(
           create: (_) => ScannerProvider(ScannerService()),
         ),
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ChecklistProvider>(
           create: (_) => ChecklistProvider(),
         ),
-         ChangeNotifierProvider<ProfileProvider>(
+        ChangeNotifierProvider<ProfileProvider>(
           create: (_) => ProfileProvider(),
         ),
       ],

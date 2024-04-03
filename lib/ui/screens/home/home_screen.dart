@@ -105,6 +105,11 @@ class _HomeScreenState extends State<HomeScreen>
                                   setState(() {
                                     searchable = !searchable;
                                   });
+                                  searchController.text.isNotEmpty
+                                      ? showSearch(
+                                          context: context,
+                                          delegate: CustomSearchDelegate())
+                                      : SizedBox();
                                 },
                                 child: searchController.text.isEmpty
                                     ? const Icon(Icons.arrow_back)
@@ -206,6 +211,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                       ListView.separated(
                           shrinkWrap: true,
+                          primary: false,
                           itemCount: search
                               ? searchedProducts.length
                               : provider.products.length,
@@ -214,7 +220,6 @@ class _HomeScreenState extends State<HomeScreen>
                           itemBuilder: (BuildContext context, int index) {
                             return ProductTile(
                               product: provider.products[index],
-                             
                               onAddToCart: () {
                                 bool value =
                                     provider.products[index]['isInCart'];
@@ -463,6 +468,189 @@ class ProductSearchDelegate extends SearchDelegate<String> {
           },
         );
       },
+    );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate {
+// Demo list to show querying
+  List<String> searchTerms = [
+    "Apple",
+    "Banana",
+    "Mango",
+    "Pear",
+    "Watermelons",
+    "Blueberries",
+    "Pineapples",
+    "Strawberries"
+  ];
+  bool searchable = true;
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      // AppTextField(name: 'Search'),
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: Icon(Icons.clear),
+      ),
+    ];
+
+    // return [
+    //   searchable
+    //       ? IconButton(
+    //           onPressed: () {
+    //             // setState(() {
+    //             //   searchable = !searchable;
+    //             // });
+    //             searchController.clear();
+    //           },
+    //           icon: SvgIcon(
+    //             AppAssets.search,
+    //             size: 20.sp,
+    //             color: AppColors.blackGreyColor,
+    //           ))
+    //       : Stack(
+    //           clipBehavior: Clip.hardEdge,
+    //           children: [
+    //             Container(
+    //                 color: Colors.white,
+    //                 height: 500,
+    //                 width: 370.w,
+    //                 child: AppTextField(
+    //                   hintText: 'Search Product',
+    //                   border: OutlineInputBorder(
+    //                     borderRadius: BorderRadius.circular(40.r),
+    //                     borderSide: const BorderSide(
+    //                       color: AppColors.blackGreyColor,
+    //                     ),
+    //                   ),
+    //                   prefixIcon: AppIconButton(
+    //                     onTap: () {
+    //                       // setState(() {
+    //                       //   searchable = !searchable;
+    //                       // });
+    //                     },
+    //                     child: searchController.text.isEmpty
+    //                         ? const Icon(Icons.arrow_back)
+    //                         : const SvgIcon(
+    //                             AppAssets.search,
+    //                             size: 15,
+    //                           ),
+    //                   ),
+    //                   controller: searchController,
+    //                   onChanged: (value) {
+    //                     // _onSearchChanged(searchController.text);
+    //                     log("search text:${searchController.text}");
+    //                   },
+    //                   name: 'Search',
+    //                 )),
+    //             Positioned(
+    //                 top: 15,
+    //                 right: 40,
+    //                 child: GestureDetector(
+    //                     onTap: () {
+    //                       log('Search clicked!');
+    //                     },
+    //                     child: const Center(
+    //                         child: SvgIcon(
+    //                       AppAssets.cancel,
+    //                       size: 18,
+    //                     )))),
+    //           ],
+    //         ),
+    //   searchable
+    //       ? Padding(
+    //           padding: const EdgeInsets.only(left: 5),
+    //           child: AppIconButton(
+    //               onTap: () {
+    //                 context.pushNamed(AppRoute.scanAndAddScreen.name,
+    //                     extra: {'isReplace': false, 'isInvoice': false});
+    //               },
+    //               child: const SvgIcon(
+    //                 AppAssets.scanner,
+    //                 size: 23,
+    //                 color: AppColors.blackGreyColor,
+    //               )),
+    //         )
+    //       : Container(),
+    //   searchable
+    //       ? Padding(
+    //           padding: const EdgeInsets.only(left: 5, right: 10),
+    //           child: AppIconButton(
+    //               onTap: () {
+    //                 context.pushNamed(
+    //                   AppRoute.addinventoryForm.name,
+    //                   extra: {
+    //                     'isEdit': false,
+    //                     'isReplace': false,
+    //                   },
+    //                 );
+    //               },
+    //               child: const SvgIcon(
+    //                 AppAssets.add,
+    //                 size: 20,
+    //                 color: AppColors.orangeColor,
+    //               )),
+    //         )
+    //       : Container(),
+    // ];
+  }
+
+// second overwrite to pop out of search menu
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, null);
+      },
+      icon: Icon(Icons.arrow_back),
+    );
+  }
+
+// third overwrite to show query result
+  @override
+  Widget buildResults(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(fruit);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(
+          title: Text(result),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var fruit in searchTerms) {
+      if (fruit.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(fruit);
+      }
+    }
+    return Container(
+      height: 300,
+      color: Colors.yellow,
+      child: ListView.builder(
+        itemCount: matchQuery.length,
+        itemBuilder: (context, index) {
+          var result = matchQuery[index];
+          return ListTile(
+            title: Text(result),
+          );
+        },
+      ),
     );
   }
 }

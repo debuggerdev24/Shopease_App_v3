@@ -136,11 +136,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   AppChip(text: widget.product!['storage']),
                 ],
               ),
-              15.verticalSpace,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildCustomContainer(widget.product!['storage'] ?? ''),
-              ),
+              10.verticalSpace,
               20.verticalSpace,
               // Center(
               //   child: AppButton(
@@ -178,6 +174,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
             onPressed: () {
+              setState(() {
+                if (widget.product!['isInCart'])
+                  widget.product!['isInCart'] = !widget.product!['isInCart'];
+              });
               context.goNamed(AppRoute.home.name);
             },
             text: widget.product!['isInCart']

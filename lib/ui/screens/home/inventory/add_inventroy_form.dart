@@ -38,7 +38,7 @@ class Addinventory extends StatefulWidget {
   final bool isEdit;
   final bool isReplace;
 
-  final Map<String, dynamic> details;
+  final Map<dynamic, dynamic> details;
 
   @override
   State<Addinventory> createState() => _AddinventoryState();
