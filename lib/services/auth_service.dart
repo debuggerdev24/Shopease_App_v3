@@ -11,50 +11,51 @@ import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
-abstract class BaseAuthService {}
+abstract class BaseAuthService {
+  // Future<dynamic> signUp({
+  //   required String phone,
+  // });
+}
 
 class AuthService implements BaseAuthService {
   final _api = BaseRepository.instance.dio;
   AuthService._();
   static final AuthService _instance = AuthService._();
   factory AuthService() => _instance;
+  SharedPrefs sharedPrefs = SharedPrefs();
+  // Future<dynamic> signUp({
+  //   required String phone,
+  // }) async {
+  //   final Map<String, dynamic> parms = {
+  //     "phone_number": phone,
+  //     "temporary_password": 'TempPassword123',
+  //     "preferred_username": 'test',
+  //   };
+  //   try {
+  //     final res = await _api.post(
+  //       ApiUrl.signUP,
+  //       data: parms,
 
-//   Future<dynamic> signUp({
-//     required String phone,
-//     required String tempPass,
-//     required String userName,
-//   }) async {
-//     try {
-//       final res = await _api.post(
-//         ApiUrl.signUP,
-//         data: {
-//           "phone_number": phone,
-//           "temporary_password": tempPass,
-//           "preferred_username": userName,
-//         },
-//         options: Options(
-//             headers: {'x-api-key': 'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0'}),
-//       );
+  //     );
 
-//       if (res.statusCode == 200) {
-//         log("Response:${res.statusCode}");
-//         return res.data;
-//       } else if (res.statusCode == 400) {
-//         // Handle specific status code 400 (Bad Request)
-//         log("Bad Request - Response:${res.statusCode}");
-//         return res.data; // Return response data for further handling
-//       } else {
-//         // Handle other non-200 status codes
-//         throw Exception('Failed to sign up: ${res.statusCode}');
-//       }
-//     } catch (e) {
-//       log('Error during sign up: $e');
-//       log(e.toString());
-//       throw e; // Rethrow the error to be handled by the caller
-//     }
-//   }
+  //     if (res.statusCode == 200) {
+  //       log("Response:${res.statusCode}");
+  //       return res.data;
+  //     } else if (res.statusCode == 400) {
+  //       log("Bad Request - Response:${res.statusCode}");
+  //       return res.data;
+  //     } else {
 
+  //       throw Exception('Failed to sign up: ${res.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     log('Error during sign up: $e');
+  //     log("=======${e}");
+  //     throw e;
+  //   }
+  // }
   void signUp(String phone, BuildContext context, bool isedit) async {
     // URL and headers
     String url = 'https://devapi.shopeaseapp.com/signup';
@@ -74,7 +75,7 @@ class AuthService implements BaseAuthService {
     String jsonBody = json.encode(body);
 
     try {
-      // Make POST request
+    
 
       http.Response response = await http.post(
         Uri.parse(url),
@@ -138,6 +139,9 @@ class AuthService implements BaseAuthService {
         log('Response: ${response.body}');
 
         CustomToast.showSuccess(context, '${response.body.toString()}');
+        sharedPrefs.setToken('true');
+        sharedPrefs.setPhone(phone);
+        
         context.pushNamed(AppRoute.nickNameScreen.name);
       } else {
         // Request failed

@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen>
                               AppRoute.addinventoryForm.name,
                               extra: {
                                 'isEdit': false,
-                                'isReplace': false,
+                               
                               },
                             );
                           },

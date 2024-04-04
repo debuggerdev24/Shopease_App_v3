@@ -73,6 +73,21 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
                         // authService.signUp(phone: phone, context: context);
                         // context.pushNamed(AppRoute.otpScreen.name,
                         //     extra: {'isEdit': widget.isEdit, 'mobile': phone});
+
+                        // provider.signUp(
+                        //     phone: phone,
+                        //     onError: (error) {
+                        //       CustomToast.showError(context, error);
+                        //     },
+                        //     onSuccess: (){
+
+                        //        CustomToast.showSuccess(context, 'Send code to $phone');
+                        //       context.pushNamed(AppRoute.otpScreen.name,
+                        //     extra: {'isEdit': widget.isEdit, 'mobile': phone});
+
+
+                        //     }
+                        //     );
                       },
                 text: 'Get OTP',
                 isLoading: false,
@@ -98,8 +113,6 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
   }
 
   _buildMobileField(AuthProvider provider) => AppTextField(
-    
-
         name: 'Mobile Number',
         labelStyle: textStyle14,
         onChanged: (value) {
@@ -174,7 +187,7 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
               const TextSpan(text: ' and '),
               TextSpan(
                 text: 'privacy of policy',
-                style: textStyle16Bold, 
+                style: textStyle16Bold,
                 recognizer: TapGestureRecognizer()..onTap = () {},
               ),
             ],

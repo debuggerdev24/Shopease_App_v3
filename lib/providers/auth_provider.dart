@@ -1,4 +1,5 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 
@@ -37,6 +38,34 @@ class AuthProvider extends ChangeNotifier {
     _selectedCountry = newCountry;
     notifyListeners();
   }
+
+
+  // Future<void> signUp({
+  //   required String phone,
+   
+  //   Function(String)? onError,
+  //   VoidCallback? onSuccess,
+  // }) async {
+  //   try {
+  //     setLoading(true);
+  //     final res = await services.signUp(
+         
+  //      phone: phone);
+  //     if (res["status"] == true) {
+  //       onSuccess?.call();
+  //     } else {
+  //       onError?.call(res["message"] ?? "Something went wrong!");
+  //     }
+
+  //     setLoading(false);
+  //   } on DioException {
+  //     setLoading(false);
+  //     rethrow;
+  //   } catch (e) {
+  //     setLoading(false);
+  //     debugPrint("Error while signing up in $e");
+  //   }
+  // }
 
   
   //   Future<void> signUp(

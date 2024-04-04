@@ -44,7 +44,7 @@ class ScanNotFoundScreen extends StatelessWidget {
                     AppRoute.addinventoryForm.name,
                     extra: {
                       'isEdit': false,
-                      'isReplace': true,
+                     
                     },
                   );
                 },

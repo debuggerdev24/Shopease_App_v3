@@ -41,7 +41,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 onTap: () {
                   context.pushNamed(AppRoute.addinventoryForm.name, extra: {
                     'isEdit': true,
-                    'isReplace': false,
+                   
                     'details': widget.product,
                   });
                 },
