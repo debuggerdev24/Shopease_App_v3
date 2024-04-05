@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,8 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
+import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -81,6 +85,21 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
               AppButton(
                 onPressed: () {
                   context.pop();
+
+                  Map<String, dynamic> newData = {
+                    'shop': provider.shops[provider.selectedShopIndex]['title']
+                        .toString(),
+                    'total': 0,
+                    'img': AppAssets.addInvoice,
+                    'products': 2,
+                    'isInvoice':false
+                  };
+
+                  log("history $newData");
+                  provider.addToHistory(newData);
+                 
+
+                  context.goNamed(AppRoute.checkList.name);
                 },
                 text: 'Do it Later',
                 colorType: AppButtonColorType.secondary,

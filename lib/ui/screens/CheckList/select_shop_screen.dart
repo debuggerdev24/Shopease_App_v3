@@ -6,6 +6,7 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_icon_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
+import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/shop_tile.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -97,15 +98,29 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20.h),
             child: Column(
               children: [
-                Text(
-                  'Create New Shop',
-                  style: textStyle18SemiBold,
-                ),
+                GlobalText('Create New Shop', textStyle: textStyle18SemiBold),
                 30.h.verticalSpace,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: RichText(
+                    text: TextSpan(
+                      text: '*',
+                      style: const TextStyle(color: Colors.red, fontSize: 17),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Shop Name',
+                          style: textStyle16.copyWith(
+                              color: AppColors.blackColor,
+                              fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                10.verticalSpace,
                 AppTextField(
                   name: 'name',
                   controller: _nameController,
-                  labelText: 'Shop Name',
                 ),
                 20.h.verticalSpace,
                 AppTextField(

@@ -18,6 +18,7 @@ class AppAssets {
   static const String user = "assets/images/user.png";
   static const String joe = "assets/images/joe.png";
   static const String invoice = "assets/images/invoice.png";
+  static const String addInvoice = "assets/images/addInvoice.png";
 
   static const String errorWarning = 'assets/icons/error_warning.svg';
 
@@ -59,6 +60,8 @@ class AppAssets {
   static const String arrowLeft = "assets/icons/arrowLeft.svg";
   static const String toastCheck = "assets/icons/toastCheck.svg";
   static const String errorToast = "assets/icons/errorToast.svg";
+  static const String addToCheck = "assets/icons/addToCheck.svg";
+  static const String rmCart= "assets/icons/rmCart.svg";
 
   static const String scanner = "assets/icons/scanner.svg";
   static const String search = "assets/icons/search.svg";

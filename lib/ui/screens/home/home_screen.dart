@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen>
                               AppRoute.addinventoryForm.name,
                               extra: {
                                 'isEdit': false,
-                                'isReplace': false,
+                               
                               },
                             );
                           },
@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ? searchedProducts.length
                               : provider.products.length,
                           separatorBuilder: (context, index) =>
-                              10.h.verticalSpace,
+                              1.h.verticalSpace,
                           itemBuilder: (BuildContext context, int index) {
                             return ProductTile(
                               product: provider.products[index],

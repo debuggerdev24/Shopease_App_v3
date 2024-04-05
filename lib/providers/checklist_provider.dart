@@ -91,6 +91,16 @@ class ChecklistProvider extends ChangeNotifier {
     log('data add to historyList');
   }
 
+   void deleteFromHistory(Map<String, dynamic> dataToDelete) {
+    if (historylist.contains(dataToDelete)) {
+      historylist.remove(dataToDelete);
+      notifyListeners();
+      log('Data deleted from historyList');
+    } else {
+      log('Item not found in historyList');
+    }
+  }
+
   Future<void> openFilePicker(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
@@ -190,11 +200,11 @@ final List<Map<String, dynamic>> shopsData = [
 ];
 
 final List<Map<String, dynamic>> historyData = [
-  {'shop': 'Shop 1', 'total': 300, 'img': AppAssets.invoice, 'products': 3},
   {
-    'shop': 'Shop 2',
-    'total': 900,
-    'img': AppAssets.noImage,
-    'products': 5,
+    'shop': 'Shop 1',
+    'total': 300,
+    'img': AppAssets.invoice,
+    'products': 3,
+    'isInvoice': true,
   },
 ];

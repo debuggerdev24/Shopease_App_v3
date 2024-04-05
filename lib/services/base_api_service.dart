@@ -6,18 +6,23 @@ import '../utils/shared_prefs.dart';
 class BaseRepository {
   BaseRepository._();
   static final _instance = BaseRepository._();
-  static const baseUrl = "http://3.105.32.43/api";
+  static const baseUrl = "https://devapi.shopeaseapp.com";
   static const socketUrl = "http://3.105.32.43.com";
   static BaseRepository get instance => _instance;
   intialize() {
     if (SharedPrefs().token != null) {
       _dio = Dio(BaseOptions(baseUrl: baseUrl, headers: {
         "Content-Type": "application/json",
-        'Authorization': "Bearer ${SharedPrefs().token}"
+         "x-api-key": "VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0"
+
+
+        // 'Authorization': "Bearer ${SharedPrefs().token}"
       }));
     } else {
       _dio = Dio(BaseOptions(baseUrl: baseUrl, headers: {
-        "Content-Type": "application/json",
+         "Content-Type": "application/json",
+         "x-api-key": "VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0"
+
       }));
     }
     _dio.interceptors.add(
@@ -26,8 +31,8 @@ class BaseRepository {
 
   Dio get dio => _dio;
   late final Dio _dio;
-  addToken(String token) {
-    _dio.options =
-        _dio.options.copyWith(headers: {'Authorization': "Bearer $token"});
-  }
+  // addToken(String token) {
+  //   _dio.options =
+  //       _dio.options.copyWith(headers: {'Authorization': "Bearer $token"});
+  // }
 }

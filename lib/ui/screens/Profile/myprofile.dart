@@ -13,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
@@ -21,6 +22,7 @@ import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:toastification/toastification.dart';
 
@@ -56,181 +58,195 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SharedPrefs sharedPrefs = SharedPrefs();
+
     return Consumer<ProfileProvider>(builder: (context, provider, _) {
       return Container(
         color: AppColors.whiteColor,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            50.h.verticalSpace,
-            GlobalText(
-              '  My Profile',
-              textStyle: appBarTitleStyle.copyWith(
-                  fontWeight: FontWeight.w600, fontSize: 25.sp),
-            ),
-            20.h.verticalSpace,
-            buildProfileTile(() {
-              _showEditProfileBottomSheet(context);
-            }, provider),
-            20.h.verticalSpace,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.sp),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GlobalText(
-                    provider.userList.isEmpty
-                        ? ' My Group (0/0)'
-                        : ' My Group (${provider.userList.length}/12)',
-                    textStyle: textStyle16,
-                  ),
-                  Spacer(),
-                  GestureDetector(
-                    child: GlobalText(
-                      'Leave Group',
-                      textStyle: textStyle12.copyWith(
-                          decoration: TextDecoration.underline),
-                    ),
-                    onTap: () {
-                      _showLeavePopUp(context, provider);
-                    },
-                  ),
-                  25.w.horizontalSpace,
-                  GestureDetector(
-                    onTap: () {
-                      _showAddMember(context);
-                    },
-                    child: SvgIcon(
-                      AppAssets.add,
-                      color: AppColors.primaryColor,
-                      size: 20.sp,
-                    ),
-                  ),
-                  4.w.horizontalSpace,
-                ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              50.h.verticalSpace,
+              GlobalText(
+                '  My Profile',
+                textStyle: appBarTitleStyle.copyWith(
+                    fontWeight: FontWeight.w600, fontSize: 25.sp),
               ),
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              primary: false,
-              itemCount: provider.userList.length,
-              // Replace yourList with your list of data
-              itemBuilder: (BuildContext context, int index) {
-                Map<String, String> user = provider.userList[index];
+              20.h.verticalSpace,
+              buildProfileTile(() {
+                _showEditProfileBottomSheet(context);
+              }, provider, sharedPrefs),
+              20.h.verticalSpace,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    GlobalText(
+                      provider.userList.isEmpty
+                          ? ' My Group (0)'
+                          : ' My Group (${provider.userList.length}/12)',
+                      textStyle: textStyle16,
+                    ),
+                    Spacer(),
+                    GestureDetector(
+                      child: GlobalText(
+                        'Leave Group',
+                        textStyle: textStyle12.copyWith(
+                            decoration: TextDecoration.underline),
+                      ),
+                      onTap: () {
+                        _showLeavePopUp(context, provider);
+                      },
+                    ),
+                    25.w.horizontalSpace,
+                    GestureDetector(
+                      onTap: () {
+                        _showAddMember(context, provider);
+                      },
+                      child: SvgIcon(
+                        AppAssets.add,
+                        color: AppColors.primaryColor,
+                        size: 20.sp,
+                      ),
+                    ),
+                    4.w.horizontalSpace,
+                  ],
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: provider.userList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  Map<String, dynamic> user = provider.userList[index];
+                  provider.selectedUserIndex == index;
 
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.sp),
-                  child: ListTile(
-                    leading: provider.set
-                        ? BounceInDown(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.orangeColor, // Border color
-                                  width: 1, // Border width
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5.sp),
+                    child: ListTile(
+                      leading: provider.set
+                          ? BounceInDown(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color:
+                                        AppColors.orangeColor, // Border color
+                                    width: 1, // Border width
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 38.0,
+                                  child: ClipOval(
+                                    child: Image.asset(user['img']
+                                        .toString()), // Display user image
+                                  ),
+                                  backgroundColor: AppColors.primaryColor,
                                 ),
                               ),
-                              child: CircleAvatar(
-                                radius: 38.0,
-                                child: ClipOval(
-                                  child: Image.asset(user['img']
-                                      .toString()), // Display user image
+                            )
+                          : BounceInUp(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color:
+                                        AppColors.orangeColor, // Border color
+                                    width: 1.5, // Border width
+                                  ),
                                 ),
-                                backgroundColor: AppColors.primaryColor,
+                                child: CircleAvatar(
+                                  radius: 38.0,
+                                  child: ClipOval(
+                                    child: Image.asset(user['img']
+                                        .toString()), // Display user image
+                                  ),
+                                  backgroundColor: AppColors.primaryColor,
+                                ),
                               ),
                             ),
-                          )
-                        : BounceInUp(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.orangeColor, // Border color
-                                  width: 1.5, // Border width
-                                ),
-                              ),
-                              child: CircleAvatar(
-                                radius: 38.0,
-                                child: ClipOval(
-                                  child: Image.asset(user['img']
-                                      .toString()), // Display user image
-                                ),
-                                backgroundColor: AppColors.primaryColor,
+                      title: GlobalText(user['name'].toString()),
+                      trailing: user['invite']
+                          ? GlobalText(
+                              'Invited',
+                              textStyle: textStyle14,
+                            )
+                          : Container(
+                              width: 70.sp,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  provider.selectedUserIndex == index
+                                      ? SvgIcon(
+                                          AppAssets.userEdit,
+                                          size: 18.sp,
+                                          color: AppColors.blackGreyColor,
+                                        )
+                                      : SizedBox(),
+                                  GestureDetector(
+                                    onTap: () {
+                                      provider
+                                          .deleteUser(user['img'].toString());
+                                    },
+                                    child: SvgIcon(
+                                      AppAssets.delete,
+                                      size: 16.sp,
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-
-                    title: GlobalText(user['name']
-                        .toString()), // Adjust the title according to your data
-                    trailing: Container(
-                      width: 70.sp,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SvgIcon(
-                            AppAssets.userEdit,
-                            size: 18.sp,
-                            color: AppColors.blackGreyColor,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              provider.deleteUser(user['img'].toString());
-                            },
-                            child: SvgIcon(
-                              AppAssets.delete,
-                              size: 16.sp,
-                            ),
-                          )
-                        ],
-                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              onTap: () {
-                provider.toggleSet(provider.set);
-              },
-              title: GlobalText(
-                'Support',
-                textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
+                  );
+                },
               ),
-              trailing: SvgIcon(
-                AppAssets.arrow,
-                color: AppColors.blackGreyColor,
+              ListTile(
+                onTap: () {
+                  provider.toggleSet(provider.set);
+                },
+                title: GlobalText(
+                  'Support',
+                  textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
+                ),
+                trailing: SvgIcon(
+                  AppAssets.arrow,
+                  color: AppColors.blackGreyColor,
+                ),
+                tileColor: AppColors.whiteColor,
               ),
-              tileColor: AppColors.whiteColor,
-            ),
-            provider.set
-                ? Column(
-                    children: [
-                      GlobalText(
-                        '    If you have any queries, write to ',
-                        fontSize: 12.sp,
-                        color: AppColors.lightGreyColor.withOpacity(0.8),
-                      ),
-                      2.h.verticalSpace,
-                      GlobalText(
-                        'support@ShopEaseApp.com',
-                        textDecoration: TextDecoration.underline,
-                        fontSize: 12.sp,
-                        color: AppColors.lightGreyColor.withOpacity(0.8),
-                      ),
-                    ],
-                  )
-                : SizedBox(),
-          ],
+              provider.set
+                  ? Column(
+                      children: [
+                        GlobalText(
+                          '    If you have any queries, write to ',
+                          fontSize: 12.sp,
+                          color: AppColors.lightGreyColor.withOpacity(0.8),
+                        ),
+                        2.h.verticalSpace,
+                        GlobalText(
+                          'support@ShopEaseApp.com',
+                          textDecoration: TextDecoration.underline,
+                          fontSize: 12.sp,
+                          color: AppColors.lightGreyColor.withOpacity(0.8),
+                        ),
+                      ],
+                    )
+                  : SizedBox(),
+              20.h.verticalSpace,
+            ],
+          ),
         ),
       );
     });
   }
 
-  void _showAddMember(BuildContext context) {
+  void _showAddMember(BuildContext context, ProfileProvider profileProvider) {
     showModalBottomSheet(
         enableDrag: true,
         showDragHandle: true,
@@ -270,11 +286,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       labelStyle: textStyle16.copyWith(
                           color: AppColors.blackColor,
                           fontWeight: FontWeight.w400),
+                      keyboardType: TextInputType.phone,
                     ),
                     80.h.verticalSpace,
                     AppButton(
                         onPressed: () {
                           context.pop();
+                          profileProvider.saveUser(
+                            {
+                              'img': AppAssets.noImage,
+                              'name': _nameController.text,
+                              'admin': false,
+                              'phone': int.parse(_mobileController.text),
+                              'invite': true,
+                            },
+                          );
+
+                          _mobileController.clear();
+                          _nameController.clear();
                         },
                         text: 'Invite'),
                     10.h.verticalSpace,
@@ -282,6 +311,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         colorType: AppButtonColorType.greyed,
                         onPressed: () {
                           context.pop();
+                          _mobileController.clear();
+                          _nameController.clear();
                         },
                         text: 'Cancel'),
                   ],
@@ -411,6 +442,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showLeavePopUp(BuildContext context, ProfileProvider profileProvider) {
+    log(profileProvider.uninvitedUsers.length.toString());
+    log("userList length: ${profileProvider.userList.length}");
+    log("uninvitedUsers length: ${profileProvider.uninvitedUsers.length}");
+
+    // Ensure uninvitedUsers is updated
+    profileProvider.updateUninvitedUsers();
+
     showModalBottomSheet(
         context: context,
         showDragHandle: true,
@@ -429,10 +467,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textStyle: textStyle18SemiBold),
                     20.h.verticalSpace,
                     Column(
-                      children:
-                          profileProvider.userList.asMap().entries.map((entry) {
+                      children: profileProvider.uninvitedUsers
+                          .asMap()
+                          .entries
+                          .map((entry) {
                         final int index = entry.key;
-                        final Map<String, String> user = entry.value;
+                        final Map<String, dynamic> user = entry.value;
 
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -458,7 +498,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       )
                                     : SizedBox(width: 20.sp),
-                                2.horizontalSpace, // Adjust the width as needed
+                                2.horizontalSpace,
                                 GlobalText(
                                   user['name'].toString(),
                                   fontSize: 15.sp,
@@ -479,8 +519,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                           CustomToast.showSuccess(
                               context, 'Successfully left the existing group.');
-
-                            },
+                        },
                         text: 'Assign & Leave'),
                     10.h.verticalSpace,
                     AppButton(
@@ -539,7 +578,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildProfileTile(VoidCallback ontap, ProfileProvider profileProvider) {
+  Widget buildProfileTile(VoidCallback ontap, ProfileProvider profileProvider,
+      SharedPrefs sharedPrefs) {
     return Container(
       alignment: Alignment.center,
       color: AppColors.lightGreyColor.withOpacity(0.05),
@@ -621,14 +661,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 4.h.verticalSpace,
                 GlobalText(
-                  'Jessica',
+                  sharedPrefs.userName ?? 'Jessica',
                   textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
                 ),
                 2.h.verticalSpace,
-                buildProfileRow('8888987121', "Change", () {
+                buildProfileRow(sharedPrefs.phone ?? '8888987121', "Change",
+                    () {
                   context.pushNamed(AppRoute.mobileLoginScreen.name,
-                      extra: true
-                      );
+                      extra: true);
                 }),
                 2.h.verticalSpace,
                 buildProfileRow('abc@gmail.com', 'Verify', () {}),

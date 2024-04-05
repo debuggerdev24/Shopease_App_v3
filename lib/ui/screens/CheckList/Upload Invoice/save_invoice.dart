@@ -76,6 +76,7 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                   ),
                   10.h.verticalSpace,
                   AppTextField(
+                    enabled: false,
                     controller: _nameController,
                     name: "Enter product name",
                     hintText: '\$ ${widget.total}',
@@ -124,7 +125,8 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     'shop': widget.shop,
                     'total': widget.total,
                     'img': AppAssets.invoice,
-                    'products': 4
+                    'products': 4,
+                    'isInvoice': true
                   };
 
                   log("history $newData");

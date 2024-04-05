@@ -174,4 +174,12 @@ class InventoryProvider extends ChangeNotifier {
     uploadedFilePath = key;
     notifyListeners();
   }
+
+
+
+   void clearUploadedFilePath() {
+    uploadedFilePath = null;
+    notifyListeners();
+  }
+
 }

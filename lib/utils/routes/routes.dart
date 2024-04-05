@@ -6,6 +6,7 @@ import 'package:shopease_app_flutter/tabs/tabs.dart';
 import 'package:shopease_app_flutter/ui/screens/CheckList/Upload%20Invoice/add_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/CheckList/Upload%20Invoice/save_invoice.dart';
 import 'package:shopease_app_flutter/ui/screens/CheckList/Upload%20Invoice/upload_invoice_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/CheckList/add_manually_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/CheckList/history_detail_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/CheckList/replace_manually_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/Notification/notificationScreen.dart';
@@ -46,6 +47,7 @@ enum AppRoute {
   ////////// BRANCH 2 //////////
   checkList,
   selectShop,
+  addManuallyForm,
   replaceManually,
   uploadInvoice,
   addInvoice,
@@ -178,7 +180,7 @@ class AppNavigator {
                         isEdit: (extra['isEdit'] ?? false) as bool,
                         details:
                             (extra['details'] ?? {}) as Map<dynamic, dynamic>,
-                        isReplace: (extra['isReplace'] ?? false) as bool,
+                       
                       );
                     },
                   ),
@@ -192,9 +194,7 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.fetchProduct.name,
                     name: AppRoute.fetchProduct.name,
-                    // builder: (context, state) => FetchProduct(
-                    //   product: state.extra as Map<String, dynamic>,
-                    // ),
+                   
                     builder: (BuildContext context, GoRouterState state) =>
                         const FetchProductScreen(),
                   ),
@@ -221,6 +221,12 @@ class AppNavigator {
                     path: AppRoute.selectShop.name,
                     name: AppRoute.selectShop.name,
                     builder: (context, state) => const SelectShopScreen(),
+                  ),
+                      GoRoute(
+                    path: AppRoute.addManuallyForm.name,
+                    name: AppRoute.addManuallyForm.name,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const AddManuallyScreen(),
                   ),
                   GoRoute(
                     path: AppRoute.replaceManually.name,
@@ -257,9 +263,16 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.historyDetail.name,
                     name: AppRoute.historyDetail.name,
-                    builder: (context, state) => HistoryDetailScreen(
-                      invoice: state.extra as Map<String, dynamic>,
-                    ),
+                   
+
+
+                     builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>;
+                      return HistoryDetailScreen(
+                       invoice : extra['invoice'] as Map<String, dynamic>,
+                        count: extra['count'] as int,
+                      );
+                    },
                   ),
                 ],
               ),

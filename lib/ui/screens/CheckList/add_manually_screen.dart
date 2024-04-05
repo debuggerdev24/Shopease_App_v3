@@ -14,6 +14,7 @@ import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
+import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/card_dropdown.dart';
@@ -25,26 +26,16 @@ import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-import '../../../widgets/app_button.dart';
-
-class Addinventory extends StatefulWidget {
-  const Addinventory({
+class AddManuallyScreen extends StatefulWidget {
+  const AddManuallyScreen({
     super.key,
-    this.isEdit = false,
-    this.details = const {},
-    this.isReplace = false,
   });
 
-  final bool isEdit;
-  final bool isReplace;
-
-  final Map<dynamic, dynamic> details;
-
   @override
-  State<Addinventory> createState() => _AddinventoryState();
+  State<AddManuallyScreen> createState() => _AddManuallyScreenState();
 }
 
-class _AddinventoryState extends State<Addinventory> {
+class _AddManuallyScreenState extends State<AddManuallyScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _brandController = TextEditingController();
@@ -111,12 +102,6 @@ class _AddinventoryState extends State<Addinventory> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isEdit) {
-      _nameController.text = widget.details['title'];
-      _descController.text = widget.details['desc'];
-      _brandController.text = widget.details['brand'];
-      _storageController.text = widget.details['storage'];
-    }
     var _formKey = GlobalKey<FormState>();
     var isLoading = false;
 
@@ -139,7 +124,7 @@ class _AddinventoryState extends State<Addinventory> {
           check = true;
         });
 
-        context.pushNamed(AppRoute.home.name);
+        context.pushNamed(AppRoute.checkList.name);
       }
 
       return Scaffold(
@@ -147,12 +132,12 @@ class _AddinventoryState extends State<Addinventory> {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           leading: Padding(
-            padding: EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 10),
             child: GestureDetector(
               onTap: () {
                 context.pop();
               },
-              child: SvgIcon(
+              child: const SvgIcon(
                 AppAssets.arrowLeft,
                 color: AppColors.blackColor,
               ),
@@ -161,9 +146,7 @@ class _AddinventoryState extends State<Addinventory> {
           leadingWidth: 30.sp,
           iconTheme: IconThemeData(color: AppColors.blackColor, size: 20.sp),
           title: Text(
-            widget.isEdit
-                ? "Edit"
-                : (widget.isReplace ? "Add Manually" : "Add Inventory"),
+            "Add Manually",
             style: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
@@ -264,11 +247,7 @@ class _AddinventoryState extends State<Addinventory> {
                       ),
                       18.verticalSpace,
                       CardDropDownField(
-                        value: (widget.isEdit
-                                ? widget.details['inventoryLevel']
-                                    as InventoryType
-                                : InventoryType.low)
-                            .name,
+                        value: InventoryType.low.name,
                         labelStyle: textStyle16.copyWith(
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w400),
@@ -310,9 +289,7 @@ class _AddinventoryState extends State<Addinventory> {
                           }
                           return null;
                         },
-                        value: widget.isEdit
-                            ? widget.details['category'].toString()
-                            : 'Select Category',
+                        value: 'Select Category',
                         labelStyle: textStyle16.copyWith(
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w400),

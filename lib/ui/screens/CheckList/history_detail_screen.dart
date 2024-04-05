@@ -13,9 +13,11 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
-  const HistoryDetailScreen({super.key, required this.invoice});
+  const HistoryDetailScreen(
+      {super.key, required this.invoice, required this.count});
 
   final Map<String, dynamic> invoice;
+  final int count;
 
   @override
   State<HistoryDetailScreen> createState() => _HistoryDetailScreenState();
@@ -73,7 +75,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     ],
                   ),
                 ),
-                _buildCurrentListView(provider),
+                _buildCurrentListView(provider, widget.count),
               ]),
         ),
         floatingActionButton: Padding(
@@ -89,6 +91,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ),
               onPressed: () {
                 context.goNamed(AppRoute.checkList.name);
+
+                provider.deleteFromHistory(widget.invoice);
               },
               text: 'Add to Checklist'),
         ),
@@ -97,11 +101,12 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     });
   }
 
-  Widget _buildCurrentListView(ChecklistProvider provider) {
+  Widget _buildCurrentListView(ChecklistProvider provider, int count) {
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
           children: provider.checklist
+              .take(count)
               .map(
                 (e) => ChecklistTile(
                   product: e,

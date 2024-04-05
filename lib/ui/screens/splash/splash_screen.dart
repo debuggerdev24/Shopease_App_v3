@@ -82,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Future.delayed(duration, () {
       // context.goNamed(AppRoute.createPostScreen.name, extra: PostType.blog);
       if (SharedPrefs().token != null) {
-        context.goNamed(AppRoute.onBoardScreen.name);
+        context.goNamed(AppRoute.home.name);
       } else {
         context.goNamed(AppRoute.onBoardScreen.name);
       }

@@ -144,11 +144,8 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                         child: AppIconButton(
                             onTap: () {
                               context.goNamed(
-                                AppRoute.addinventoryForm.name,
-                                extra: {
-                                  'isEdit': false,
-                                  'isReplace': true,
-                                },
+                                AppRoute.addManuallyForm.name,
+                               
                               );
                             },
                             child: const SvgIcon(
