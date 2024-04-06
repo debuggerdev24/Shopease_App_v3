@@ -61,15 +61,13 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
                             context, 'Please enter valid mobile number');
                       }
                     : () {
-                        // authService.signUp(
-                        //     phone: '+${provider.selectedCountry.phoneCode}' +
-                        //         _phoneController.text,
-                        //     tempPass: '45646rr',
-                        //     userName: 'hh');
                         var phone = '+${provider.selectedCountry.phoneCode}' +
                             _phoneController.text;
 
+                        print("phone object data --> ${phone}");
+
                          authService.signUp(phone,context,widget.isEdit);
+
                         // authService.signUp(phone: phone, context: context);
                         // context.pushNamed(AppRoute.otpScreen.name,
                         //     extra: {'isEdit': widget.isEdit, 'mobile': phone});
@@ -79,15 +77,17 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
                         //     onError: (error) {
                         //       CustomToast.showError(context, error);
                         //     },
-                        //     onSuccess: (){
-
-                        //        CustomToast.showSuccess(context, 'Send code to $phone');
+                        //     onSuccess: () {
+                        //       CustomToast.showSuccess(
+                        //           context, 'Send code to $phone');
                         //       context.pushNamed(AppRoute.otpScreen.name,
-                        //     extra: {'isEdit': widget.isEdit, 'mobile': phone});
-
-
-                        //     }
-                        //     );
+                        //           extra: {
+                        //             'isEdit': widget.isEdit,
+                        //             'mobile': phone
+                        //           });
+                        //     });
+                    
+                    
                       },
                 text: 'Get OTP',
                 isLoading: false,

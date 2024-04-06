@@ -104,6 +104,17 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
   Widget build(BuildContext context) {
     var _formKey = GlobalKey<FormState>();
     var isLoading = false;
+    final ValueNotifier<bool> isEnabled = ValueNotifier(false);
+    late final TextEditingController _nameController;
+
+    _nameController = TextEditingController()
+      ..addListener(() {
+        if (_nameController.text.isNotEmpty) {
+          isEnabled.value = true;
+        } else {
+          isEnabled.value = false;
+        }
+      });
 
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
       String? validateImage() {
@@ -115,8 +126,8 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
 
       void _submit() {
         final isValid = _formKey.currentState!.validate();
-        final isImageValid = validateImage() == null;
-        if (!isValid || !isImageValid) {
+
+        if (!isValid) {
           CustomToast.showError(context, 'Please fill all required fields.');
           return;
         }
@@ -197,12 +208,6 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
                       12.h.verticalSpace,
                       12.h.verticalSpace,
                       AppTextField(
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Enter a valid description!';
-                          }
-                          return null;
-                        },
                         controller: _descController,
                         hintText: "Enter Description",
                         maxLines: 3,
@@ -223,12 +228,6 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
                       ),
                       12.h.verticalSpace,
                       AppTextField(
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Enter a valid name!';
-                          }
-                          return null;
-                        },
                         controller: _brandController,
                         hintText: "Enter brand name",
                         name: "Name",
@@ -358,12 +357,6 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
                         ),
                       ),
                       AppTextField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Enter a valid  storage details!';
-                          }
-                          return null;
-                        },
                         controller: _storageController,
                         hintText: "Enter storage detail",
                         name: "Storage Details",
@@ -371,13 +364,17 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
                       ),
                       30.h.verticalSpace,
 
-                      AppButton(
-                        colorType: check
-                            ? AppButtonColorType.primary
-                            : AppButtonColorType.greyed,
-                        onPressed: () => _submit(),
-                        text: 'Save',
-                      ),
+                      ValueListenableBuilder<bool>(
+                          valueListenable: isEnabled,
+                          builder: (context, value, child) {
+                            return AppButton(
+                              colorType: value
+                                  ? AppButtonColorType.primary
+                                  : AppButtonColorType.greyed,
+                              onPressed: () => _submit(),
+                              text: 'Save',
+                            );
+                          }),
                       //   // ),
                     ],
                   ),

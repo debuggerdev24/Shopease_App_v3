@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (SharedPrefs().token != null) {
         context.goNamed(AppRoute.home.name);
       } else {
-        context.goNamed(AppRoute.onBoardScreen.name);
+        context.goNamed(AppRoute.home.name);
       }
     });
   }

@@ -14,8 +14,10 @@ class CardDropDownField extends StatelessWidget {
     this.validator,
     this.labelStyle,
     this.value,
+     this.selectedValueNotifier,
   });
-
+  
+  final ValueNotifier<String>? selectedValueNotifier;
   final String? labelText;
   final String? hintText;
   final Widget? leading;
@@ -83,3 +85,6 @@ class CardDropDownField extends StatelessWidget {
     ]);
   }
 }
+
+
+

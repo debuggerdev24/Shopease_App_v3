@@ -127,7 +127,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           context
                               .goNamed(AppRoute.scanAndAddScreen.name, extra: {
                             'isInvoice': false,
-                            'isReplace': true,
+                            'isReplace': false,
                           });
                         },
                         child: const SvgIcon(
@@ -178,6 +178,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
             onTap: _handleTabChange,
           ),
         ),
+      
         body: TabBarView(controller: _tabsController, children: [
           _buildCurrentListView(provider),
           _buildHistoryView(provider),
@@ -284,7 +285,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
               onPressed: () {
                 if (provider.selectedShopIndex < 0) {
                   CustomToast.showWarning(
-                      context, 'Please select products first');
+                      context, 'Please select shop');
                 } else {
                   CustomToast.showSuccess(context,
                       '${provider.checklist.length} Products purchased ');

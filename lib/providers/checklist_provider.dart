@@ -91,6 +91,12 @@ class ChecklistProvider extends ChangeNotifier {
     log('data add to historyList');
   }
 
+   addToShop(Map<String, dynamic> newData) {
+    shops.add(newData);
+    notifyListeners();
+    log('data add to shop');
+  }
+
    void deleteFromHistory(Map<String, dynamic> dataToDelete) {
     if (historylist.contains(dataToDelete)) {
       historylist.remove(dataToDelete);
