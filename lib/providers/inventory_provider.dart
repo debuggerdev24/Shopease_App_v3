@@ -82,7 +82,7 @@ class InventoryProvider extends ChangeNotifier {
   File? imagefile;
   String imageurl = '';
   String? uploadedFilePath;
-
+  int _selectedProduct = 0;
   void changeLoading(bool newValue) {
     _isLoading = newValue;
     notifyListeners();
@@ -91,9 +91,20 @@ class InventoryProvider extends ChangeNotifier {
   void deleteProduct(String title, BuildContext context) {
     _productList.removeWhere((element) => element['title'] == title);
 
-    CustomToast.showSuccess(
-        context, 'Successfully delete the  ${title} product ');
+    CustomToast.showSuccess(context, 'Successfully deleted');
 
+    notifyListeners();
+  }
+
+  List<Map<dynamic, dynamic>> _checkoutList = [];
+
+  List<Map<dynamic, dynamic>> get checkOutList => _checkoutList;
+
+  int get selectedProduct => _selectedProduct;
+
+  void checkOutProducts() {
+    _checkoutList =
+        products.where((product) => product['isInCart'] == true).toList();
     notifyListeners();
   }
 
@@ -108,17 +119,39 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addtoCart(String title, bool isInCart, BuildContext context) {
-    final product =
-        _productList.firstWhere((element) => element['title'] == title);
+  void addtoCart(String title, bool isInCart, BuildContext context,bool multi) {
+    final product = _productList
+        .firstWhere((element) => element['title'] == title, orElse: () => {});
+
+    if (product == null) {
+     if(multi) CustomToast.showError(context, 'Product not found');
+      return;
+    }
+
     product['isInCart'] = isInCart;
 
     if (isInCart) {
-      CustomToast.showSuccess(context, 'Successfully add into Cart');
+      _checkoutList.add(product);
+      if(multi) CustomToast.showSuccess(context, 'Successfully added to Cart');
     } else {
-      CustomToast.showError(context, 'Remove Product from Cart');
+      _checkoutList.remove(product);
+      if(multi) CustomToast.showError(context, 'Removed from Cart');
     }
 
+    notifyListeners();
+  }
+
+  void deleteCheckList(BuildContext context) {
+    List<Map<dynamic, dynamic>> checkOutList = List.from(_checkoutList);
+    for (Map<dynamic, dynamic> product in checkOutList) {
+      if (product['isInCart']) {
+              product['isInCart'] = false;
+
+        _checkoutList.remove(product);
+      
+      }
+    }
+    
     notifyListeners();
   }
 
@@ -151,7 +184,6 @@ class InventoryProvider extends ChangeNotifier {
       }
     } else {
       context.pop();
-      // User canceled the file picker
     }
   }
 
@@ -175,11 +207,8 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
-   void clearUploadedFilePath() {
+  void clearUploadedFilePath() {
     uploadedFilePath = null;
     notifyListeners();
   }
-
 }

@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen>
   List<Map<String, dynamic>> searchedProducts = [];
   bool search = false;
   bool searchable = true;
+  bool check = false;
 
   void _onSearchChanged(String query) {
     final products = context.read<InventoryProvider>().products;
@@ -169,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen>
                               AppRoute.addinventoryForm.name,
                               extra: {
                                 'isEdit': false,
-                               
                               },
                             );
                           },
@@ -219,6 +219,11 @@ class _HomeScreenState extends State<HomeScreen>
                               1.h.verticalSpace,
                           itemBuilder: (BuildContext context, int index) {
                             return ProductTile(
+                              onLongPress: () {
+                                context.goNamed(
+                                  AppRoute.multipleSelectProduct.name,
+                                );
+                              },
                               product: provider.products[index],
                               onAddToCart: () {
                                 bool value =
@@ -229,7 +234,8 @@ class _HomeScreenState extends State<HomeScreen>
                                 provider.addtoCart(
                                     provider.products[index]['title'],
                                     value,
-                                    context);
+                                    context,
+                                    true);
                               },
                               onTap: () {
                                 context.pushNamed(AppRoute.productDetail.name,
@@ -284,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen>
                         padding: EdgeInsets.all(20.sp),
                         child: AppButton(
                             onPressed: () {
-                              context.pushNamed(AppRoute.home.name);
+                              context.pushNamed(AppRoute.addManuallyForm.name);
                             },
                             text: 'Add an Inventory'),
                       ),
@@ -385,24 +391,30 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                   50.h.verticalSpace,
-                  AppButton(
-                      onPressed: () {
-                        context.pop();
-                      },
-                      text: 'Apply'),
+                  Center(
+                    child: AppButton(
+                        colorType: AppButtonColorType.secondary,
+                        onPressed: () {
+                          context.pop();
+                        },
+                        text: 'Apply'),
+                  ),
                   10.h.verticalSpace,
-                  AppButton(
-                      colorType: AppButtonColorType.greyed,
-                      onPressed: () {
-                        context.pop();
-                      },
-                      text: 'Cancel'),
+                  Center(
+                    child: AppButton(
+                        colorType: AppButtonColorType.greyed,
+                        onPressed: () {
+                          context.pop();
+                        },
+                        text: 'Cancel'),
+                  ),
                 ],
               ),
             ),
           );
         });
   }
+
 }
 
 class ProductSearchDelegate extends SearchDelegate<String> {

@@ -159,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   provider.selectedUserIndex == index
                                       ? Positioned(
-                                          bottom: 15,
+                                          bottom: 5,
                                           right: 8,
                                           child: SvgPicture.asset(
                                             AppAssets.update,
@@ -198,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   provider.selectedUserIndex == index
                                       ? Positioned(
-                                          bottom: 15,
+                                          bottom: 5,
                                           right: 8,
                                           child: SvgPicture.asset(
                                             AppAssets.update,
