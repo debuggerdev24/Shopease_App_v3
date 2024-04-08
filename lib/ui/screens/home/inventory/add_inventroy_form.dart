@@ -108,17 +108,32 @@ class _AddinventoryState extends State<Addinventory> {
   }
 
   var _formKey = GlobalKey<FormState>();
-
+  
   @override
   Widget build(BuildContext context) {
-    if (widget.isEdit) {
-      _nameController.text = widget.details['title'];
-      _descController.text = widget.details['desc'];
-      _brandController.text = widget.details['brand'];
-      _storageController.text = widget.details['storage'];
-    }
     var _formKey = GlobalKey<FormState>();
     var isLoading = false;
+    final ValueNotifier<bool> isEnabled = ValueNotifier(false);
+    late final TextEditingController _nameController;
+
+   ValueNotifier<String> selectedCategoryNotifier = ValueNotifier<String>('Select Category');
+
+    _nameController = TextEditingController()
+      ..addListener(() {
+        if (_nameController.text.isNotEmpty || selectedCategoryNotifier.value.isNotEmpty) {
+          isEnabled.value = true;
+        } else {
+          isEnabled.value = false;
+        }
+      });
+
+ValueNotifier<bool> isNameNotEmptyNotifier = ValueNotifier<bool>(_nameController.text.isNotEmpty);
+ValueNotifier<bool> isCategorySelectedNotifier = ValueNotifier<bool>(selectedCategoryNotifier.value != 'Select Category');
+
+
+isCategorySelectedNotifier.addListener(() {
+  isCategorySelectedNotifier.value = isCategorySelectedNotifier.value != 'Select Category';
+});
 
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
       String? validateImage() {
@@ -130,8 +145,8 @@ class _AddinventoryState extends State<Addinventory> {
 
       void _submit() {
         final isValid = _formKey.currentState!.validate();
-        final isImageValid = validateImage() == null;
-        if (!isValid || !isImageValid) {
+
+        if (!isValid) {
           CustomToast.showError(context, 'Please fill all required fields.');
           return;
         }
@@ -139,7 +154,7 @@ class _AddinventoryState extends State<Addinventory> {
           check = true;
         });
 
-        context.pushNamed(AppRoute.home.name);
+        context.pushNamed(AppRoute.checkList.name);
       }
 
       return Scaffold(
@@ -147,12 +162,12 @@ class _AddinventoryState extends State<Addinventory> {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           leading: Padding(
-            padding: EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 10),
             child: GestureDetector(
               onTap: () {
                 context.pop();
               },
-              child: SvgIcon(
+              child: const SvgIcon(
                 AppAssets.arrowLeft,
                 color: AppColors.blackColor,
               ),
@@ -161,9 +176,7 @@ class _AddinventoryState extends State<Addinventory> {
           leadingWidth: 30.sp,
           iconTheme: IconThemeData(color: AppColors.blackColor, size: 20.sp),
           title: Text(
-            widget.isEdit
-                ? "Edit"
-                : (widget.isReplace ? "Add Manually" : "Add Inventory"),
+            "Add Manually",
             style: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
@@ -214,12 +227,6 @@ class _AddinventoryState extends State<Addinventory> {
                       12.h.verticalSpace,
                       12.h.verticalSpace,
                       AppTextField(
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Enter a valid description!';
-                          }
-                          return null;
-                        },
                         controller: _descController,
                         hintText: "Enter Description",
                         maxLines: 3,
@@ -240,12 +247,6 @@ class _AddinventoryState extends State<Addinventory> {
                       ),
                       12.h.verticalSpace,
                       AppTextField(
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Enter a valid name!';
-                          }
-                          return null;
-                        },
                         controller: _brandController,
                         hintText: "Enter brand name",
                         name: "Name",
@@ -264,11 +265,7 @@ class _AddinventoryState extends State<Addinventory> {
                       ),
                       18.verticalSpace,
                       CardDropDownField(
-                        value: (widget.isEdit
-                                ? widget.details['inventoryLevel']
-                                    as InventoryType
-                                : InventoryType.low)
-                            .name,
+                        value: InventoryType.low.name,
                         labelStyle: textStyle16.copyWith(
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w400),
@@ -310,9 +307,7 @@ class _AddinventoryState extends State<Addinventory> {
                           }
                           return null;
                         },
-                        value: widget.isEdit
-                            ? widget.details['category'].toString()
-                            : 'Select Category',
+                        value: 'Select Category',
                         labelStyle: textStyle16.copyWith(
                             color: AppColors.blackColor,
                             fontWeight: FontWeight.w400),
@@ -320,6 +315,7 @@ class _AddinventoryState extends State<Addinventory> {
                         dropDownList: CategoryList(),
                         trailing: SvgPicture.asset(AppAssets.dropDown),
                       ),
+      
                       12.h.verticalSpace,
                       Align(
                         alignment: Alignment.centerLeft,
@@ -381,12 +377,6 @@ class _AddinventoryState extends State<Addinventory> {
                         ),
                       ),
                       AppTextField(
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Enter a valid  storage details!';
-                          }
-                          return null;
-                        },
                         controller: _storageController,
                         hintText: "Enter storage detail",
                         name: "Storage Details",
@@ -394,13 +384,17 @@ class _AddinventoryState extends State<Addinventory> {
                       ),
                       30.h.verticalSpace,
 
-                      AppButton(
-                        colorType: check
-                            ? AppButtonColorType.primary
-                            : AppButtonColorType.greyed,
-                        onPressed: () => _submit(),
-                        text: 'Save',
-                      ),
+                      ValueListenableBuilder<bool>(
+                          valueListenable: isEnabled,
+                          builder: (context, value, child) {
+                            return AppButton(
+                              colorType: value
+                                  ? AppButtonColorType.primary
+                                  : AppButtonColorType.greyed,
+                              onPressed: () => _submit(),
+                              text: 'Save',
+                            );
+                          }),
                       //   // ),
                     ],
                   ),

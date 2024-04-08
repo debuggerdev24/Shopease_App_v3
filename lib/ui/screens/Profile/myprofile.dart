@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
@@ -130,43 +131,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: ListTile(
                       leading: provider.set
                           ? BounceInDown(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color:
-                                        AppColors.orangeColor, // Border color
-                                    width: 1, // Border width
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors
+                                            .orangeColor, // Border color
+                                        width: 1.5, // Border width
+                                      ),
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      radius: 40.sp,
+                                      child: CircleAvatar(
+                                        radius: 38.0,
+                                        child: ClipOval(
+                                          child:
+                                              // Image.asset(AppAssets.user), // Display user image
+                                              Image.asset(
+                                                  user['img'].toString()),
+                                        ),
+                                        backgroundColor: Colors.white,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: CircleAvatar(
-                                  radius: 38.0,
-                                  child: ClipOval(
-                                    child: Image.asset(user['img']
-                                        .toString()), // Display user image
-                                  ),
-                                  backgroundColor: AppColors.primaryColor,
-                                ),
+                                  provider.selectedUserIndex == index
+                                      ? Positioned(
+                                          bottom: 15,
+                                          right: 8,
+                                          child: SvgPicture.asset(
+                                            AppAssets.update,
+                                            width: 20.sp,
+                                          ))
+                                      : SizedBox(),
+                                ],
                               ),
                             )
                           : BounceInUp(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color:
-                                        AppColors.orangeColor, // Border color
-                                    width: 1.5, // Border width
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors
+                                            .orangeColor, // Border color
+                                        width: 1.5, // Border width
+                                      ),
+                                    ),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      radius: 40.sp,
+                                      child: CircleAvatar(
+                                        radius: 38.0,
+                                        child: ClipOval(
+                                          child:
+                                              // Image.asset(AppAssets.user), // Display user image
+                                              Image.asset(
+                                                  user['img'].toString()),
+                                        ),
+                                        backgroundColor: Colors.white,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: CircleAvatar(
-                                  radius: 38.0,
-                                  child: ClipOval(
-                                    child: Image.asset(user['img']
-                                        .toString()), // Display user image
-                                  ),
-                                  backgroundColor: AppColors.primaryColor,
-                                ),
+                                  provider.selectedUserIndex == index
+                                      ? Positioned(
+                                          bottom: 15,
+                                          right: 8,
+                                          child: SvgPicture.asset(
+                                            AppAssets.update,
+                                            width: 20.sp,
+                                          ))
+                                      : SizedBox(),
+                                ],
                               ),
                             ),
                       title: GlobalText(user['name'].toString()),
@@ -247,6 +286,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showAddMember(BuildContext context, ProfileProvider profileProvider) {
+    final ValueNotifier<bool> isEnabled = ValueNotifier(false);
+    late final TextEditingController mobileController;
+    late final TextEditingController nameController;
+
+    nameController = TextEditingController()
+      ..addListener(() {
+        if (mobileController.text.isNotEmpty &&
+            nameController.text.isNotEmpty) {
+          isEnabled.value = true;
+        } else {
+          isEnabled.value = false;
+        }
+      });
+    mobileController = TextEditingController()
+      ..addListener(() {
+        if (nameController.text.isNotEmpty &&
+            mobileController.text.isNotEmpty) {
+          isEnabled.value = true;
+        } else {
+          isEnabled.value = false;
+        }
+      });
     showModalBottomSheet(
         enableDrag: true,
         showDragHandle: true,
@@ -269,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     buildTextLabel('Name'),
                     9.verticalSpace,
                     AppTextField(
-                      controller: _nameController,
+                      controller: nameController,
                       name: "Enter User name",
                       hintText: "Enter User name",
                       labelStyle: textStyle16.copyWith(
@@ -280,7 +341,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     buildTextLabel('Mobile Number'),
                     9.verticalSpace,
                     AppTextField(
-                      controller: _mobileController,
+                      controller: mobileController,
                       name: "Enter Mobile NUmber",
                       hintText: "Mobile Number",
                       labelStyle: textStyle16.copyWith(
@@ -289,23 +350,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       keyboardType: TextInputType.phone,
                     ),
                     80.h.verticalSpace,
-                    AppButton(
-                        onPressed: () {
-                          context.pop();
-                          profileProvider.saveUser(
-                            {
-                              'img': AppAssets.noImage,
-                              'name': _nameController.text,
-                              'admin': false,
-                              'phone': int.parse(_mobileController.text),
-                              'invite': true,
-                            },
-                          );
+                    ValueListenableBuilder<bool>(
+                        valueListenable: isEnabled,
+                        builder: (context, value, child) {
+                          return AppButton(
+                              colorType: isEnabled.value
+                                  ? AppButtonColorType.primary
+                                  : AppButtonColorType.secondary,
+                              onPressed: () {
+                                if (isEnabled.value) {
+                                  context.pop();
+                                  profileProvider.saveUser(
+                                    {
+                                      'img': AppAssets.noImage,
+                                      'name': nameController.text,
+                                      'admin': false,
+                                      'phone': int.parse(mobileController.text),
+                                      'invite': true,
+                                    },
+                                  );
 
-                          _mobileController.clear();
-                          _nameController.clear();
-                        },
-                        text: 'Invite'),
+                                  _mobileController.clear();
+                                  _nameController.clear();
+                                }
+                              },
+                              text: 'Invite');
+                        }),
                     10.h.verticalSpace,
                     AppButton(
                         colorType: AppButtonColorType.greyed,
@@ -324,6 +394,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showEditProfileBottomSheet(BuildContext context) {
+    final ValueNotifier<bool> isEnabled = ValueNotifier(false);
+    late final TextEditingController _mobileController;
+    late final TextEditingController _nameController;
+
+    _nameController = TextEditingController()
+      ..addListener(() {
+        if (_mobileController.text.isNotEmpty &&
+            _nameController.text.isNotEmpty) {
+          isEnabled.value = true;
+        } else {
+          isEnabled.value = false;
+        }
+      });
+    _mobileController = TextEditingController()
+      ..addListener(() {
+        if (_nameController.text.isNotEmpty &&
+            _mobileController.text.isNotEmpty) {
+          isEnabled.value = true;
+        } else {
+          isEnabled.value = false;
+        }
+      });
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -415,17 +507,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       40.h.verticalSpace,
-                      AppButton(
-                        onPressed: () {
-                          provider.toggleSet(true); // Set 'set' to true
-                          Navigator.pop(context); // Close the bottom sheet
+                      ValueListenableBuilder<bool>(
+                        valueListenable: isEnabled,
+                        builder: (context, value, child) {
+                          return AppButton(
+                            colorType: value
+                                ? AppButtonColorType.primary
+                                : AppButtonColorType.secondary,
+                            onPressed: () {
+                              provider.toggleSet(true);
+                              _nameController.clear();
+                              _mobileController.clear();
+                              Navigator.pop(context);
+                            },
+                            text: 'Save',
+                          );
                         },
-                        text: 'Save',
                       ),
                       10.h.verticalSpace,
                       AppButton(
                         colorType: AppButtonColorType.greyed,
                         onPressed: () {
+                          _nameController.clear();
+                          _mobileController.clear();
                           Navigator.pop(context); // Close the bottom sheet
                         },
                         text: 'Cancel',
@@ -511,6 +615,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     30.h.verticalSpace,
                     AppButton(
+                        colorType: profileProvider.selectedUserIndex == -1
+                            ? AppButtonColorType.greyed
+                            : AppButtonColorType.primary,
                         onPressed: () {
                           profileProvider
                               .deleteUserList(profileProvider.userList);

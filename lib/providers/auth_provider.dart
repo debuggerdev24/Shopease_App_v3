@@ -39,22 +39,21 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   // Future<void> signUp({
   //   required String phone,
-   
   //   Function(String)? onError,
   //   VoidCallback? onSuccess,
   // }) async {
   //   try {
   //     setLoading(true);
-  //     final res = await services.signUp(
-         
-  //      phone: phone);
-  //     if (res["status"] == true) {
+  //     final res = await services.signUp(phone: phone);
+
+  //     print("tatatat ----> ${res}");
+
+  //     if (res.statusCode == 200) {
   //       onSuccess?.call();
   //     } else {
-  //       onError?.call(res["message"] ?? "Something went wrong!");
+  //       onError?.call(res.data["message"] ?? "Something went wrong!");
   //     }
 
   //     setLoading(false);
@@ -67,39 +66,5 @@ class AuthProvider extends ChangeNotifier {
   //   }
   // }
 
-  
-  //   Future<void> signUp(
-  //   String phone,
-  //   String temp, {
-  //   VoidCallback? onSuccess,
-  //   VoidCallback? onChangePassword,
-  //   VoidCallback? onError,
-  // }) async {
-  //   setLoading(true);
-  //   try {
-  //     final response = await AuthService().signUp(phone: phone, tempPass: tempPass, userName: userName)
-  //     if (response['code'] == 200) {
-        
-  //       log("response ====${response.toString()}");
-      
-  //       if (loginResp.data.tempPass == true) {
-  //         // SharedPrefs().setDocId(response['doctor']);
-  //         onChangePassword?.call();
-  //       } else {
-  //         onSuccess?.call();
-  //       }
-  //     } else {
-  //       onError?.call();
-  //     }
-  //   } on DioException {
-  //     onError?.call();
-  //     rethrow;
-  //   } catch (e, s) {
-  //     debugPrint('Error while login: $e');
-  //     debugPrint('Error while login: $s');
-  //   } finally  {
-  //   setLoading(false);
-  //   }
-  // }
 
 }

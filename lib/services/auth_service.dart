@@ -14,7 +14,7 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 abstract class BaseAuthService {
-  // Future<dynamic> signUp({
+  // Future<Response<dynamic>> signUp({
   //   required String phone,
   // });
 }
@@ -25,7 +25,9 @@ class AuthService implements BaseAuthService {
   static final AuthService _instance = AuthService._();
   factory AuthService() => _instance;
   SharedPrefs sharedPrefs = SharedPrefs();
-  // Future<dynamic> signUp({
+
+  @override
+  // Future<Response<dynamic>> signUp({
   //   required String phone,
   // }) async {
   //   final Map<String, dynamic> parms = {
@@ -33,49 +35,27 @@ class AuthService implements BaseAuthService {
   //     "temporary_password": 'TempPassword123',
   //     "preferred_username": 'test',
   //   };
-  //   try {
-  //     final res = await _api.post(
-  //       ApiUrl.signUP,
-  //       data: parms,
 
-  //     );
-
-  //     if (res.statusCode == 200) {
-  //       log("Response:${res.statusCode}");
-  //       return res.data;
-  //     } else if (res.statusCode == 400) {
-  //       log("Bad Request - Response:${res.statusCode}");
-  //       return res.data;
-  //     } else {
-
-  //       throw Exception('Failed to sign up: ${res.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     log('Error during sign up: $e');
-  //     log("=======${e}");
-  //     throw e;
-  //   }
+  //   final res = await _api.post(ApiUrl.signUP, data: parms);
+  //   return res;
   // }
+
   void signUp(String phone, BuildContext context, bool isedit) async {
-    // URL and headers
     String url = 'https://devapi.shopeaseapp.com/signup';
     Map<String, String> headers = {
       'x-api-key': 'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0',
       'Content-Type': 'application/json',
     };
 
-    // Body data
     Map<String, dynamic> body = {
       "phone_number": phone,
       "temporary_password": "TempPassword123",
       "preferred_username": "sts"
     };
 
-    // Encode the body to JSON
     String jsonBody = json.encode(body);
 
     try {
-    
 
       http.Response response = await http.post(
         Uri.parse(url),
@@ -83,9 +63,7 @@ class AuthService implements BaseAuthService {
         body: jsonBody,
       );
 
-      // Check response status
       if (response.statusCode == 200) {
-        // Successful request
         log('Sign up successful');
         ('Response: ${response.body}');
         CustomToast.showSuccess(context, 'Send code to $phone');
@@ -96,7 +74,6 @@ class AuthService implements BaseAuthService {
         log('Response 400: ${response.body}');
         CustomToast.showError(context, 'User already exists');
       } else {
-        // Request failed
         log('Failed to sign up');
         log('Status code: ${response.statusCode}');
         log('Response: ${response.body}');
@@ -132,19 +109,16 @@ class AuthService implements BaseAuthService {
         body: jsonBody,
       );
 
-      // Check response status
       if (response.statusCode == 200) {
-        // Successful request
         log('Confirmation successful');
         log('Response: ${response.body}');
 
         CustomToast.showSuccess(context, '${response.body.toString()}');
         sharedPrefs.setToken('true');
         sharedPrefs.setPhone(phone);
-        
+
         context.pushNamed(AppRoute.nickNameScreen.name);
       } else {
-        // Request failed
         log('Failed to confirm sign up');
         log('Status code: ${response.statusCode}');
         log('Response: ${response.body}');
@@ -152,7 +126,6 @@ class AuthService implements BaseAuthService {
             context, 'OTP is invalid. Please enter correct OTP');
       }
     } catch (e) {
-      // Exception occurred during request
       print('Error confirming sign up: $e');
     }
   }
