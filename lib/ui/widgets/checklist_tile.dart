@@ -20,7 +20,7 @@ class ChecklistTile extends StatefulWidget {
       this.onChangeBrand,
       required this.isUpload});
 
-  final Map<String, dynamic> product;
+  final Map<dynamic, dynamic> product;
   final VoidCallback? onDelete;
   final VoidCallback? onChangeBrand;
   final bool isUpload;
@@ -110,7 +110,7 @@ class _ChecklistTileState extends State<ChecklistTile>
     );
   }
 
-  _buildRightSwipeActions(Map<String, dynamic> product) => ActionPane(
+  _buildRightSwipeActions(Map<dynamic, dynamic> product) => ActionPane(
         motion: const DrawerMotion(),
         children: [
           AppSlidableaction(
@@ -133,7 +133,7 @@ class _ChecklistTileState extends State<ChecklistTile>
         ],
       );
 
-  _showReplaceBrandSheet(Map<String, dynamic> product) {
+  _showReplaceBrandSheet(Map<dynamic, dynamic> product) {
     showModalBottomSheet(
         showDragHandle: true,
         context: context,
@@ -178,7 +178,7 @@ class _ChecklistTileState extends State<ChecklistTile>
             ));
   }
 
-  _showDeleteSheet(Map<String, dynamic> product) {
+  _showDeleteSheet(Map<dynamic, dynamic> product) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(

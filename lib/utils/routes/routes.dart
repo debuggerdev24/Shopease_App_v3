@@ -20,6 +20,7 @@ import 'package:shopease_app_flutter/ui/screens/auth/otp_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/fetch_product_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/home_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory/add_inventroy_form.dart';
+import 'package:shopease_app_flutter/ui/screens/home/inventory/multiple_addtocheckList.dart';
 import 'package:shopease_app_flutter/ui/screens/home/product_detail_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/scan_and_addscreen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/scan_not_found_screen.dart';
@@ -43,6 +44,7 @@ enum AppRoute {
   productDetail,
   fetchProduct,
   scanNotFoundScreen,
+  multipleSelectProduct,
 
   ////////// BRANCH 2 //////////
   checkList,
@@ -204,6 +206,11 @@ class AppNavigator {
                     builder: (BuildContext context, GoRouterState state) =>
                         const ScanNotFoundScreen(),
                   ),
+                      GoRoute(
+                path: AppRoute.multipleSelectProduct.name,
+                name: AppRoute.multipleSelectProduct.name,
+                builder: (BuildContext context, GoRouterState state) =>
+                    const MultipleAddCheckList(),),
                 ],
               ),
             ],
