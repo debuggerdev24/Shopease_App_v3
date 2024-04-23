@@ -36,9 +36,7 @@ class _OtpScreenState extends State<OtpScreen> {
   late Timer _resendOTPTimer;
   bool _showResendOTPText = false;
 
-  late Timer _timer;
-  final AuthService authService = AuthService();
-  int _remainingSeconds = 0;
+  @override
   void initState() {
     super.initState();
     startResendOTPTimer();
@@ -59,7 +57,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
-    _resendOTPTimer?.cancel(); // Cancel the timer when the widget is disposed
+    _resendOTPTimer.cancel(); // Cancel the timer when the widget is disposed
     super.dispose();
   }
 
@@ -86,19 +84,33 @@ class _OtpScreenState extends State<OtpScreen> {
               AppButton(
                 onPressed: () async {
                   if (_otpController.text.isNotEmpty) {
-                    authService.confirmSignUp(
-                        widget.mobile, _otpController.text,context);
+                    provider.confirmSignUp(
+                      phone: widget.mobile,
+                      otp: _otpController.text,
+                      onSuccess: () {
+                        widget.isEdit
+                            ? context.goNamed(AppRoute.profile.name)
+                            : context
+                                .pushNamed(AppRoute.congratulationsScreen.name);
+                        widget.isEdit
+                            ? CustomToast.showSuccess(
+                                context, 'Phone number changed')
+                            : null;
+                      },
+                    );
+                    // authService.confirmSignUp(
+
+                    //     , _otpController.text,context);
                     // widget.isEdit
                     //     ? context.goNamed(AppRoute.profile.name)
                     //     : context.pushNamed(AppRoute.nickNameScreen.name);
 
-                    widget.isEdit
-                        ? CustomToast.showSuccess(
-                            context, 'Phone number changed')
-                        : SizedBox();
+                    // widget.isEdit
+                    //     ? CustomToast.showSuccess(
+                    //         context, 'Phone number changed')
+                    //     : SizedBox();
                   } else {
-                    CustomToast.showWarning(
-                        context, 'Please fill required fields');
+                    CustomToast.showWarning(context, 'Please Enter valid OTP.');
                   }
                 },
                 text: 'Continue',
@@ -171,13 +183,12 @@ class _OtpScreenState extends State<OtpScreen> {
 
                     // Custom format
                   },
-                  duration: Duration(seconds: 15),
+                  duration: const Duration(seconds: 15),
                   style: textStyle12,
                   onTimeOver: () {
                     setState(() {
                       _showResendOTPText = true;
                     });
-                    print("TIME OVER");
                   },
                 )
               ],

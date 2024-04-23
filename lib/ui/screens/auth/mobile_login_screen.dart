@@ -1,20 +1,14 @@
 import 'dart:developer';
-
 import 'package:country_picker/country_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
-import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
-import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -22,8 +16,9 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class MobileLoginscreen extends StatefulWidget {
-  const MobileLoginscreen({super.key, required this.isEdit});
+  const MobileLoginscreen({super.key, required this.isEdit, this.nickName});
   final bool isEdit;
+  final String? nickName;
 
   @override
   State<MobileLoginscreen> createState() => _MobileLoginscreenState();
@@ -31,14 +26,13 @@ class MobileLoginscreen extends StatefulWidget {
 
 class _MobileLoginscreenState extends State<MobileLoginscreen> {
   final TextEditingController _phoneController = TextEditingController();
-  final AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
     log("value:${widget.isEdit}");
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: AppColors.whiteColor),
+        iconTheme: const IconThemeData(color: AppColors.whiteColor),
       ),
       body: Consumer<AuthProvider>(builder: (context, provider, _) {
         return Padding(
@@ -60,37 +54,25 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
                         CustomToast.showWarning(
                             context, 'Please enter valid mobile number');
                       }
-                    : () {
-                        var phone = '+${provider.selectedCountry.phoneCode}' +
-                            _phoneController.text;
-
-                        print("phone object data --> ${phone}");
-
-                         authService.signUp(phone,context,widget.isEdit);
-
-                        // authService.signUp(phone: phone, context: context);
-                        // context.pushNamed(AppRoute.otpScreen.name,
-                        //     extra: {'isEdit': widget.isEdit, 'mobile': phone});
-
-                        // provider.signUp(
-                        //     phone: phone,
-                        //     onError: (error) {
-                        //       CustomToast.showError(context, error);
-                        //     },
-                        //     onSuccess: () {
-                        //       CustomToast.showSuccess(
-                        //           context, 'Send code to $phone');
-                        //       context.pushNamed(AppRoute.otpScreen.name,
-                        //           extra: {
-                        //             'isEdit': widget.isEdit,
-                        //             'mobile': phone
-                        //           });
-                        //     });
-                    
-                    
+                    : () async {
+                        final String phone =
+                            '+${provider.selectedCountry.phoneCode}${_phoneController.text}';
+                        await provider.signUp(
+                          phone: phone,
+                          tempName: widget.nickName,
+                          onSuccess: () {
+                            CustomToast.showSuccess(
+                                context, 'OTP sent successfully.');
+                            context.pushNamed(
+                              AppRoute.otpScreen.name,
+                              extra: {'isEdit': false, 'mobile': phone},
+                            );
+                          },
+                          onError: (msg) => CustomToast.showError(context, msg),
+                        );
                       },
                 text: 'Get OTP',
-                isLoading: false,
+                isLoading: provider.isLoading,
                 colorType: !(_phoneController.text.length ==
                         provider.selectedCountry.example.length)
                     ? AppButtonColorType.greyed
@@ -100,11 +82,11 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
               15.verticalSpace,
               if (_phoneController.text.length ==
                   provider.selectedCountry.example.length)
-                // _buildTosLine(),
-                GlobalText(
-                  'By clicking, I accept the terms of service and privacy policy',
-                  textStyle: textStyle14,
-                )
+                _buildTosLine(),
+              // GlobalText(
+              //   'By clicking, I accept the terms of service and privacy policy',
+              //   textStyle: textStyle14,
+              // )
             ],
           ),
         );
@@ -174,25 +156,21 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
 
   _buildTosLine() => RichText(
         text: TextSpan(
-            children: [
-              TextSpan(
-                  text: 'By clicking, I\'m accept the ',
-                  style: TextStyle(
-                      color: AppColors.blackGreyColor, fontSize: 14.sp)),
-              TextSpan(
-                text: 'terms of service',
-                style: textStyle16Bold,
-                recognizer: TapGestureRecognizer()..onTap = () {},
-              ),
-              const TextSpan(text: ' and '),
-              TextSpan(
-                text: 'privacy of policy',
-                style: textStyle16Bold,
-                recognizer: TapGestureRecognizer()..onTap = () {},
-              ),
-            ],
-            style: textStyle16.copyWith(
-              color: AppColors.orangeColor,
-            )),
+          text: 'By clicking, I\'m accept the ',
+          style: textStyle14.copyWith(color: AppColors.blackColor),
+          children: [
+            TextSpan(
+              text: 'terms of service',
+              // style: textStyle16Bold,
+              recognizer: TapGestureRecognizer()..onTap = () {},
+            ),
+            const TextSpan(text: ' and '),
+            TextSpan(
+              text: 'privacy of policy',
+              // style: textStyle16Bold,
+              recognizer: TapGestureRecognizer()..onTap = () {},
+            ),
+          ],
+        ),
       );
 }

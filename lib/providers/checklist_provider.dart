@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -15,6 +16,17 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:toastification/toastification.dart';
 
 class ChecklistProvider extends ChangeNotifier {
+  final List<Map<String, String>> valueList = [
+    {
+      'name': 'Value 1',
+    },
+    {
+      'name': 'Value 2',
+    },
+    {
+      'name': 'Value 3',
+    },
+  ];
   bool _isLoading = false;
   final List<Map<String, dynamic>> _checklist = checklistData;
   final List<Map<String, dynamic>> _historylist = historyData;
@@ -28,21 +40,10 @@ class ChecklistProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get checklist => _checklist;
   List<Map<String, dynamic>> get historylist => _historylist;
 
-  final List<Map<String, String>> valueList = [
-    {
-      'name': 'Value 1',
-    },
-    {
-      'name': 'Value 2',
-    },
-    {
-      'name': 'Value 3',
-    },
-  ];
-
   int get currentTab => _currentTab;
   List<Map<String, dynamic>> get shops => _shopsList;
   int get selectedShopIndex => _selectedShop;
+
   String? imagekey;
   File? imagefile;
   String imageurl = '';
@@ -53,12 +54,42 @@ class ChecklistProvider extends ChangeNotifier {
 
   bool get searchable => _searchable;
 
+  String? _addCLSelectedCategory;
+  String? _addCLSelectedInvType;
+  XFile? _addCLSelectedFile;
+
+  String? get addCLSelectedCategory => _addCLSelectedCategory;
+  String? get addCLSelectedInvType => _addCLSelectedInvType;
+  XFile? get addCLSelectedFile => _addCLSelectedFile;
+  int get selectedValueIndex => _selectedValue;
+
   void toggleSearchable() {
     _searchable = !_searchable;
     notifyListeners();
   }
 
-  int get selectedValueIndex => _selectedValue;
+  void changeAddCLSelectedCategory(String? newValue) {
+    _addCLSelectedCategory = newValue;
+    notifyListeners();
+  }
+
+  void changeAddCLSelectedInvType(String? newValue) {
+    _addCLSelectedInvType = newValue;
+    notifyListeners();
+  }
+
+  Future<String?> selectFile() async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null) return null;
+    _addCLSelectedFile = file;
+    notifyListeners();
+    return file.name;
+  }
+
+  void clearFile() {
+    _addCLSelectedFile = null;
+    notifyListeners();
+  }
 
   void changeLoading(bool newValue) {
     _isLoading = newValue;
@@ -91,13 +122,13 @@ class ChecklistProvider extends ChangeNotifier {
     log('data add to historyList');
   }
 
-   addToShop(Map<String, dynamic> newData) {
+  addToShop(Map<String, dynamic> newData) {
     shops.add(newData);
     notifyListeners();
     log('data add to shop');
   }
 
-   void deleteFromHistory(Map<String, dynamic> dataToDelete) {
+  void deleteFromHistory(Map<String, dynamic> dataToDelete) {
     if (historylist.contains(dataToDelete)) {
       historylist.remove(dataToDelete);
       notifyListeners();

@@ -14,10 +14,10 @@ class CardDropDownField extends StatelessWidget {
     this.validator,
     this.labelStyle,
     this.value,
-     this.selectedValueNotifier,
+    this.isRequired = false,
+    this.onChanged,
   });
-  
-  final ValueNotifier<String>? selectedValueNotifier;
+
   final String? labelText;
   final String? hintText;
   final Widget? leading;
@@ -26,23 +26,36 @@ class CardDropDownField extends StatelessWidget {
   final String? Function(dynamic)? validator;
   final List<DropdownMenuItem> dropDownList;
   final dynamic value;
+  final bool isRequired;
+  final Function(dynamic)? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Column(mainAxisSize: MainAxisSize.min, children: [
       labelText?.isNotEmpty ?? false
           ? Container(
               margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
               alignment: Alignment.centerLeft,
-              child: Text(
-                labelText ?? '',
+              child: RichText(
+                text: TextSpan(children: [
+                  TextSpan(
+                    text: labelText,
+                    style: labelStyle ??
+                        textStyle16.copyWith(color: AppColors.blackColor),
+                  ),
+                  if (isRequired)
+                    TextSpan(
+                      text: ' *',
+                      style: textStyle16.copyWith(color: AppColors.redColor),
+                    ),
+                ]),
               ),
             )
-          : Container(),
+          : const SizedBox.shrink(),
       DropdownButtonFormField(
         value: value,
         items: dropDownList,
-        onChanged: (value) {},
+        onChanged: onChanged,
         isDense: true,
         // validator: widget.validator,
         decoration: InputDecoration(
@@ -60,19 +73,19 @@ class CardDropDownField extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40.r),
             borderSide: const BorderSide(
-              color: AppColors.greyColor,
+              color: AppColors.mediumGreyColor,
             ),
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40.r),
             borderSide: const BorderSide(
-              color: AppColors.greyColor,
+              color: AppColors.mediumGreyColor,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40.r),
             borderSide: const BorderSide(
-              color: AppColors.greyColor,
+              color: AppColors.mediumGreyColor,
             ),
           ),
           border: OutlineInputBorder(
@@ -85,6 +98,3 @@ class CardDropDownField extends StatelessWidget {
     ]);
   }
 }
-
-
-

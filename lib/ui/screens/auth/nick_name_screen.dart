@@ -26,13 +26,11 @@ final TextEditingController _nameController = TextEditingController();
 bool check = false;
 
 class _NickNameScreenState extends State<NickNameScreen> {
-  SharedPrefs sharedPrefs = SharedPrefs();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: AppColors.whiteColor),
+        iconTheme: const IconThemeData(color: AppColors.whiteColor),
       ),
       body: Consumer<AuthProvider>(builder: (context, provider, _) {
         return Padding(
@@ -49,10 +47,9 @@ class _NickNameScreenState extends State<NickNameScreen> {
                 20.verticalSpace,
                 AppTextField(
                   onChanged: (val) {
-                    if (_nameController.length > 0)
-                      setState(() {
-                        check = true;
-                      });
+                    setState(() {
+                      check = _nameController.text.isNotEmpty;
+                    });
                   },
                   autoValidateMode: AutovalidateMode.onUserInteraction,
                   name: 'nickNameField',
@@ -66,17 +63,15 @@ class _NickNameScreenState extends State<NickNameScreen> {
                   child: AppButton(
                       onPressed: () {
                         if (_nameController.text.isNotEmpty) {
-                          setState(() {
-                            check = true;
-                          });
-                          sharedPrefs.setUserName(_nameController.text);
-
-                          context
-                              .pushNamed(AppRoute.congratulationsScreen.name);
+                          SharedPrefs().setUserName(_nameController.text);
+                          context.pushNamed(
+                            AppRoute.mobileLoginScreen.name,
+                            extra: {
+                              'isEdit': false,
+                              'nickName': _nameController.text,
+                            },
+                          );
                         } else {
-                          setState(() {
-                            check = false;
-                          });
                           CustomToast.showWarning(
                               context, 'Please enter a nickname');
                         }

@@ -1,18 +1,21 @@
+import 'dart:developer';
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
-import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
-import 'package:shopease_app_flutter/utils/styles.dart';
-import 'package:toastification/toastification.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 class InventoryProvider extends ChangeNotifier {
+  final BaseInventoryService services;
+
+  InventoryProvider(this.services);
+
   bool _isLoading = false;
   final List<Map<String, dynamic>> _productList = [
     {
@@ -72,18 +75,31 @@ class InventoryProvider extends ChangeNotifier {
     },
   ];
 
-  List<Map<String, dynamic>> _searchedProducts = [];
+  final List<Map<String, dynamic>> _searchedProducts = [];
+  String? _addInvSelectedCategory;
+  String? _addInvSelectedInvType;
+  XFile? _addInvSelectedFile;
 
   bool get isLoading => _isLoading;
   List<Map<String, dynamic>> get products => _productList;
   List<Map<String, dynamic>> get searchedProducts => _searchedProducts;
+  String? get addInvSelectedCategory => _addInvSelectedCategory;
+  String? get addInvSelectedInvType => _addInvSelectedInvType;
+  XFile? get addInvSelectedFile => _addInvSelectedFile;
 
   String? imagekey;
   File? imagefile;
   String imageurl = '';
   String? uploadedFilePath;
-  int _selectedProduct = 0;
-  void changeLoading(bool newValue) {
+  final int _selectedProduct = 0;
+
+  List<Map<dynamic, dynamic>> _checkoutList = [];
+
+  List<Map<dynamic, dynamic>> get checkOutList => _checkoutList;
+
+  int get selectedProduct => _selectedProduct;
+
+  void setLoading(bool newValue) {
     _isLoading = newValue;
     notifyListeners();
   }
@@ -96,15 +112,32 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<dynamic, dynamic>> _checkoutList = [];
-
-  List<Map<dynamic, dynamic>> get checkOutList => _checkoutList;
-
-  int get selectedProduct => _selectedProduct;
-
   void checkOutProducts() {
     _checkoutList =
         products.where((product) => product['isInCart'] == true).toList();
+    notifyListeners();
+  }
+
+  void changeAddInvSelectedCategory(String? newValue) {
+    _addInvSelectedCategory = newValue;
+    notifyListeners();
+  }
+
+  void changeAddInvSelectedInvType(String? newValue) {
+    _addInvSelectedInvType = newValue;
+    notifyListeners();
+  }
+
+  Future<String?> selectFile() async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null) return null;
+    _addInvSelectedFile = file;
+    notifyListeners();
+    return file.name;
+  }
+
+  void clearFile() {
+    _addInvSelectedFile = null;
     notifyListeners();
   }
 
@@ -112,6 +145,7 @@ class InventoryProvider extends ChangeNotifier {
       String title, InventoryType newType, BuildContext context) {
     final product =
         _productList.firstWhere((element) => element['title'] == title);
+    if (product['inventoryLevel'] == newType) return;
     product['inventoryLevel'] = newType;
 
     CustomToast.showSuccess(context, 'Successfully changed inventory type ');
@@ -119,12 +153,13 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addtoCart(String title, bool isInCart, BuildContext context,bool multi) {
+  void addtoCart(
+      String title, bool isInCart, BuildContext context, bool multi) {
     final product = _productList
         .firstWhere((element) => element['title'] == title, orElse: () => {});
 
     if (product == null) {
-     if(multi) CustomToast.showError(context, 'Product not found');
+      if (multi) CustomToast.showError(context, 'Product not found');
       return;
     }
 
@@ -132,10 +167,10 @@ class InventoryProvider extends ChangeNotifier {
 
     if (isInCart) {
       _checkoutList.add(product);
-      if(multi) CustomToast.showSuccess(context, 'Successfully added to Cart');
+      if (multi) CustomToast.showSuccess(context, 'Successfully added to Cart');
     } else {
       _checkoutList.remove(product);
-      if(multi) CustomToast.showError(context, 'Removed from Cart');
+      if (multi) CustomToast.showError(context, 'Removed from Cart');
     }
 
     notifyListeners();
@@ -145,13 +180,12 @@ class InventoryProvider extends ChangeNotifier {
     List<Map<dynamic, dynamic>> checkOutList = List.from(_checkoutList);
     for (Map<dynamic, dynamic> product in checkOutList) {
       if (product['isInCart']) {
-              product['isInCart'] = false;
+        product['isInCart'] = false;
 
         _checkoutList.remove(product);
-      
       }
     }
-    
+
     notifyListeners();
   }
 
@@ -191,7 +225,7 @@ class InventoryProvider extends ChangeNotifier {
     final result = await FilePicker.platform.pickFiles();
 
     if (result == null) {
-      print('No file selected');
+      log('No file selected');
       return;
     }
 
@@ -199,7 +233,6 @@ class InventoryProvider extends ChangeNotifier {
     final platformFile = result.files.single;
     final path = platformFile.path!;
     final key = DateTime.now().toString() + platformFile.name;
-    final file = File(path);
 
     imagekey = key;
     imagefile = File(path);
@@ -210,5 +243,71 @@ class InventoryProvider extends ChangeNotifier {
   void clearUploadedFilePath() {
     uploadedFilePath = null;
     notifyListeners();
+  }
+
+  Future<void> getInventoryItems({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.getInventoryItems();
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while getInventoryItems: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> putInventoryItems({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.putInventoryItems();
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while putInventoryItems: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> deletInventoryItems({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.deleteInventoryItems();
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while deletInventoryItems: $e");
+    } finally {
+      setLoading(false);
+    }
   }
 }

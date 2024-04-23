@@ -2,7 +2,7 @@ import "package:ai_barcode_scanner/ai_barcode_scanner.dart";
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import 'package:flutter/foundation.dart';
-import "package:shopease_app_flutter/Models/product_model.dart";
+import "package:shopease_app_flutter/models/product_model.dart";
 import 'dart:developer';
 import "package:shopease_app_flutter/services/scanner_service.dart";
 

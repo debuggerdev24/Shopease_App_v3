@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -57,11 +59,9 @@ class _MultipleProductTileState extends State<MultipleProductTile>
 
   @override
   Widget build(BuildContext context) {
-    final InventoryProvider inventoryProvider = InventoryProvider();
     final product = widget.product;
-    int selectValue = 0;
 
-    void _itemChange(bool? val, BuildContext context) {
+    void itemChange(bool? val, BuildContext context) {
       setState(() {
         if (val != null) {
           _isChecked = val;
@@ -78,28 +78,22 @@ class _MultipleProductTileState extends State<MultipleProductTile>
       });
     }
 
-    log("CheckOut--- List :${inventoryProvider.checkOutList.length}");
-
-    int selectedCount = 0;
-
     return Slidable(
       controller: _slideController,
       // endActionPane: _buildRightSwipeActions(product),
       // startActionPane: _buildLeftSwipeActions(product),
       // // controller: _slidableController,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 5),
         child: CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
           tileColor: Colors.grey[800]!.withOpacity(0.05),
           activeColor: AppColors.primaryColor,
           checkColor: AppColors.lightGreenColor,
-          contentPadding: EdgeInsets.symmetric(
+          contentPadding: const EdgeInsets.symmetric(
             horizontal: 5,
           ),
-          
-          title: Container(
-            // color: Colors.grey[800]!.withOpacity(0.05),
+          title: SizedBox(
             width: double.infinity,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -159,7 +153,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
             ),
           ),
           value: _isChecked,
-          onChanged: (value) => _itemChange(value, context),
+          onChanged: (value) => itemChange(value, context),
         ),
       ),
     );

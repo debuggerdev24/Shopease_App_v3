@@ -7,6 +7,7 @@ import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/providers/theme_provider.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
+import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/services/scanner_service.dart';
 import 'package:shopease_app_flutter/utils/app_themes.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
           create: (_) => ScannerProvider(ScannerService()),
         ),
         ChangeNotifierProvider<InventoryProvider>(
-          create: (_) => InventoryProvider(),
+          create: (_) => InventoryProvider(InventoryService()),
         ),
         ChangeNotifierProvider<ChecklistProvider>(
           create: (_) => ChecklistProvider(),

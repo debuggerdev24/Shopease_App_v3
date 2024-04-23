@@ -2,6 +2,8 @@ import 'package:country_picker/country_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
+import 'package:shopease_app_flutter/services/base_api_service.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 class AuthProvider extends ChangeNotifier {
   final BaseAuthService services;
@@ -39,32 +41,106 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> signUp({
-  //   required String phone,
-  //   Function(String)? onError,
-  //   VoidCallback? onSuccess,
-  // }) async {
-  //   try {
-  //     setLoading(true);
-  //     final res = await services.signUp(phone: phone);
+  Future<void> signUp({
+    required String phone,
+    String? tempName,
+    required VoidCallback onSuccess,
+    Function(String)? onError,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.signUp(phone: phone, tempName: tempName);
 
-  //     print("tatatat ----> ${res}");
+      if (res.statusCode == 200) {
+        SharedPrefs().setSessionId(res.data['session_id']);
+        onSuccess.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while signUp: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  //     if (res.statusCode == 200) {
-  //       onSuccess?.call();
-  //     } else {
-  //       onError?.call(res.data["message"] ?? "Something went wrong!");
-  //     }
+  Future<void> confirmSignUp({
+    required String phone,
+    required String otp,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.confirmsignup(phone: phone, code: otp);
 
-  //     setLoading(false);
-  //   } on DioException {
-  //     setLoading(false);
-  //     rethrow;
-  //   } catch (e) {
-  //     setLoading(false);
-  //     debugPrint("Error while signing up in $e");
-  //   }
-  // }
+      if (res.statusCode == 200) {
+        SharedPrefs().setAccessToken(res.data['AccessToken']);
+        SharedPrefs().setRefreshToken(res.data['RefreshToken']);
+        SharedPrefs().setIdToken(res.data['IdToken']);
+        BaseRepository.instance.addToken(res.data['IdToken']);
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while confirmSignUp: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
 
+  Future<void> refreshAuth({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.refreshAuth();
 
+      if (res.statusCode == 200) {
+        SharedPrefs().setAccessToken(res.data['AccessToken']);
+        SharedPrefs().setIdToken(res.data['IdToken']);
+        BaseRepository.instance.addToken(res.data['IdToken']);
+        await getProfile();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while refreshAuth: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getProfile({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.refreshAuth();
+
+      if (res.statusCode == 200) {
+        SharedPrefs().setLocationId(res.data['location_id']);
+        SharedPrefs().setUserId(res.data['user_id']);
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? "Something went wrong!");
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while getProfile: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
 }

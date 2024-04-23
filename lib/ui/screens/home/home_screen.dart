@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'dart:developer';
-import 'dart:ui';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
@@ -17,7 +17,6 @@ import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
-
 import '../../widgets/app_txt_field.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -53,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    _startTimer();
   }
 
   @override
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen>
                                       ? showSearch(
                                           context: context,
                                           delegate: CustomSearchDelegate())
-                                      : SizedBox();
+                                      : const SizedBox();
                                 },
                                 child: searchController.text.isEmpty
                                     ? const Icon(Icons.arrow_back)
@@ -285,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen>
                             fontWeight: FontWeight.w400,
                             color: AppColors.blackGreyColor),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Padding(
                         padding: EdgeInsets.all(20.sp),
                         child: AppButton(
@@ -415,6 +415,11 @@ class _HomeScreenState extends State<HomeScreen>
         });
   }
 
+  void _startTimer() {
+    Timer.periodic(const Duration(seconds: 3600), (timer) async {
+      await context.read<AuthProvider>().refreshAuth();
+    });
+  }
 }
 
 class ProductSearchDelegate extends SearchDelegate<String> {
