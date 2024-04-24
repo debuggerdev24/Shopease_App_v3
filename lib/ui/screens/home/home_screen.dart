@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -13,6 +14,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_icon_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
@@ -29,9 +31,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final TextEditingController searchController = TextEditingController();
-  List<Map<String, dynamic>> searchedProducts = [];
+  List<Product> searchedProducts = [];
   bool search = false;
-  bool searchable = true;
+  bool searchable = false;
   bool check = false;
 
   void _onSearchChanged(String query) {
@@ -42,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
       } else {
         searchedProducts = products
             .where((product) =>
-                product['title']!.toLowerCase().contains(query.toLowerCase()))
+                product.title.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
       search = true;
@@ -53,6 +55,9 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     _startTimer();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      // await context.read<InventoryProvider>().getInventoryItems();
+    });
   }
 
   @override
@@ -65,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen>
 
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
-            title: searchable
+            title: !searchable
                 ? GlobalText(
                     "Inventory List",
                     textStyle: appBarTitleStyle.copyWith(
@@ -73,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen>
                   )
                 : const SizedBox.shrink(),
             actions: [
-              searchable
+              !searchable
                   ? IconButton(
                       onPressed: () {
                         setState(() {
@@ -143,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 )))),
                       ],
                     ),
-              searchable
+              !searchable
                   ? Padding(
                       padding: const EdgeInsets.only(left: 5),
                       child: AppIconButton(
@@ -160,8 +165,8 @@ class _HomeScreenState extends State<HomeScreen>
                             color: AppColors.blackGreyColor,
                           )),
                     )
-                  : Container(),
-              searchable
+                  : const SizedBox.shrink(),
+              !searchable
                   ? Padding(
                       padding: const EdgeInsets.only(left: 5, right: 10),
                       child: AppIconButton(
@@ -179,124 +184,130 @@ class _HomeScreenState extends State<HomeScreen>
                             color: AppColors.orangeColor,
                           )),
                     )
-                  : Container(),
+                  : const SizedBox.shrink(),
             ],
           ),
-          body: provider.products.isNotEmpty
-              ? SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 8),
-                        child: Row(
-                          children: [
-                            10.horizontalSpace,
-                            Text(
-                              '${provider.products.length} Products',
-                              style: textStyle16.copyWith(fontSize: 18),
+          body: provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : provider.products.isNotEmpty
+                  ? SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 8),
+                            child: Row(
+                              children: [
+                                10.horizontalSpace,
+                                Text(
+                                  '${provider.products.length} Products',
+                                  style: textStyle16.copyWith(fontSize: 18),
+                                ),
+                                const Spacer(),
+                                InkWell(
+                                  onTap: showFilterSheet,
+                                  child: SvgPicture.asset(
+                                    AppAssets.selectedFilterIcon,
+                                    width: 22.h,
+                                    height: 22.h,
+                                  ),
+                                ),
+                                8.w.horizontalSpace,
+                              ],
                             ),
-                            const Spacer(),
-                            InkWell(
-                              onTap: showFilterSheet,
-                              child: SvgPicture.asset(
-                                AppAssets.selectedFilterIcon,
-                                width: 22.h,
-                                height: 22.h,
+                          ),
+                          ListView.separated(
+                              shrinkWrap: true,
+                              primary: false,
+                              itemCount: search
+                                  ? searchedProducts.length
+                                  : provider.products.length,
+                              separatorBuilder: (context, index) =>
+                                  1.h.verticalSpace,
+                              itemBuilder: (BuildContext context, int index) {
+                                return ProductTile(
+                                  onLongPress: () {
+                                    context.goNamed(
+                                      AppRoute.multipleSelectProduct.name,
+                                    );
+                                  },
+                                  product: provider.products[index],
+                                  onAddToCart: () {
+                                    provider.addtoCart(provider.products[index],
+                                        context, true);
+                                  },
+                                  onTap: () {
+                                    context.pushNamed(
+                                        AppRoute.productDetail.name,
+                                        extra: provider.products[index]);
+                                  },
+                                  onDelete: () {
+                                    provider.deletInventoryItems(
+                                        itemIds: [
+                                          provider.products[index].itemId
+                                        ],
+                                        onSuccess: () {
+                                          
+                                          CustomToast.showSuccess(
+                                              context, 'Successfully deleted');
+                                        });
+                                  },
+                                  onInventoryChange: (newType) {
+                                    provider.changeInventoryType(
+                                        provider.products[index].itemId,
+                                        newType,
+                                        context);
+                                  },
+                                );
+                              }),
+                        ],
+                      ),
+                    )
+                  : BounceInUp(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          120.h.verticalSpace,
+                          Container(
+                            height: 200.h,
+                            width: double.infinity,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(AppAssets.addInventory)),
+                            ),
+                          ),
+                          50.h.verticalSpace,
+                          if (searchable)
+                            GlobalText(
+                              'No matching search results',
+                              textStyle: textStyle16.copyWith(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.blackGreyColor,
                               ),
                             ),
-                            8.w.horizontalSpace,
-                          ],
-                        ),
+                          10.h.verticalSpace,
+                          if (!searchable)
+                            GlobalText(
+                              'Add your First Inventory',
+                              textStyle: textStyle16.copyWith(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.blackGreyColor),
+                            ),
+                          const Spacer(),
+                          Padding(
+                            padding: EdgeInsets.all(20.sp),
+                            child: AppButton(
+                                onPressed: () {
+                                  context
+                                      .pushNamed(AppRoute.addManuallyForm.name);
+                                },
+                                text: 'Add an Inventory'),
+                          ),
+                        ],
                       ),
-                      ListView.separated(
-                          shrinkWrap: true,
-                          primary: false,
-                          itemCount: search
-                              ? searchedProducts.length
-                              : provider.products.length,
-                          separatorBuilder: (context, index) =>
-                              1.h.verticalSpace,
-                          itemBuilder: (BuildContext context, int index) {
-                            return ProductTile(
-                              onLongPress: () {
-                                context.goNamed(
-                                  AppRoute.multipleSelectProduct.name,
-                                );
-                              },
-                              product: provider.products[index],
-                              onAddToCart: () {
-                                bool value =
-                                    provider.products[index]['isInCart'];
-
-                                value = !value;
-
-                                provider.addtoCart(
-                                    provider.products[index]['title'],
-                                    value,
-                                    context,
-                                    true);
-                              },
-                              onTap: () {
-                                context.pushNamed(AppRoute.productDetail.name,
-                                    extra: provider.products[index]);
-                              },
-                              onDelete: () {
-                                provider.deleteProduct(
-                                    provider.products[index]['title'], context);
-                              },
-                              onInventoryChange: (newType) {
-                                provider.changeInventoryType(
-                                    provider.products[index]['title'],
-                                    newType,
-                                    context);
-                              },
-                            );
-                          }),
-                    ],
-                  ),
-                )
-              : BounceInUp(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      120.h.verticalSpace,
-                      Container(
-                        height: 200.h,
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(AppAssets.addInventory)),
-                        ),
-                      ),
-                      50.h.verticalSpace,
-                      GlobalText(
-                        'No matching search results',
-                        textStyle: textStyle16.copyWith(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.blackGreyColor),
-                      ),
-                      10.h.verticalSpace,
-                      GlobalText(
-                        'Add your First Inventory',
-                        textStyle: textStyle16.copyWith(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.blackGreyColor),
-                      ),
-                      const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.all(20.sp),
-                        child: AppButton(
-                            onPressed: () {
-                              context.pushNamed(AppRoute.addManuallyForm.name);
-                            },
-                            text: 'Add an Inventory'),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
         );
       },
     );
@@ -329,10 +340,10 @@ class _HomeScreenState extends State<HomeScreen>
     return ListView.builder(
       itemCount: searchedProducts.length,
       itemBuilder: (context, index) {
-        Map<String, dynamic> product = searchedProducts[index];
+        Product product = searchedProducts[index];
         return ListTile(
-          title: Text(product['title'] ?? ''),
-          subtitle: Text(product['brand'] ?? ''),
+          title: Text(product.title),
+          subtitle: Text(product.brand),
           onTap: () {
             // Handle tap on search result
             // context.pushNamed(AppRoute.productDetail.name, extra: product);

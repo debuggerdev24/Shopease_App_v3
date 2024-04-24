@@ -50,11 +50,13 @@ class _AddinventoryScreenState extends State<AddinventoryScreen> {
           },
           onFileClear: provider.clearFile,
           onSubmit: submit,
+          isLoading: context.read<InventoryProvider>().isLoading,
         );
       });
 
-  Future<void> submit() async {
+  Future<void> submit(Map<String, dynamic> data) async {
     context.read<InventoryProvider>().putInventoryItems(
+          data: data,
           onError: (msg) => CustomToast.showError(context, msg),
           onSuccess: () => context.pushNamed(AppRoute.checkList.name),
         );

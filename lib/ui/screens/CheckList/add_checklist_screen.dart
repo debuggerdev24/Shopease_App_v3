@@ -44,7 +44,7 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
         );
       });
 
-  Future<void> submit() async {
+  Future<void> submit(Map<String, dynamic> data) async {
     // context.read<ChecklistProvider>().putInventoryItems(
     //       onError: (msg) => CustomToast.showError(context, msg),
     //       onSuccess: () => context.pushNamed(AppRoute.checkList.name),

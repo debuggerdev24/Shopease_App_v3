@@ -27,20 +27,14 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.isInvoice
-            ? Text(
-                'Scan & Add Invoice',
-                style: textStyle20SemiBold.copyWith(fontSize: 24),
-              )
-            : widget.isReplace
-                ? Text(
-                    "Scan & Replace",
-                    style: textStyle20SemiBold.copyWith(fontSize: 24),
-                  )
-                : Text(
-                    "Scan & Add",
-                    style: textStyle20SemiBold.copyWith(fontSize: 24),
-                  ),
+        title: Text(
+          widget.isInvoice
+              ? 'Scan & Add Invoice'
+              : widget.isReplace
+                  ? "Scan & Replace"
+                  : "Scan & Add",
+          style: textStyle20SemiBold.copyWith(fontSize: 24),
+        ),
       ),
       body: Center(child: _buildinventorylist()),
     );

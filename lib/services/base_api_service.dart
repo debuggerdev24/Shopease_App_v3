@@ -24,7 +24,7 @@ class BaseRepository {
           headers: {
             "Content-Type": "application/json",
             "x-api-key": "VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0",
-            "Authorization": "Bearer ${SharedPrefs().idToken}"
+            "Authorization": "${SharedPrefs().idToken}"
           },
         ),
       );
@@ -37,10 +37,11 @@ class BaseRepository {
           },
         ),
       );
-
-      _dio.interceptors.add(PrettyDioLogger(
-          request: true, requestBody: true, requestHeader: true));
     }
+
+    _dio.interceptors.add(
+      PrettyDioLogger(request: true, requestBody: true, requestHeader: true),
+    );
   }
 
   void addToken(String idToken) {

@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/back_button.dart';
@@ -20,14 +23,16 @@ class AddItemManuallyForm extends StatefulWidget {
     required this.onInventoryLevelChanged,
     required this.onFilePicked,
     required this.onFileClear,
+    this.isLoading = false,
   });
 
-  final VoidCallback onSubmit;
+  final Function(Map<String, dynamic>) onSubmit;
   final List<dynamic> categoties;
   final Function(dynamic) onCategoryChange;
   final Function(dynamic) onInventoryLevelChanged;
   final Future<String?> Function() onFilePicked;
   final Function() onFileClear;
+  final bool isLoading;
 
   @override
   State<AddItemManuallyForm> createState() => _AddItemManuallyFormState();
@@ -173,9 +178,33 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
                       colorType: _formKey.currentState?.validate() == true
                           ? AppButtonColorType.primary
                           : AppButtonColorType.greyed,
+                      isLoading: widget.isLoading,
                       onPressed: () {
                         if (_formKey.currentState?.validate() == true) {
-                          widget.onSubmit();
+                          final Map<String, dynamic> data = {
+                            'product_name': _nameController.text,
+                            'product_description': _descController.text,
+                            'brand': _brandController.text,
+                            'item_level': context
+                                .read<InventoryProvider>()
+                                .addInvSelectedInvType,
+                            'item_category': context
+                                .read<InventoryProvider>()
+                                .addInvSelectedCategory,
+                          };
+
+                          if (_fileFieldController.text.isNotEmpty) {
+                            data.addAll({
+                              'item_image': context
+                                  .read<InventoryProvider>()
+                                  .addInvSelectedFile!
+                                  .path
+                            });
+                          }
+
+                          log('data: ${data.toString()}', name: 'onsubmit');
+
+                          widget.onSubmit(data);
                         }
                       },
                       text: 'Save',
