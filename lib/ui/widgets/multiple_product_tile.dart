@@ -63,7 +63,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                   width: 100.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(widget.product.images?.first ?? ''),
+                      image: NetworkImage(widget.product.itemImage ?? ''),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -77,14 +77,14 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    widget.product.title,
+                    widget.product.productName,
                     style: textStyle16.copyWith(
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 10.h),
                   AppChip(
-                      text: widget.product
-                          .brand) // Assuming 20.verticalSpace is a SizedBox
+                      text: widget.product.brand ??
+                          '') // Assuming 20.verticalSpace is a SizedBox
                 ],
               ),
               const Spacer(),
@@ -96,9 +96,9 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 ),
               SizedBox(width: 25.sp),
               SvgPicture.asset(
-                widget.product.inventoryLevel == InventoryType.high.name
+                widget.product.itemLevel == InventoryType.high.name
                     ? AppAssets.inventoryHigh
-                    : widget.product.inventoryLevel == InventoryType.medium.name
+                    : widget.product.itemLevel == InventoryType.medium.name
                         ? AppAssets.inventoryMid
                         : AppAssets.inventoryLow,
                 width: 18.h,

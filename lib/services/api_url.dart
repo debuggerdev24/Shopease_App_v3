@@ -1,7 +1,7 @@
 class ApiUrl {
-  static const String prodUrl = "https://api.shopeaseapp.com";
+  static const String prodBaseURL = "https://api.shopeaseapp.com";
 
-  static const String baseUrl = "https://devapi.shopeaseapp.com";
+  static const String devBaseURL = "https://devapi.shopeaseapp.com";
 
   static const String signUP = "/signup";
 
@@ -11,9 +11,11 @@ class ApiUrl {
 
   static const String getProfile = '/getprofile';
 
+  static const String scanItem = '/scanitem';
+
   static const String getInventoryItems = '/getinventoryitems';
 
   static const String putInventoryItems = '/putinventoryitems';
 
-  static const String deletInventoryItems = '/deletinventoryitems';
+  static const String deletInventoryItems = '/deleteinventoryitems';
 }

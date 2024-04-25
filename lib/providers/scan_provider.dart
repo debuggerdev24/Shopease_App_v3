@@ -43,8 +43,7 @@ class ScannerProvider extends ChangeNotifier {
     _mobileScannerController = MobileScannerController(
         detectionSpeed: DetectionSpeed.normal,
         returnImage: true,
-        formats: [BarcodeFormat.all]
-        );
+        formats: [BarcodeFormat.all]);
     notifyListeners();
   }
 
@@ -136,10 +135,10 @@ class ScannerProvider extends ChangeNotifier {
     VoidCallback? onError,
   }) async {
     try {
-      final response = await service.getScannedData(barcode);
+      final response = await service.scanItem(barcode);
 
-      log("Response status code: ${response.statusCode}");
-      log("Response body: ${response.data}");
+        log("Response status code: ${response.statusCode}");
+        log("Response body: ${response.data}");
 
       if (response.statusCode == 200) {
         final result = Product.fromJson(response.data);

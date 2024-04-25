@@ -9,6 +9,7 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
@@ -162,13 +163,18 @@ class InventoryProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.getInventoryItems();
 
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
       if (res.statusCode == 200) {
         _products.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
         notifyListeners();
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;
@@ -188,10 +194,15 @@ class InventoryProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.putInventoryItems([data]);
 
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
       if (res.statusCode == 200) {
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;
@@ -212,11 +223,16 @@ class InventoryProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.deleteInventoryItems(itemIds: itemIds);
 
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
       if (res.statusCode == 200) {
         clearSelectedProducts();
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;

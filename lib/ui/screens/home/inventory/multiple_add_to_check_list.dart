@@ -19,14 +19,15 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class MultipleAddCheckList extends StatefulWidget {
-  const MultipleAddCheckList({super.key});
+class MultipleSelectionScreen extends StatefulWidget {
+  const MultipleSelectionScreen({super.key});
 
   @override
-  State<MultipleAddCheckList> createState() => _MultipleAddCheckListState();
+  State<MultipleSelectionScreen> createState() =>
+      _MultipleSelectionScreenState();
 }
 
-class _MultipleAddCheckListState extends State<MultipleAddCheckList> {
+class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
@@ -42,6 +43,7 @@ class _MultipleAddCheckListState extends State<MultipleAddCheckList> {
                       provider.selectedProducts.map((e) => e.itemId).toList(),
                   onSuccess: () {
                     CustomToast.showSuccess(context, 'Successfully deleted.');
+                    context.pop();
                   },
                 );
               },

@@ -14,23 +14,23 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 abstract class BaseAuthService {
-  Future<Response<dynamic>> signUp({
+  Future<Response<dynamic>?> signUp({
     required String phone,
     String? tempName,
   });
 
-  Future<Response<dynamic>> confirmsignup({
+  Future<Response<dynamic>?> confirmsignup({
     required String phone,
     required String code,
     String? sessionId,
   });
 
-  Future<Response<dynamic>> refreshAuth();
-  Future<Response<dynamic>> getProfile();
+  Future<Response<dynamic>?> refreshAuth();
+  Future<Response<dynamic>?> getProfile();
 }
 
 class AuthService implements BaseAuthService {
-  final _api = BaseRepository.instance.dio;
+  final _api = BaseRepository().dio;
 
   AuthService._();
 
@@ -39,7 +39,7 @@ class AuthService implements BaseAuthService {
   factory AuthService() => _instance;
 
   @override
-  Future<Response<dynamic>> signUp({
+  Future<Response<dynamic>?> signUp({
     required String phone,
     String? tempName,
   }) async {
@@ -48,14 +48,13 @@ class AuthService implements BaseAuthService {
       "preferred_username": tempName,
     };
 
-    final res = await _api.post(ApiUrl.signUP, data: parms);
-    return res;
+    return await BaseRepository().post(ApiUrl.signUP, data: parms);
   }
 
   @override
-  Future<Response> confirmsignup(
+  Future<Response?> confirmsignup(
       {required String phone, required String code, String? sessionId}) async {
-    return await _api.post(
+    return await BaseRepository().post(
       ApiUrl.confirmSignUp,
       data: {
         "session": SharedPrefs().sessionId,
@@ -66,15 +65,15 @@ class AuthService implements BaseAuthService {
   }
 
   @override
-  Future<Response> refreshAuth() async {
-    return await _api.post(ApiUrl.refreshAuth, data: {
+  Future<Response?> refreshAuth() async {
+    return await BaseRepository().post(ApiUrl.refreshAuth, data: {
       'refresh_token': SharedPrefs().refreshToken,
     });
   }
 
   @override
-  Future<Response> getProfile() async {
-    return await _api.post(ApiUrl.getProfile);
+  Future<Response?> getProfile() async {
+    return await BaseRepository().post(ApiUrl.getProfile);
   }
 
   // void signUp(String phone, BuildContext context, bool isedit) async {

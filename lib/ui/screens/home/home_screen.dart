@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
       } else {
         searchedProducts = products
             .where((product) =>
-                product.title.toLowerCase().contains(query.toLowerCase()))
+                product.productName.toLowerCase().contains(query.toLowerCase()))
             .toList();
       }
       search = true;
@@ -54,9 +54,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _startTimer();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      // await context.read<InventoryProvider>().getInventoryItems();
+      await context.read<InventoryProvider>().getInventoryItems();
     });
   }
 
@@ -247,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen>
                                           provider.products[index].itemId
                                         ],
                                         onSuccess: () {
-                                          
+                                          provider.getInventoryItems();
                                           CustomToast.showSuccess(
                                               context, 'Successfully deleted');
                                         });
@@ -300,8 +299,8 @@ class _HomeScreenState extends State<HomeScreen>
                             padding: EdgeInsets.all(20.sp),
                             child: AppButton(
                                 onPressed: () {
-                                  context
-                                      .pushNamed(AppRoute.addManuallyForm.name);
+                                  context.pushNamed(
+                                      AppRoute.addinventoryForm.name);
                                 },
                                 text: 'Add an Inventory'),
                           ),
@@ -342,8 +341,8 @@ class _HomeScreenState extends State<HomeScreen>
       itemBuilder: (context, index) {
         Product product = searchedProducts[index];
         return ListTile(
-          title: Text(product.title),
-          subtitle: Text(product.brand),
+          title: Text(product.productName),
+          subtitle: Text(product.brand ?? ''),
           onTap: () {
             // Handle tap on search result
             // context.pushNamed(AppRoute.productDetail.name, extra: product);
@@ -424,12 +423,6 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         });
-  }
-
-  void _startTimer() {
-    Timer.periodic(const Duration(seconds: 3600), (timer) async {
-      await context.read<AuthProvider>().refreshAuth();
-    });
   }
 }
 
@@ -523,7 +516,7 @@ class CustomSearchDelegate extends SearchDelegate {
         onPressed: () {
           query = '';
         },
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
       ),
     ];
 
@@ -635,7 +628,7 @@ class CustomSearchDelegate extends SearchDelegate {
       onPressed: () {
         close(context, null);
       },
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
     );
   }
 

@@ -1,26 +1,21 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
-import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
-import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/extensions/context_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:time_remaining/time_remaining.dart';
-import 'package:toastification/toastification.dart';
+import 'package:workmanager/workmanager.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key, required this.isEdit, required this.mobile});
@@ -88,14 +83,15 @@ class _OtpScreenState extends State<OtpScreen> {
                       phone: widget.mobile,
                       otp: _otpController.text,
                       onSuccess: () {
+                        scheduleRefreshTokenTask();
                         widget.isEdit
                             ? context.goNamed(AppRoute.profile.name)
                             : context
                                 .pushNamed(AppRoute.congratulationsScreen.name);
-                        widget.isEdit
-                            ? CustomToast.showSuccess(
-                                context, 'Phone number changed')
-                            : null;
+                        if (widget.isEdit) {
+                          CustomToast.showSuccess(
+                              context, 'Phone number changed');
+                        }
                       },
                     );
                     // authService.confirmSignUp(
@@ -239,5 +235,15 @@ class _OtpScreenState extends State<OtpScreen> {
             )),
       ),
     );
+  }
+
+  void scheduleRefreshTokenTask() {
+    Workmanager().registerPeriodicTask(
+      'refreshMyToken',
+      'callRefreshAuthAPI',
+      frequency: const Duration(hours: 1),
+      inputData: <String, dynamic>{'refresh_token': SharedPrefs().refreshToken},
+    );
+    log('workmanager scheduled');
   }
 }

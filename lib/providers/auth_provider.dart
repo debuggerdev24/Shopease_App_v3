@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -51,11 +52,16 @@ class AuthProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.signUp(phone: phone, tempName: tempName);
 
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
       if (res.statusCode == 200) {
         SharedPrefs().setSessionId(res.data['session_id']);
         onSuccess.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;
@@ -76,14 +82,19 @@ class AuthProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.confirmsignup(phone: phone, code: otp);
 
+      if(res == null ) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
       if (res.statusCode == 200) {
         SharedPrefs().setAccessToken(res.data['AccessToken']);
         SharedPrefs().setRefreshToken(res.data['RefreshToken']);
         SharedPrefs().setIdToken(res.data['IdToken']);
-        BaseRepository.instance.addToken(res.data['IdToken']);
+        BaseRepository().addToken(res.data['IdToken']);
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;
@@ -94,7 +105,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> refreshAuth({
+  Future refreshAuth({
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
@@ -102,14 +113,19 @@ class AuthProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.refreshAuth();
 
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
       if (res.statusCode == 200) {
         SharedPrefs().setAccessToken(res.data['AccessToken']);
         SharedPrefs().setIdToken(res.data['IdToken']);
-        BaseRepository.instance.addToken(res.data['IdToken']);
+        BaseRepository().addToken(res.data['IdToken']);
         await getProfile();
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;
@@ -126,14 +142,19 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     try {
       setLoading(true);
-      final res = await services.refreshAuth();
+      final res = await services.getProfile();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
 
       if (res.statusCode == 200) {
         SharedPrefs().setLocationId(res.data['location_id']);
         SharedPrefs().setUserId(res.data['user_id']);
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? "Something went wrong!");
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
     } on DioException {
       rethrow;

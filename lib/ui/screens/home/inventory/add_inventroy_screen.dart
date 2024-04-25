@@ -7,8 +7,8 @@ import 'package:shopease_app_flutter/ui/widgets/add_item_manually_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 
-class AddinventoryScreen extends StatefulWidget {
-  const AddinventoryScreen({
+class AddInventoryScreen extends StatefulWidget {
+  const AddInventoryScreen({
     super.key,
     this.isEdit = false,
     this.details = const {},
@@ -17,14 +17,13 @@ class AddinventoryScreen extends StatefulWidget {
 
   final bool isEdit;
   final bool isReplace;
-
   final Map<dynamic, dynamic> details;
 
   @override
-  State<AddinventoryScreen> createState() => _AddinventoryScreenState();
+  State<AddInventoryScreen> createState() => _AddInventoryScreenState();
 }
 
-class _AddinventoryScreenState extends State<AddinventoryScreen> {
+class _AddInventoryScreenState extends State<AddInventoryScreen> {
   @override
   void initState() {
     super.initState();
@@ -58,7 +57,10 @@ class _AddinventoryScreenState extends State<AddinventoryScreen> {
     context.read<InventoryProvider>().putInventoryItems(
           data: data,
           onError: (msg) => CustomToast.showError(context, msg),
-          onSuccess: () => context.pushNamed(AppRoute.checkList.name),
+          onSuccess: () {
+            context.read<InventoryProvider>().getInventoryItems();
+            context.pop();
+          },
         );
   }
 }

@@ -7,14 +7,14 @@ import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 
 abstract class BaseInventoryService {
-  Future<Response<dynamic>> getInventoryItems();
-  Future<Response<dynamic>> putInventoryItems(List<Map<String, dynamic>> data);
-  Future<Response<dynamic>> deleteInventoryItems(
+  Future<Response<dynamic>?> getInventoryItems();
+  Future<Response<dynamic>?> putInventoryItems(List<Map<String, dynamic>> data);
+  Future<Response<dynamic>?> deleteInventoryItems(
       {required List<String> itemIds});
 }
 
 class InventoryService implements BaseInventoryService {
-  final Dio _api = BaseRepository.instance.dio;
+  final Dio _api = BaseRepository().dio;
 
   InventoryService._();
 
@@ -23,12 +23,12 @@ class InventoryService implements BaseInventoryService {
   factory InventoryService() => _instance;
 
   @override
-  Future<Response> getInventoryItems() async {
-    return await _api.post(ApiUrl.getInventoryItems);
+  Future<Response?> getInventoryItems() async {
+    return await BaseRepository().post(ApiUrl.getInventoryItems);
   }
 
   @override
-  Future<Response> putInventoryItems(List<Map<String, dynamic>> data) async {
+  Future<Response?> putInventoryItems(List<Map<String, dynamic>> data) async {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
@@ -41,9 +41,9 @@ class InventoryService implements BaseInventoryService {
 
     log('form data: ${formData.toString()}', name: 'putInventoryItems-service');
 
-    return await _api.post(
+    return await BaseRepository().post(
       ApiUrl.putInventoryItems,
-      data: FormData.fromMap(formData),
+      data: formData,
     );
   }
 
@@ -53,10 +53,10 @@ class InventoryService implements BaseInventoryService {
   }
 
   @override
-  Future<Response<dynamic>> deleteInventoryItems(
+  Future<Response<dynamic>?> deleteInventoryItems(
       {required List<String> itemIds}) async {
-    return await _api.post(ApiUrl.deletInventoryItems, data: {
-      'records': itemIds.map((e) => {'item_id': e})
+    return await BaseRepository().post(ApiUrl.deletInventoryItems, data: {
+      'records': itemIds.map((e) => {"item_id": e}).toList()
     });
   }
 }

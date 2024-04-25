@@ -181,7 +181,7 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra =
                           (state.extra ?? {}) as Map<dynamic, dynamic>;
-                      return AddinventoryScreen(
+                      return AddInventoryScreen(
                         isEdit: (extra['isEdit'] ?? false) as bool,
                         details:
                             (extra['details'] ?? {}) as Map<dynamic, dynamic>,
@@ -211,7 +211,7 @@ class AppNavigator {
                     path: AppRoute.multipleSelectProduct.name,
                     name: AppRoute.multipleSelectProduct.name,
                     builder: (BuildContext context, GoRouterState state) =>
-                        const MultipleAddCheckList(),
+                        const MultipleSelectionScreen(),
                   ),
                 ],
               ),
