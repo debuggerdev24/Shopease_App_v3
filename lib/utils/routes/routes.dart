@@ -3,26 +3,26 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopease_app_flutter/tabs/tabs.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/Upload%20Invoice/add_invoice_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/Upload%20Invoice/save_invoice.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/Upload%20Invoice/upload_invoice_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/add_manually_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/history_detail_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/replace_manually_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/Notification/notificationScreen.dart';
-import 'package:shopease_app_flutter/ui/screens/Profile/myprofile.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/checklist_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/select_shop_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/add_invoice_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_invoice.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/upload_invoice_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/add_checklist_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/history_detail_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/replace_manually_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/notification/notification_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/profile/profile_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/checklist_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/select_shop_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/auth/congratilations_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/auth/mobile_login_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/auth/nick_name_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/auth/otp_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/fetch_product_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/home_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/home/inventory/add_inventroy_form.dart';
-import 'package:shopease_app_flutter/ui/screens/home/inventory/multiple_addtocheckList.dart';
+import 'package:shopease_app_flutter/ui/screens/home/inventory/add_inventroy_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/home/inventory/multiple_add_to_check_list.dart';
 import 'package:shopease_app_flutter/ui/screens/home/product_detail_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/home/scan_and_addscreen.dart';
+import 'package:shopease_app_flutter/ui/screens/home/scan_and_add_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/scan_not_found_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/scan_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/on_boarding/on_board_screen.dart';
@@ -106,8 +106,11 @@ class AppNavigator {
         path: AppRoute.mobileLoginScreen.path,
         name: AppRoute.mobileLoginScreen.name,
         builder: (context, state) {
-          final extra = state.extra as bool;
-          return MobileLoginscreen(isEdit: extra);
+          final extra = state.extra as Map<String, dynamic>;
+          return MobileLoginscreen(
+            isEdit: extra['isEdit'],
+            nickName: extra['nickName'],
+          );
         },
       ),
       GoRoute(
@@ -178,11 +181,10 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra =
                           (state.extra ?? {}) as Map<dynamic, dynamic>;
-                      return Addinventory(
+                      return AddInventoryScreen(
                         isEdit: (extra['isEdit'] ?? false) as bool,
                         details:
                             (extra['details'] ?? {}) as Map<dynamic, dynamic>,
-                       
                       );
                     },
                   ),
@@ -196,7 +198,6 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.fetchProduct.name,
                     name: AppRoute.fetchProduct.name,
-                   
                     builder: (BuildContext context, GoRouterState state) =>
                         const FetchProductScreen(),
                   ),
@@ -206,11 +207,12 @@ class AppNavigator {
                     builder: (BuildContext context, GoRouterState state) =>
                         const ScanNotFoundScreen(),
                   ),
-                      GoRoute(
-                path: AppRoute.multipleSelectProduct.name,
-                name: AppRoute.multipleSelectProduct.name,
-                builder: (BuildContext context, GoRouterState state) =>
-                    const MultipleAddCheckList(),),
+                  GoRoute(
+                    path: AppRoute.multipleSelectProduct.name,
+                    name: AppRoute.multipleSelectProduct.name,
+                    builder: (BuildContext context, GoRouterState state) =>
+                        const MultipleSelectionScreen(),
+                  ),
                 ],
               ),
             ],
@@ -229,11 +231,11 @@ class AppNavigator {
                     name: AppRoute.selectShop.name,
                     builder: (context, state) => const SelectShopScreen(),
                   ),
-                      GoRoute(
+                  GoRoute(
                     path: AppRoute.addManuallyForm.name,
                     name: AppRoute.addManuallyForm.name,
                     builder: (BuildContext context, GoRouterState state) =>
-                        const AddManuallyScreen(),
+                        const AddChecklistScreen(),
                   ),
                   GoRoute(
                     path: AppRoute.replaceManually.name,
@@ -270,13 +272,10 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.historyDetail.name,
                     name: AppRoute.historyDetail.name,
-                   
-
-
-                     builder: (context, state) {
+                    builder: (context, state) {
                       final extra = state.extra as Map<String, dynamic>;
                       return HistoryDetailScreen(
-                       invoice : extra['invoice'] as Map<String, dynamic>,
+                        invoice: extra['invoice'] as Map<String, dynamic>,
                         count: extra['count'] as int,
                       );
                     },

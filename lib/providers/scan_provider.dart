@@ -1,8 +1,7 @@
 import "package:ai_barcode_scanner/ai_barcode_scanner.dart";
 import "package:dio/dio.dart";
-import "package:flutter/material.dart";
 import 'package:flutter/foundation.dart';
-import "package:shopease_app_flutter/Models/product_model.dart";
+import "package:shopease_app_flutter/models/product_model.dart";
 import 'dart:developer';
 import "package:shopease_app_flutter/services/scanner_service.dart";
 
@@ -10,25 +9,21 @@ enum ScanningStatus { ntg, prepare, scanning, scanned }
 
 class ScannerProvider extends ChangeNotifier {
   ScannerProvider(this.service);
-// CameraController? _cameraController;
-// FlutterBarcodeSdk? _flutterBarcodeSdk;
 
   final BaseScannerService service;
 
   ScanningStatus _scanningStatus = ScanningStatus.ntg;
   String barcodeResults = 'No Barcode Detected';
-  ProductModel? _scannedProduct;
-  ProductModel? get scannedProduct => _scannedProduct;
+  Product? _scannedProduct;
+  Product? get scannedProduct => _scannedProduct;
 
   Uint8List? _scannedCode;
-// CameraController? get cameraController => _cameraController;
-// FlutterBarcodeSdk? get flutterBarcodeSdk => _flutterBarcodeSdk;
   ScanningStatus get scanningStatus => _scanningStatus;
   Uint8List? get scannedCode => _scannedCode;
 
   void changeScanningStatus(ScanningStatus value) {
     _scanningStatus = value;
-    log("Scanning status ${scanningStatus}");
+    log("Scanning status $scanningStatus");
     notifyListeners();
   }
 
@@ -37,7 +32,7 @@ class ScannerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeProduct(ProductModel newProduct) {
+  void changeProduct(Product newProduct) {
     _scannedProduct = newProduct;
     notifyListeners();
   }
@@ -48,9 +43,7 @@ class ScannerProvider extends ChangeNotifier {
     _mobileScannerController = MobileScannerController(
         detectionSpeed: DetectionSpeed.normal,
         returnImage: true,
-        formats: [BarcodeFormat.all]
-        // cameraResolution: const Size(300, 300),
-        );
+        formats: [BarcodeFormat.all]);
     notifyListeners();
   }
 
@@ -136,19 +129,19 @@ class ScannerProvider extends ChangeNotifier {
   //   }
   // }
 
-  Future<void>  fetchBarcodeData({
+  Future<void> fetchBarcodeData({
     required String barcode,
     VoidCallback? onSuccess,
     VoidCallback? onError,
   }) async {
     try {
-      final response = await service.getScannedData(barcode);
+      final response = await service.scanItem(barcode);
 
-      log("Response status code: ${response.statusCode}");
-      log("Response body: ${response.data}");
+        log("Response status code: ${response.statusCode}");
+        log("Response body: ${response.data}");
 
       if (response.statusCode == 200) {
-        final result = ProductModel.fromJson(response.data);
+        final result = Product.fromJson(response.data);
         changeProduct(result);
         onSuccess?.call();
       } else {

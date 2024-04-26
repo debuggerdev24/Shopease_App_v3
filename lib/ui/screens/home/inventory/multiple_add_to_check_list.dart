@@ -13,19 +13,21 @@ import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class MultipleAddCheckList extends StatefulWidget {
-  const MultipleAddCheckList({super.key});
+class MultipleSelectionScreen extends StatefulWidget {
+  const MultipleSelectionScreen({super.key});
 
   @override
-  State<MultipleAddCheckList> createState() => _MultipleAddCheckListState();
+  State<MultipleSelectionScreen> createState() =>
+      _MultipleSelectionScreenState();
 }
 
-class _MultipleAddCheckListState extends State<MultipleAddCheckList> {
+class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
@@ -34,21 +36,27 @@ class _MultipleAddCheckListState extends State<MultipleAddCheckList> {
         appBar: AppBar(
           title: GlobalText('${provider.checkOutList.length} Selected'),
           actions: [
-            GestureDetector(
-              onTap: () {
-                provider.deleteCheckList(context);
+            IconButton(
+              onPressed: () async {
+                await provider.deletInventoryItems(
+                  itemIds:
+                      provider.selectedProducts.map((e) => e.itemId).toList(),
+                  onSuccess: () {
+                    CustomToast.showSuccess(context, 'Successfully deleted.');
+                    context.pop();
+                  },
+                );
               },
-              child: SvgIcon(
+              icon: SvgIcon(
                 AppAssets.delete,
                 size: 20.h,
               ),
             ),
-            25.w.horizontalSpace,
-            GestureDetector(
-              onTap: () {
+            IconButton(
+              onPressed: () {
                 context.pushReplacementNamed(AppRoute.checkList.name);
               },
-              child: SvgIcon(
+              icon: SvgIcon(
                 AppAssets.addCart,
                 size: 19.h,
                 color: AppColors.primaryColor,
@@ -87,11 +95,14 @@ class _MultipleAddCheckListState extends State<MultipleAddCheckList> {
                   shrinkWrap: true,
                   primary: false,
                   itemCount: provider.products.length,
-                  separatorBuilder: (context, index) => 1.h.verticalSpace,
+                  separatorBuilder: (context, index) => 10.h.verticalSpace,
                   itemBuilder: (BuildContext context, int index) {
                     return MultipleProductTile(
-                      context: context,
                       product: provider.products[index],
+                      onSelectionChanges: (value) {
+                        provider.addProductToSelected(
+                            value, provider.products[index]);
+                      },
                     );
                   }),
             ],

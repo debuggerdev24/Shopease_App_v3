@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        //<-- SEE HERE
         // Status bar color
         statusBarColor: Theme.of(context).brightness == Brightness.light
             ? Theme.of(context).textTheme.headlineMedium?.color
@@ -43,15 +42,15 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Container(
           color: AppColors.whiteColor,
           child: Center(
-              child: Container(
-            height: 60.h,
+            child: Container(
+              height: 60.h,
 
-            width: 400.h,
-            decoration: BoxDecoration(
-                image: DecorationImage(image: AssetImage(AppAssets.appLogo))),
-            // child: Image.asset(AppAssets.appLogo)
-          )),
-          //Image.asset("assets/images/profile.png")),
+              width: 400.h,
+              decoration: const BoxDecoration(
+                  image: DecorationImage(image: AssetImage(AppAssets.appLogo))),
+              // child: Image.asset(AppAssets.appLogo)
+            ),
+          ),
         ),
         floatingActionButton: const Text(
             textAlign: TextAlign.center,
@@ -66,26 +65,19 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  // startTimer() {
-  //   var duration = const Duration(milliseconds: 2000);
-  //   return Future.delayed(duration, () {
-  //     // context.goNamed(AppRoute.createPostScreen.name, extra: PostType.blog);
-  //     if (SharedPrefs().token != null) {
-  //       context.goNamed(AppRoute.home.name);
-  //     } else {
-  //       context.goNamed(AppRoute.onBoardScreen.name);
-  //     }
-  //   });
-  // }
   startTimer() {
     var duration = const Duration(milliseconds: 2000);
-    return Future.delayed(duration, () {
-      // context.goNamed(AppRoute.createPostScreen.name, extra: PostType.blog);
-      if (SharedPrefs().token != null) {
-        context.goNamed(AppRoute.home.name);
-      } else {
-        context.goNamed(AppRoute.home.name);
-      }
-    });
+    
+    return Future.delayed(
+      duration,
+      () {
+        // context.goNamed(AppRoute.createPostScreen.name, extra: PostType.blog);
+        if (SharedPrefs().idToken == null) {
+          context.goNamed(AppRoute.onBoardScreen.name);
+        } else {
+          context.goNamed(AppRoute.home.name);
+        }
+      },
+    );
   }
 }

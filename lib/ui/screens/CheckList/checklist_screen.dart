@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,7 +14,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/ui/widgets/historylist_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:toastification/toastification.dart';
 
@@ -67,34 +68,35 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     clipBehavior: Clip.hardEdge,
                     children: [
                       Container(
-                          color: Colors.white,
-                          height: 500,
-                          width: 370.w,
-                          child: AppTextField(
-                            hintText: 'Search Product',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(40.r),
-                              borderSide: const BorderSide(
-                                color: AppColors.blackGreyColor,
-                              ),
+                        color: Colors.white,
+                        height: 500,
+                        width: 370.w,
+                        child: AppTextField(
+                          hintText: 'Search Product',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(40.r),
+                            borderSide: const BorderSide(
+                              color: AppColors.blackGreyColor,
                             ),
-                            prefixIcon: AppIconButton(
-                              onTap: () {
-                                provider.toggleSearchable();
-                              },
-                              child: searchController.text.isEmpty
-                                  ? const Icon(Icons.arrow_back)
-                                  : const SvgIcon(
-                                      AppAssets.search,
-                                      size: 15,
-                                    ),
-                            ),
-                            controller: searchController,
-                            onChanged: (value) {
-                              log("search text:${searchController.text}");
+                          ),
+                          prefixIcon: AppIconButton(
+                            onTap: () {
+                              provider.toggleSearchable();
                             },
-                            name: 'Search',
-                          )),
+                            child: searchController.text.isEmpty
+                                ? const Icon(Icons.arrow_back)
+                                : const SvgIcon(
+                                    AppAssets.search,
+                                    size: 15,
+                                  ),
+                          ),
+                          controller: searchController,
+                          onChanged: (value) {
+                            log("search text:${searchController.text}");
+                          },
+                          name: 'Search',
+                        ),
+                      ),
                       Positioned(
                           top: 15,
                           right: 40,
@@ -120,7 +122,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                       color: AppColors.blackGreyColor,
                     )),
             provider.searchable
-                ? SizedBox()
+                ? const SizedBox.shrink()
                 : provider.currentTab == 0
                     ? AppIconButton(
                         onTap: () {
@@ -135,9 +137,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           size: 23,
                           color: AppColors.blackGreyColor,
                         ))
-                    : SizedBox(),
+                    : const SizedBox.shrink(),
             provider.searchable
-                ? SizedBox()
+                ? const SizedBox.shrink()
                 : provider.currentTab == 0
                     ? Padding(
                         padding: const EdgeInsets.only(right: 10),
@@ -145,7 +147,6 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                             onTap: () {
                               context.goNamed(
                                 AppRoute.addManuallyForm.name,
-                               
                               );
                             },
                             child: const SvgIcon(
@@ -154,8 +155,10 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                               color: AppColors.orangeColor,
                             )),
                       )
-                    : SizedBox(),
-            provider.currentTab != 0 ? 5.horizontalSpace : SizedBox(),
+                    : const SizedBox.shrink(),
+            provider.currentTab != 0
+                ? 5.horizontalSpace
+                : const SizedBox.shrink(),
           ],
           bottom: TabBar(
             controller: _tabsController,
@@ -178,7 +181,6 @@ class _ChecklistScreenState extends State<ChecklistScreen>
             onTap: _handleTabChange,
           ),
         ),
-      
         body: TabBarView(controller: _tabsController, children: [
           _buildCurrentListView(provider),
           _buildHistoryView(provider),
@@ -284,8 +286,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
           child: AppButton(
               onPressed: () {
                 if (provider.selectedShopIndex < 0) {
-                  CustomToast.showWarning(
-                      context, 'Please select shop');
+                  CustomToast.showWarning(context, 'Please select shop');
                 } else {
                   CustomToast.showSuccess(context,
                       '${provider.checklist.length} Products purchased ');
@@ -402,17 +403,19 @@ void _showFilterSheet(
                   ),
                   30.h.verticalSpace,
                   AppButton(
-                      onPressed: () {
-                        context.pop();
-                      },
-                      text: 'Apply'),
+                    onPressed: () {
+                      context.pop();
+                    },
+                    text: 'Apply',
+                  ),
                   10.h.verticalSpace,
                   AppButton(
-                      colorType: AppButtonColorType.greyed,
-                      onPressed: () {
-                        context.pop();
-                      },
-                      text: 'Cancel'),
+                    colorType: AppButtonColorType.greyed,
+                    onPressed: () {
+                      context.pop();
+                    },
+                    text: 'Cancel',
+                  ),
                 ],
               ),
             ),

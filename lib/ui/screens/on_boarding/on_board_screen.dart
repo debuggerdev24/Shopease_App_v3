@@ -82,7 +82,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                       //     curve: Curves.easeIn);
                       // });
 
-                      context.pushNamed(AppRoute.mobileLoginScreen.name,
+                      context.goNamed(AppRoute.nickNameScreen.name,
                           extra: false);
                     },
                     child: Text('Skip',
@@ -142,8 +142,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
             child: AppButton(
                 onPressed: () {
                   if (selectedPage == onBoardList.length - 1) {
-                    context.goNamed(AppRoute.mobileLoginScreen.name,
-                        extra: false);
+                    context.goNamed(AppRoute.nickNameScreen.name, extra: false);
                   } else {
                     _pageController.nextPage(
                         duration: const Duration(milliseconds: 500),
@@ -157,24 +156,6 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
           20.h.verticalSpace,
         ],
       ),
-      // bottomNavigationBar: Padding(
-      //   padding: const EdgeInsets.all(50.0),
-      //   child: AppButton(
-      //       onPressed: () {
-      //         if (selectedPage == onBoardList.length - 1) {
-      //           SharedPrefs().token != null
-      //               ? context.goNamed(AppRoute.home.name)
-      //               : context.pushNamed(AppRoute.mobileLoginScreen.name);
-      //         } else {
-      //           _pageController.nextPage(
-      //               duration: const Duration(milliseconds: 500),
-      //               curve: Curves.easeInOut);
-      //         }
-      //       },
-      //       text: selectedPage == (onBoardList.length - 1)
-      //           ? 'Get Started'
-      //           : 'Next'),
-      // ),
     );
   }
 

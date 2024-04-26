@@ -13,42 +13,70 @@ class SharedPrefs {
   late final SharedPreferences _prefs;
 
   /// Keys
-  final String _tokenKey = "token";
+  final String _sessionIdKey = "sessionIdKey";
+  final String _accessTokenKey = "accessToken";
+  final String _refreshTokenKey = "refreshToken";
+  final String _idTokenKey = "idTokenKey";
+  final String _locationIdKey = 'locationId';
+  final String _userIdKey = 'userId';
+  final String _phoneKey = "phone";
+  final String _userNameKey = "name";
   final String _theme = 'theme';
-  final String _phone = "phone";
-  final String _userName = "name";
-
 
   /// initializer
   init() async {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  /// TOKEN ///
-  String? get token => _prefs.getString(_tokenKey);
+  /// SESSION ID ///
+  String? get sessionId => _prefs.getString(_sessionIdKey);
 
-  Future<bool> setToken(String token) => _prefs.setString(_tokenKey, token);
+  Future<bool> setSessionId(String sessionId) =>
+      _prefs.setString(_sessionIdKey, sessionId);
 
-  Future<bool> setPhone(String phone) => _prefs.setString(_phone, phone);
+  /// ACCESS TOKEN ///
+  String? get accessToken => _prefs.getString(_accessTokenKey);
 
-  Future<bool> setUserName(String userName) => _prefs.setString(_userName, userName);
+  Future<bool> setAccessToken(String sessionId) =>
+      _prefs.setString(_accessTokenKey, sessionId);
 
+  /// REFRESH TOKEN ///
+  String? get refreshToken => _prefs.getString(_refreshTokenKey);
 
-  Future<bool> removeToken() => _prefs.remove(_tokenKey);
+  Future<bool> setRefreshToken(String sessionId) =>
+      _prefs.setString(_refreshTokenKey, sessionId);
+
+  /// ID TOKEN ///
+  String? get idToken => _prefs.getString(_idTokenKey);
+
+  Future<bool> setIdToken(String sessionId) =>
+      _prefs.setString(_idTokenKey, sessionId);
+
+  /// LOCATION ID ///
+  String? get locationId => _prefs.getString(_locationIdKey);
+
+  Future<bool> setLocationId(String sessionId) =>
+      _prefs.setString(_locationIdKey, sessionId);
+
+  /// USER ID ///
+  String? get userId => _prefs.getString(_userIdKey);
+
+  Future<bool> setUserId(String sessionId) =>
+      _prefs.setString(_userIdKey, sessionId);
+
+  /// PHONE ///
+  Future<bool> setPhone(String phone) => _prefs.setString(_phoneKey, phone);
+
+  String? get phone => _prefs.getString(_phoneKey);
+
+  /// NAME ///
+  Future<bool> setUserName(String userName) =>
+      _prefs.setString(_userNameKey, userName);
+
+  String? get userName => _prefs.getString(_userNameKey);
 
   /// Theme ///
   String? get theme => _prefs.getString(_theme);
 
-  String? get phone => _prefs.getString(_phone);
-
-  String? get userName => _prefs.getString(_userName);
-
   setTheme(String theme) => _prefs.setString(_theme, theme);
-
-  Future resetTheme() => _prefs.remove(_theme);
-
-  String? get getsavedUsers => _prefs.getString("savedUsers");
-
-  Future<bool> setSavedUsers(String savedUsers) =>
-      _prefs.setString("savedUsers", savedUsers);
 }

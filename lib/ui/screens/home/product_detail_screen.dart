@@ -14,9 +14,9 @@ import '../../widgets/app_icon_button.dart';
 import '../../widgets/global_text.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  const ProductDetailScreen({super.key, this.product});
+  const ProductDetailScreen({super.key, required this.product});
 
-  final Map? product;
+  final Map<String, dynamic> product;
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -39,11 +39,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: AppIconButton(
                 onTap: () {
-                  context.pushNamed(AppRoute.addinventoryForm.name, extra: {
-                    'isEdit': true,
-                   
-                    'details': widget.product,
-                  });
+                  context.pushNamed(
+                    AppRoute.addinventoryForm.name,
+                    extra: {
+                      'isEdit': true,
+                      'details': widget.product,
+                    },
+                  );
                 },
                 child: const SvgIcon(
                   AppAssets.edit,
@@ -73,7 +75,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             width: 2.8)),
                     color: Colors.white,
                     image: DecorationImage(
-                        image: AssetImage(widget.product!['image'] ?? ""),
+                        image: AssetImage(widget.product['image'] ?? ""),
                         fit: BoxFit.cover),
                   ),
                 ),
@@ -87,12 +89,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GlobalText(
-                        widget.product!['title'].toString(),
+                        widget.product['title'].toString(),
                         textStyle:
                             textStyle18SemiBold.copyWith(fontSize: 19.sp),
                       ),
                       Spacer(),
-                      widget.product!['isInCart']
+                      widget.product['isInCart']
                           ? SvgIcon(
                               AppAssets.succcessCart,
                               color: AppColors.greenColor,
@@ -101,9 +103,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           : SizedBox(),
                       15.w.horizontalSpace,
                       SvgPicture.asset(
-                        widget.product!['inventoryLevel'] == InventoryType.high
+                        widget.product['inventoryLevel'] == InventoryType.high
                             ? AppAssets.inventoryHigh
-                            : widget.product!['inventoryLevel'] ==
+                            : widget.product['inventoryLevel'] ==
                                     InventoryType.medium
                                 ? AppAssets.inventoryMid
                                 : AppAssets.inventoryLow,
@@ -119,7 +121,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.sp),
                 child: GlobalText(
-                  widget.product!['desc'],
+                  widget.product['desc'],
                   textStyle: textStyle16.copyWith(
                       fontSize: 16.sp, fontWeight: FontWeight.w400),
                 ),
@@ -128,12 +130,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Wrap(
                 children: [
                   10.horizontalSpace,
-                  AppChip(text: widget.product!['brand']),
+                  AppChip(text: widget.product['brand']),
                   // buildCustomContainer(widget.product!['brand'] ?? ''),
                   10.horizontalSpace,
-                  AppChip(text: widget.product!['category']),
+                  AppChip(text: widget.product['category']),
                   10.horizontalSpace,
-                  AppChip(text: widget.product!['storage']),
+                  AppChip(text: widget.product['storage']),
                 ],
               ),
               10.verticalSpace,
@@ -159,10 +161,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       floatingActionButton: Padding(
         padding: EdgeInsets.symmetric(vertical: 25, horizontal: 5),
         child: AppButton(
-            colorType: widget.product!['isInCart']
+            colorType: widget.product['isInCart']
                 ? AppButtonColorType.secondary
                 : AppButtonColorType.primary,
-            icon: widget.product!['isInCart']
+            icon: widget.product['isInCart']
                 ? SizedBox()
                 : Padding(
                     padding:
@@ -175,12 +177,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
             onPressed: () {
               setState(() {
-                if (widget.product!['isInCart'])
-                  widget.product!['isInCart'] = !widget.product!['isInCart'];
+                if (widget.product['isInCart'])
+                  widget.product['isInCart'] = !widget.product['isInCart'];
               });
               context.goNamed(AppRoute.home.name);
             },
-            text: widget.product!['isInCart']
+            text: widget.product['isInCart']
                 ? 'Remove from Checklist'
                 : 'Add to Checklist'),
       ),

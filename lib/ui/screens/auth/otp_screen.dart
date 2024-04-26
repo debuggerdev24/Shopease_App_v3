@@ -1,26 +1,21 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
-import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
-import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/extensions/context_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:time_remaining/time_remaining.dart';
-import 'package:toastification/toastification.dart';
+import 'package:workmanager/workmanager.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key, required this.isEdit, required this.mobile});
@@ -36,9 +31,7 @@ class _OtpScreenState extends State<OtpScreen> {
   late Timer _resendOTPTimer;
   bool _showResendOTPText = false;
 
-  late Timer _timer;
-  final AuthService authService = AuthService();
-  int _remainingSeconds = 0;
+  @override
   void initState() {
     super.initState();
     startResendOTPTimer();
@@ -59,7 +52,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
-    _resendOTPTimer?.cancel(); // Cancel the timer when the widget is disposed
+    _resendOTPTimer.cancel(); // Cancel the timer when the widget is disposed
     super.dispose();
   }
 
@@ -86,19 +79,34 @@ class _OtpScreenState extends State<OtpScreen> {
               AppButton(
                 onPressed: () async {
                   if (_otpController.text.isNotEmpty) {
-                    authService.confirmSignUp(
-                        widget.mobile, _otpController.text,context);
+                    provider.confirmSignUp(
+                      phone: widget.mobile,
+                      otp: _otpController.text,
+                      onSuccess: () {
+                        scheduleRefreshTokenTask();
+                        widget.isEdit
+                            ? context.goNamed(AppRoute.profile.name)
+                            : context
+                                .pushNamed(AppRoute.congratulationsScreen.name);
+                        if (widget.isEdit) {
+                          CustomToast.showSuccess(
+                              context, 'Phone number changed');
+                        }
+                      },
+                    );
+                    // authService.confirmSignUp(
+
+                    //     , _otpController.text,context);
                     // widget.isEdit
                     //     ? context.goNamed(AppRoute.profile.name)
                     //     : context.pushNamed(AppRoute.nickNameScreen.name);
 
-                    widget.isEdit
-                        ? CustomToast.showSuccess(
-                            context, 'Phone number changed')
-                        : SizedBox();
+                    // widget.isEdit
+                    //     ? CustomToast.showSuccess(
+                    //         context, 'Phone number changed')
+                    //     : SizedBox();
                   } else {
-                    CustomToast.showWarning(
-                        context, 'Please fill required fields');
+                    CustomToast.showWarning(context, 'Please Enter valid OTP.');
                   }
                 },
                 text: 'Continue',
@@ -171,13 +179,12 @@ class _OtpScreenState extends State<OtpScreen> {
 
                     // Custom format
                   },
-                  duration: Duration(seconds: 15),
+                  duration: const Duration(seconds: 15),
                   style: textStyle12,
                   onTimeOver: () {
                     setState(() {
                       _showResendOTPText = true;
                     });
-                    print("TIME OVER");
                   },
                 )
               ],
@@ -228,5 +235,15 @@ class _OtpScreenState extends State<OtpScreen> {
             )),
       ),
     );
+  }
+
+  void scheduleRefreshTokenTask() {
+    Workmanager().registerPeriodicTask(
+      'refreshMyToken',
+      'callRefreshAuthAPI',
+      frequency: const Duration(hours: 1),
+      inputData: <String, dynamic>{'refresh_token': SharedPrefs().refreshToken},
+    );
+    log('workmanager scheduled');
   }
 }

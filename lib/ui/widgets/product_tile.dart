@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shopease_app_flutter/ui/screens/auth/nick_name_screen.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
@@ -24,7 +30,7 @@ class ProductTile extends StatefulWidget {
     this.check,
   });
 
-  final Map<dynamic, dynamic> product;
+  final Product product;
   final bool? check;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
@@ -49,12 +55,17 @@ class _ProductTileState extends State<ProductTile>
   }
 
   @override
+  dispose() {
+    _slideController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final product = widget.product;
     return Slidable(
       controller: _slideController,
-      endActionPane: _buildRightSwipeActions(product),
-      startActionPane: _buildLeftSwipeActions(product),
+      endActionPane: _buildRightSwipeActions(widget.product),
+      startActionPane: _buildLeftSwipeActions(widget.product),
       // controller: _slidableController,
       child: ListTile(
         onLongPress: widget.onLongPress,
@@ -74,7 +85,9 @@ class _ProductTileState extends State<ProductTile>
                   width: 100.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(product['image'] ?? ''),
+                      image: NetworkImage(
+                        widget.product.itemImage ?? '',
+                      ),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -88,18 +101,18 @@ class _ProductTileState extends State<ProductTile>
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    product['title'] ?? '',
+                    widget.product.productName,
                     style: textStyle16.copyWith(
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 10.h),
                   AppChip(
-                      text: product['brand'] ??
+                      text: widget.product.brand ??
                           '') // Assuming 20.verticalSpace is a SizedBox
                 ],
               ),
               const Spacer(),
-              if (product['isInCart'])
+              if (widget.product.isInCart == true)
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,
@@ -107,9 +120,9 @@ class _ProductTileState extends State<ProductTile>
                 ),
               SizedBox(width: 25.sp),
               SvgPicture.asset(
-                product['inventoryLevel'] == InventoryType.high
+                widget.product.itemLevel == InventoryType.high.name
                     ? AppAssets.inventoryHigh
-                    : product['inventoryLevel'] == InventoryType.medium
+                    : widget.product.itemLevel == InventoryType.medium.name
                         ? AppAssets.inventoryMid
                         : AppAssets.inventoryLow,
                 width: 18.h,
@@ -124,14 +137,15 @@ class _ProductTileState extends State<ProductTile>
     );
   }
 
-  _buildRightSwipeActions(Map<dynamic, dynamic> product) => ActionPane(
+  _buildRightSwipeActions(Product product) => ActionPane(
         motion: const DrawerMotion(),
         children: [
           AppSlidableaction(
             isRight: true,
-            height: product['isInCart'] ? 29.sp : 18.sp,
-            icon: product['isInCart'] ? AppAssets.rmCart : AppAssets.addCart,
-            forgroundColor: product['isInCart']
+            height: product.isInCart == true ? 29.sp : 18.sp,
+            icon:
+                product.isInCart == true ? AppAssets.rmCart : AppAssets.addCart,
+            forgroundColor: product.isInCart == true
                 ? AppColors.redColor
                 : AppColors.primaryColor,
             onTap: () {
@@ -153,7 +167,7 @@ class _ProductTileState extends State<ProductTile>
         ],
       );
 
-  _buildLeftSwipeActions(Map<dynamic, dynamic> product) => ActionPane(
+  _buildLeftSwipeActions(Product product) => ActionPane(
         motion: const ScrollMotion(),
         extentRatio: 0.75,
         children: [
@@ -184,7 +198,7 @@ class _ProductTileState extends State<ProductTile>
         ],
       );
 
-  _showDeleteSheet(Map<dynamic, dynamic> product) {
+  _showDeleteSheet(Product product) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
