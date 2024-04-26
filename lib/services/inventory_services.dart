@@ -8,7 +8,10 @@ import 'package:shopease_app_flutter/services/base_api_service.dart';
 
 abstract class BaseInventoryService {
   Future<Response<dynamic>?> getInventoryItems();
-  Future<Response<dynamic>?> putInventoryItems(List<Map<String, dynamic>> data);
+  Future<Response<dynamic>?> putInventoryItem({
+    required List<Map<String, dynamic>> data,
+    required bool isEdit,
+  });
   Future<Response<dynamic>?> deleteInventoryItems(
       {required List<String> itemIds});
 }
@@ -28,12 +31,13 @@ class InventoryService implements BaseInventoryService {
   }
 
   @override
-  Future<Response?> putInventoryItems(List<Map<String, dynamic>> data) async {
+  Future<Response?> putInventoryItem(
+      {required List<Map<String, dynamic>> data, required bool isEdit}) async {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
-      if (record.containsKey('item_image')) {
-        record['item_image'] = getBse64String(record['item_image']);
+      if (!isEdit && record.containsKey('image_url')) {
+        record['image_url'] = getBse64String(record['image_url']);
       }
       // recordMap['item_details'] = record;
       (formData['records'] as List).add({'item_details': record});
@@ -41,15 +45,17 @@ class InventoryService implements BaseInventoryService {
 
     log('form data: ${formData.toString()}', name: 'putInventoryItems-service');
 
-    return await BaseRepository().post(
-      ApiUrl.putInventoryItems,
-      data: formData,
-    );
-  }
-
-  String getBse64String(String filePath) {
-    final bytes = File(filePath).readAsBytesSync();
-    return base64Encode(bytes);
+    if (isEdit) {
+      return await BaseRepository().put(
+        ApiUrl.putInventoryItems,
+        data: formData,
+      );
+    } else {
+      return await BaseRepository().post(
+        ApiUrl.putInventoryItems,
+        data: formData,
+      );
+    }
   }
 
   @override
@@ -58,5 +64,10 @@ class InventoryService implements BaseInventoryService {
     return await BaseRepository().post(ApiUrl.deletInventoryItems, data: {
       'records': itemIds.map((e) => {"item_id": e}).toList()
     });
+  }
+
+  String getBse64String(String filePath) {
+    final bytes = File(filePath).readAsBytesSync();
+    return base64Encode(bytes);
   }
 }

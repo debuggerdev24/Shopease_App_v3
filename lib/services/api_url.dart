@@ -18,4 +18,12 @@ class ApiUrl {
   static const String putInventoryItems = '/putinventoryitems';
 
   static const String deletInventoryItems = '/deleteinventoryitems';
+
+  static const String getChecklistItems = '/getchecklistitems';
+
+  static const String putChecklistItems = '/putchecklistitems';
+
+  static const String getShops = '/getshops';
+
+  static const String putShops = '/putshops';
 }

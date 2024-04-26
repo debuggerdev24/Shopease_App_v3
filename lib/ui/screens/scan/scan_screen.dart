@@ -26,7 +26,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Consumer<ScannerProvider>(builder: (context, provider, _) {
-        return provider.mobileScanController == null
+        return provider.mobileScanController == null || provider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(),
               )
@@ -47,8 +47,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               style: textStyle20SemiBold.copyWith(fontSize: 24),
                             ),
                 ),
-                controller:
-                    context.read<ScannerProvider>().mobileScanController,
+                controller: provider.mobileScanController,
                 onScan: (String value) {
                   log('scanned data : $value');
                 },
@@ -64,10 +63,12 @@ class _ScanScreenState extends State<ScanScreen> {
                   ),
                 ),
                 onDispose: () {
-                  context.read<ScannerProvider>().disposeScan();
+                  provider.disposeScan();
                 },
-                onDetect: (captureData) {
-                  context.read<ScannerProvider>().captureImage(
+                onDetect: (captureData) async {
+                  if (provider.mobileScanController == null) return;
+                  provider.mobileScanController!.dispose();
+                  await provider.captureImage(
                     captureData,
                     onSuccess: () {
                       log('Capture barcode successfully');
@@ -75,11 +76,16 @@ class _ScanScreenState extends State<ScanScreen> {
                           ? context.goNamed(AppRoute.saveInvoice.name)
                           : widget.isReplace
                               ? context.goNamed(AppRoute.checkList.name)
-                              : context.goNamed(AppRoute.fetchProduct.name);
+                              : context.pushReplacement(
+                                  AppRoute.addinventoryForm.name,
+                                  extra: {
+                                      'details': provider.scannedProduct,
+                                    });
                     },
-                    onError: () {
-                      log('Not Capture barcode successfully');
-                      context.goNamed(AppRoute.scanNotFoundScreen.name);
+                    onError: (msg) {
+                      context.pushReplacementNamed(
+                        AppRoute.scanNotFoundScreen.name,
+                      );
                     },
                   );
                 },

@@ -96,16 +96,17 @@ class AppTextField extends StatelessWidget {
                 ),
               )
             : const SizedBox.shrink(),
-        FormBuilderTextField(
+        TextFormField(
           enabled: enabled ?? true,
           expands: false,
-          name: name,
+          // name: name,
           readOnly: readOnly,
           maxLength: maxLength,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           controller: controller,
-          autovalidateMode: autoValidateMode,
+          // autovalidateMode:
+          //     autoValidateMode ?? AutovalidateMode.onUserInteraction,
           obscureText: obSecureText ?? false,
           cursorColor: AppColors.blackColor,
           style: style,

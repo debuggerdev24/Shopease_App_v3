@@ -25,7 +25,7 @@ class InventoryProvider extends ChangeNotifier {
 
   final List<Map<String, dynamic>> _searchedProducts = [];
   String? _addInvSelectedCategory;
-  String? _addInvSelectedInvType;
+  String _addInvSelectedInvType = 'low';
   XFile? _addInvSelectedFile;
 
   bool get isLoading => _isLoading;
@@ -67,7 +67,7 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   void changeAddInvSelectedInvType(String? newValue) {
-    _addInvSelectedInvType = newValue;
+    _addInvSelectedInvType = newValue ?? 'low';
     notifyListeners();
   }
 
@@ -99,16 +99,12 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeInventoryType(
-      String title, InventoryType newType, BuildContext context) {
-    final product =
-        _productList.firstWhere((element) => element['title'] == title);
-    if (product['inventoryLevel'] == newType) return;
-    product['inventoryLevel'] = newType;
-
-    CustomToast.showSuccess(context, 'Successfully changed inventory type ');
-
-    notifyListeners();
+  void changeInventoryType(String itemId, InventoryType newType) async {
+    final product = _products.firstWhere((element) => element.itemId == itemId);
+    if (product.itemLevel == newType.name) return;
+    product.itemLevel = newType.name;
+    await putInventoryItem(
+        data: product.copyWith(itemLevel: newType.name).toJson(), isEdit: true);
   }
 
   void addtoCart(Product product, BuildContext context, bool isFromMulti) {
@@ -185,14 +181,15 @@ class InventoryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> putInventoryItems({
+  Future<void> putInventoryItem({
     required Map<String, dynamic> data,
+    required bool isEdit,
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
     try {
       setLoading(true);
-      final res = await services.putInventoryItems([data]);
+      final res = await services.putInventoryItem(data: [data], isEdit: isEdit);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);

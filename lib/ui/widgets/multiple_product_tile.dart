@@ -11,6 +11,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -63,7 +64,8 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                   width: 100.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(widget.product.itemImage ?? ''),
+                      image: NetworkImage(
+                          widget.product.itemImage ?? Constants.placeholdeImg),
                       fit: BoxFit.contain,
                     ),
                   ),

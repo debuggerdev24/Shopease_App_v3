@@ -11,6 +11,8 @@ class Product {
   String? itemCount;
   String? locationId;
   String? itemImage;
+  String? itemStorage;
+  String? barcode;
 
   Product({
     required this.itemId,
@@ -23,6 +25,8 @@ class Product {
     this.itemCount,
     this.locationId,
     this.itemImage,
+    this.itemStorage,
+    this.barcode,
   });
 
   Product copyWith({
@@ -36,6 +40,7 @@ class Product {
     String? itemCount,
     String? locationId,
     String? itemImage,
+    String? itemStorage,
   }) =>
       Product(
         itemId: itemId ?? this.itemId,
@@ -48,20 +53,22 @@ class Product {
         itemCount: itemCount ?? this.itemCount,
         locationId: locationId ?? this.locationId,
         itemImage: itemImage ?? this.itemImage,
+        itemStorage: itemStorage ?? this.itemStorage,
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        itemId: json["item_id"],
-        productName: json["product_name"],
-        itemCategory: json["item_category"],
-        isInCart: json['is_in_cart'] ?? false,
-        productDescription: json["product_description"],
-        brand: json["brand"],
-        itemLevel: json["item_level"],
-        itemCount: json["item_count"],
-        locationId: json["location_id"],
-        itemImage: json["image_url"],
-      );
+      itemId: json["item_id"],
+      productName: json["product_name"],
+      itemCategory: json["item_category"],
+      isInCart: json['is_in_cart'] ?? false,
+      productDescription: json["product_description"],
+      brand: json["brand"],
+      itemLevel: json["item_level"],
+      itemCount: json["item_count"],
+      locationId: json["location_id"],
+      itemImage: json["image_url"],
+      itemStorage: json['item_storage'],
+      barcode: json['barcode']);
 
   Map<String, dynamic> toJson() => {
         "item_id": itemId,
@@ -74,5 +81,7 @@ class Product {
         "item_count": itemCount,
         "location_id": locationId,
         "image_url": itemImage,
+        'item_storage': itemStorage,
+        'barcode': barcode,
       };
 }

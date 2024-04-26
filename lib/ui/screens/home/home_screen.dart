@@ -215,14 +215,12 @@ class _HomeScreenState extends State<HomeScreen>
                               ],
                             ),
                           ),
-                          ListView.separated(
+                          ListView.builder(
                               shrinkWrap: true,
                               primary: false,
                               itemCount: search
                                   ? searchedProducts.length
                                   : provider.products.length,
-                              separatorBuilder: (context, index) =>
-                                  1.h.verticalSpace,
                               itemBuilder: (BuildContext context, int index) {
                                 return ProductTile(
                                   onLongPress: () {
@@ -253,9 +251,9 @@ class _HomeScreenState extends State<HomeScreen>
                                   },
                                   onInventoryChange: (newType) {
                                     provider.changeInventoryType(
-                                        provider.products[index].itemId,
-                                        newType,
-                                        context);
+                                      provider.products[index].itemId,
+                                      newType,
+                                    );
                                   },
                                 );
                               }),

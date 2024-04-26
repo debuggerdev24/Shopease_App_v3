@@ -6,4 +6,6 @@ class Constants {
   static const String tokenExpiredMessage =
       'Something went wrong, Please try again later.';
   static const String commonErrMsg = 'Something went wrong.';
+
+  static const String placeholdeImg = 'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
 }

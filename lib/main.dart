@@ -13,7 +13,7 @@ import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
-import 'package:shopease_app_flutter/services/scanner_service.dart';
+import 'package:shopease_app_flutter/services/scan_service.dart';
 import 'package:shopease_app_flutter/utils/app_themes.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';

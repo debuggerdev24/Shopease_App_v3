@@ -30,12 +30,6 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
             'Fresh Vegetables',
             'Other Category'
           ],
-          onInventoryLevelChanged: (value) {
-            provider.changeAddCLSelectedInvType(value);
-          },
-          onCategoryChange: (value) {
-            provider.changeAddCLSelectedCategory(value.toString());
-          },
           onFilePicked: () async {
             return await provider.selectFile();
           },

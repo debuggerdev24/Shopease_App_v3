@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -6,6 +7,7 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 class CardDropDownField extends StatelessWidget {
   const CardDropDownField({
     super.key,
+    required this.name,
     required this.dropDownList,
     this.labelText = "",
     this.hintText,
@@ -24,6 +26,7 @@ class CardDropDownField extends StatelessWidget {
   final Widget? trailing;
   final TextStyle? labelStyle;
   final String? Function(dynamic)? validator;
+  final String name;
   final List<DropdownMenuItem> dropDownList;
   final dynamic value;
   final bool isRequired;
@@ -53,11 +56,13 @@ class CardDropDownField extends StatelessWidget {
             )
           : const SizedBox.shrink(),
       DropdownButtonFormField(
+        // name: name,
         value: value,
         items: dropDownList,
         onChanged: onChanged,
         isDense: true,
-        // validator: widget.validator,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: validator,
         decoration: InputDecoration(
           labelStyle: labelStyle ??
               textStyle16.copyWith(
