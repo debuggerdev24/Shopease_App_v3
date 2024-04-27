@@ -3,11 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -20,7 +22,7 @@ class ChecklistTile extends StatefulWidget {
       this.onChangeBrand,
       required this.isUpload});
 
-  final Map<dynamic, dynamic> product;
+  final Product product;
   final VoidCallback? onDelete;
   final VoidCallback? onChangeBrand;
   final bool isUpload;
@@ -36,6 +38,12 @@ class _ChecklistTileState extends State<ChecklistTile>
   void initState() {
     super.initState();
     _slideController = SlidableController(this);
+  }
+
+  @override
+  dispose() {
+    _slideController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,32 +68,33 @@ class _ChecklistTileState extends State<ChecklistTile>
                   width: 100.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(widget.product['image'] ?? ''),
+                      image: NetworkImage(
+                        widget.product.itemImage ?? Constants.placeholdeImg,
+                      ),
                       fit: BoxFit.contain,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(
-                  width: 8), // Assuming 8.horizontalSpace is a SizedBox
+              const SizedBox(width: 8),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    widget.product['title'] ?? '',
+                    widget.product.productName,
                     style: textStyle16.copyWith(
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 10.h),
                   AppChip(
-                      text: widget.product['brand'] ??
+                      text: widget.product.brand ??
                           '') // Assuming 20.verticalSpace is a SizedBox
                 ],
               ),
               const Spacer(),
-              if (!widget.product['isInCart'])
+              if (!widget.product.isInChecklist)
                 SvgIcon(
                   AppAssets.addCart,
                   size: 25.sp,
@@ -93,9 +102,9 @@ class _ChecklistTileState extends State<ChecklistTile>
                 ),
               SizedBox(width: 25.sp),
               SvgPicture.asset(
-                widget.product['inventoryLevel'] == InventoryType.high
+                widget.product.itemLevel == InventoryType.high.name
                     ? AppAssets.inventoryHigh
-                    : widget.product['inventoryLevel'] == InventoryType.medium
+                    : widget.product.itemLevel == InventoryType.medium.name
                         ? AppAssets.inventoryMid
                         : AppAssets.inventoryLow,
                 width: 18.h,
@@ -110,7 +119,7 @@ class _ChecklistTileState extends State<ChecklistTile>
     );
   }
 
-  _buildRightSwipeActions(Map<dynamic, dynamic> product) => ActionPane(
+  _buildRightSwipeActions(Product product) => ActionPane(
         motion: const DrawerMotion(),
         children: [
           AppSlidableaction(
@@ -133,7 +142,7 @@ class _ChecklistTileState extends State<ChecklistTile>
         ],
       );
 
-  _showReplaceBrandSheet(Map<dynamic, dynamic> product) {
+  _showReplaceBrandSheet(Product product) {
     showModalBottomSheet(
         showDragHandle: true,
         context: context,
@@ -178,7 +187,7 @@ class _ChecklistTileState extends State<ChecklistTile>
             ));
   }
 
-  _showDeleteSheet(Map<dynamic, dynamic> product) {
+  _showDeleteSheet(Product product) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(

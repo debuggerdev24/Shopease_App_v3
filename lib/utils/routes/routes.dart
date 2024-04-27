@@ -50,7 +50,7 @@ enum AppRoute {
   ////////// BRANCH 2 //////////
   checkList,
   selectShop,
-  addManuallyForm,
+  addChecklistForm,
   replaceManually,
   uploadInvoice,
   addInvoice,
@@ -190,7 +190,7 @@ class AppNavigator {
                           (state.extra ?? {}) as Map<dynamic, dynamic>;
                       return AddInventoryScreen(
                         isEdit: (extra['isEdit'] ?? false) as bool,
-                        details: extra['details'],
+                        product: extra['details'],
                       );
                     },
                   ),
@@ -232,10 +232,15 @@ class AppNavigator {
                     builder: (context, state) => const SelectShopScreen(),
                   ),
                   GoRoute(
-                    path: AppRoute.addManuallyForm.name,
-                    name: AppRoute.addManuallyForm.name,
-                    builder: (BuildContext context, GoRouterState state) =>
-                        const AddChecklistScreen(),
+                    path: AppRoute.addChecklistForm.name,
+                    name: AppRoute.addChecklistForm.name,
+                    builder: (BuildContext context, GoRouterState state) {
+                      final extra = state.extra as Map<String, dynamic>;
+                      return AddChecklistScreen(
+                        isEdit: extra['isEdit'] ?? false,
+                        product: extra['details'],
+                      );
+                    },
                   ),
                   GoRoute(
                     path: AppRoute.replaceManually.name,

@@ -12,13 +12,13 @@ class AddInventoryScreen extends StatefulWidget {
   const AddInventoryScreen({
     super.key,
     this.isEdit = false,
-    this.details,
+    this.product,
     this.isReplace = false,
   });
 
   final bool isEdit;
   final bool isReplace;
-  final Product? details;
+  final Product? product;
 
   @override
   State<AddInventoryScreen> createState() => _AddInventoryScreenState();
@@ -35,7 +35,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
       Consumer<InventoryProvider>(builder: (context, provider, _) {
         return AddItemManuallyForm(
           isEdit: widget.isEdit,
-          product: widget.details,
+          product: widget.product,
           categoties: const [
             'Fresh Fruits',
             'Fresh Vegetables',
@@ -46,7 +46,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
           },
           onFileClear: provider.clearFile,
           onSubmit: submit,
-          isLoading: context.read<InventoryProvider>().isLoading,
+          isLoading: provider.isLoading,
         );
       });
 

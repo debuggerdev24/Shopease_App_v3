@@ -77,7 +77,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             width: 2.8)),
                     color: Colors.white,
                     image: DecorationImage(
-                        image: NetworkImage(widget.product.itemImage ?? Constants.placeholdeImg),
+                        image: NetworkImage(widget.product.itemImage ??
+                            Constants.placeholdeImg),
                         fit: BoxFit.cover),
                   ),
                 ),
@@ -96,7 +97,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             textStyle18SemiBold.copyWith(fontSize: 19.sp),
                       ),
                       const Spacer(),
-                      widget.product.isInCart
+                      widget.product.isInChecklist
                           ? SvgIcon(
                               AppAssets.succcessCart,
                               color: AppColors.greenColor,
@@ -164,10 +165,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
         child: AppButton(
-            colorType: widget.product.isInCart
+            colorType: widget.product.isInChecklist
                 ? AppButtonColorType.secondary
                 : AppButtonColorType.primary,
-            icon: widget.product.isInCart
+            icon: widget.product.isInChecklist
                 ? const SizedBox()
                 : Padding(
                     padding:
@@ -180,13 +181,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
             onPressed: () {
               setState(() {
-                if (widget.product.isInCart) {
-                  widget.product.isInCart = !widget.product.isInCart;
+                if (widget.product.isInChecklist) {
+                  widget.product.isInChecklist = !widget.product.isInChecklist;
                 }
               });
               context.goNamed(AppRoute.home.name);
             },
-            text: widget.product.isInCart
+            text: widget.product.isInChecklist
                 ? 'Remove from Checklist'
                 : 'Add to Checklist'),
       ),

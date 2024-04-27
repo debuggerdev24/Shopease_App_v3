@@ -66,7 +66,6 @@ class _ProductTileState extends State<ProductTile>
       controller: _slideController,
       endActionPane: _buildRightSwipeActions(widget.product),
       startActionPane: _buildLeftSwipeActions(widget.product),
-      
       child: ListTile(
         onLongPress: widget.onLongPress,
         contentPadding: EdgeInsets.zero,
@@ -112,7 +111,7 @@ class _ProductTileState extends State<ProductTile>
                 ],
               ),
               const Spacer(),
-              if (widget.product.isInCart == true)
+              if (widget.product.isInChecklist == true)
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,
@@ -142,10 +141,11 @@ class _ProductTileState extends State<ProductTile>
         children: [
           AppSlidableaction(
             isRight: true,
-            height: product.isInCart == true ? 29.sp : 18.sp,
-            icon:
-                product.isInCart == true ? AppAssets.rmCart : AppAssets.addCart,
-            forgroundColor: product.isInCart == true
+            height: product.isInChecklist == true ? 29.sp : 18.sp,
+            icon: product.isInChecklist == true
+                ? AppAssets.rmCart
+                : AppAssets.addCart,
+            forgroundColor: product.isInChecklist == true
                 ? AppColors.redColor
                 : AppColors.primaryColor,
             onTap: () {

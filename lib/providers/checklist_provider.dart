@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/services/checklist_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
@@ -14,7 +15,7 @@ import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 class ChecklistProvider extends ChangeNotifier {
   final BaseChecklistService service;
 
-  ChecklistProvider({required this.service});
+  ChecklistProvider(this.service);
 
   final List<Map<String, String>> valueList = [
     {
@@ -28,7 +29,7 @@ class ChecklistProvider extends ChangeNotifier {
     },
   ];
   bool _isLoading = false;
-  final List<Map<String, dynamic>> _checklist = checklistData;
+  final List<Product> _checklist = [];
   final List<Map<String, dynamic>> _historylist = historyData;
 
   int _currentTab = 0;
@@ -37,7 +38,7 @@ class ChecklistProvider extends ChangeNotifier {
   int _selectedShop = -1;
 
   bool get isLoading => _isLoading;
-  List<Map<String, dynamic>> get checklist => _checklist;
+  List<Product> get checklist => _checklist;
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
@@ -110,8 +111,8 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String title) {
-    _checklist.removeWhere((element) => element['title'] == title);
+  void deleteProduct(String itemId) {
+    _checklist.removeWhere((element) => element.itemId == itemId);
     notifyListeners();
   }
 
@@ -180,7 +181,7 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getInventoryItems({
+  Future<void> getChecklistItems({
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
@@ -194,7 +195,8 @@ class ChecklistProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
-        // TODO: add logic here
+        _checklist.clear();
+        _checklist.addAll((res.data as List).map((e) => Product.fromJson(e)));
         notifyListeners();
         onSuccess?.call();
       } else {
@@ -203,7 +205,68 @@ class ChecklistProvider extends ChangeNotifier {
     } on DioException {
       rethrow;
     } catch (e) {
-      debugPrint("Error while getInventoryItems: $e");
+      debugPrint("Error while getChecklistItems: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> putCheklistItems({
+    required List<Map<String, dynamic>> data,
+    required bool isEdit,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.putChecklistItem(data: data, isEdit: isEdit);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while putCheklistItem: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> putBackToInventory({
+    required List<String> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.putBackToInventory(itemIds: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        for (String itemId in data) {
+          _checklist.removeWhere((element) => element.itemId == itemId);
+        }
+        notifyListeners();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while putCheklistItem: $e");
     } finally {
       setLoading(false);
     }

@@ -90,7 +90,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 ],
               ),
               const Spacer(),
-              if (widget.product.isInCart)
+              if (widget.product.isInChecklist)
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,

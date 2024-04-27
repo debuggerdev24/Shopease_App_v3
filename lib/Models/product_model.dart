@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-
 class Product {
   String itemId;
   String productName;
   String itemCategory;
-  bool isInCart;
+  bool isInChecklist;
   String? productDescription;
   String? brand;
   String? itemLevel;
@@ -18,7 +16,7 @@ class Product {
     required this.itemId,
     required this.productName,
     required this.itemCategory,
-    this.isInCart = false,
+    this.isInChecklist = false,
     this.productDescription,
     this.brand,
     this.itemLevel,
@@ -33,7 +31,7 @@ class Product {
     String? itemId,
     String? productName,
     String? itemCategory,
-    bool? isInCart,
+    bool? isInChecklist,
     String? productDescription,
     String? brand,
     String? itemLevel,
@@ -46,7 +44,7 @@ class Product {
         itemId: itemId ?? this.itemId,
         productName: productName ?? this.productName,
         itemCategory: itemCategory ?? this.itemCategory,
-        isInCart: isInCart ?? this.isInCart,
+        isInChecklist: isInChecklist ?? this.isInChecklist,
         productDescription: productDescription ?? this.productDescription,
         brand: brand ?? this.brand,
         itemLevel: itemLevel ?? this.itemLevel,
@@ -60,7 +58,7 @@ class Product {
       itemId: json["item_id"],
       productName: json["product_name"],
       itemCategory: json["item_category"],
-      isInCart: json['is_in_cart'] ?? false,
+      isInChecklist: json['is_in_checklist'] ?? false,
       productDescription: json["product_description"],
       brand: json["brand"],
       itemLevel: json["item_level"],
@@ -74,7 +72,7 @@ class Product {
         "item_id": itemId,
         "product_name": productName,
         "item_category": itemCategory,
-        'is_in_cart': isInCart,
+        'is_in_checklist': isInChecklist,
         "product_description": productDescription,
         "brand": brand,
         "item_level": itemLevel,

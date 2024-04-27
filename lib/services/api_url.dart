@@ -19,6 +19,8 @@ class ApiUrl {
 
   static const String deletInventoryItems = '/deleteinventoryitems';
 
+  static const String putBackToInventory = '/putinventoryfromchecklist';
+
   static const String getChecklistItems = '/getchecklistitems';
 
   static const String putChecklistItems = '/putchecklistitems';

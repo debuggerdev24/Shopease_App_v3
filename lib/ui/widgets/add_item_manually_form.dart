@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
@@ -62,6 +63,8 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
       if (widget.product == null || !widget.isEdit) {
         context.read<InventoryProvider>().changeAddInvSelectedInvType(null);
         context.read<InventoryProvider>().changeAddInvSelectedCategory(null);
+        context.read<ChecklistProvider>().changeAddCLSelectedCategory(null);
+        context.read<ChecklistProvider>().changeAddCLSelectedInvType(null);
       }
     });
   }
@@ -221,6 +224,7 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
                                 .read<InventoryProvider>()
                                 .addInvSelectedCategory,
                             'item_storage': _storageController.text,
+                            'is_in_checklist': false,
                           };
 
                           if (!widget.isEdit &&

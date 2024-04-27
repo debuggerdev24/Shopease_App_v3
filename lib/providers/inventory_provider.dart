@@ -42,10 +42,6 @@ class InventoryProvider extends ChangeNotifier {
   String? uploadedFilePath;
   final int _selectedProduct = 0;
 
-  final List<Product> _checkoutList = [];
-
-  List<Product> get checkOutList => _checkoutList;
-
   int get selectedProduct => _selectedProduct;
 
   void setLoading(bool newValue) {
@@ -107,34 +103,34 @@ class InventoryProvider extends ChangeNotifier {
         data: product.copyWith(itemLevel: newType.name).toJson(), isEdit: true);
   }
 
-  void addtoCart(Product product, BuildContext context, bool isFromMulti) {
-    product.isInCart = !product.isInCart;
+  void addToChecklist(
+      List<Product> products, BuildContext context, bool isFromMulti) async {
+    for (Product product in products) {
+      product.isInChecklist = !product.isInChecklist;
 
-    if (!product.isInCart) {
-      _checkoutList.add(product);
-      if (isFromMulti) {
-        CustomToast.showSuccess(context, 'Successfully added to Cart');
-      }
-    } else {
-      _checkoutList.remove(product);
-      if (isFromMulti) CustomToast.showError(context, 'Removed from Cart');
-    }
-
-    notifyListeners();
-  }
-
-  void deleteCheckList(BuildContext context) {
-    List<Map<dynamic, dynamic>> checkOutList = List.from(_checkoutList);
-    for (Map<dynamic, dynamic> product in checkOutList) {
-      if (product['isInCart']) {
-        product['isInCart'] = false;
-
-        _checkoutList.remove(product);
+      if (!product.isInChecklist) {
+        if (isFromMulti) {
+          CustomToast.showSuccess(context, 'Successfully added to Cart');
+        }
+      } else {
+        if (isFromMulti) CustomToast.showError(context, 'Removed from Cart');
       }
     }
-
-    notifyListeners();
+    clearSelectedProducts();
   }
+
+  // void deleteCheckList(BuildContext context) {
+  //   List<Map<dynamic, dynamic>> checkOutList = List.from(_checkoutList);
+  //   for (Map<dynamic, dynamic> product in checkOutList) {
+  //     if (product['isInCart']) {
+  //       product['isInCart'] = false;
+
+  //       _checkoutList.remove(product);
+  //     }
+  //   }
+
+  //   notifyListeners();
+  // }
 
   void onSearch(String query) {
     _searchedProducts.addAll(
@@ -239,6 +235,35 @@ class InventoryProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
+
+  // Future<void> putToChecklist({
+  //   required List<String> itemIds,
+  //   Function(String)? onError,
+  //   VoidCallback? onSuccess,
+  // }) async {
+  //   try {
+  //     setLoading(true);
+  //     final res = await services.putToChecklist(itemIds: itemIds);
+
+  //     if (res == null) {
+  //       onError?.call(Constants.tokenExpiredMessage);
+  //       return;
+  //     }
+
+  //     if (res.statusCode == 200) {
+  //       clearSelectedProducts();
+  //       onSuccess?.call();
+  //     } else {
+  //       onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+  //     }
+  //   } on DioException {
+  //     rethrow;
+  //   } catch (e) {
+  //     debugPrint("Error while putToChecklist: $e");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   final List<Map<String, dynamic>> _productList = [
     {

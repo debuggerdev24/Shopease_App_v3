@@ -14,6 +14,8 @@ abstract class BaseInventoryService {
   });
   Future<Response<dynamic>?> deleteInventoryItems(
       {required List<String> itemIds});
+  // Future<Response<dynamic>?> putToChecklist(
+  //     {required List<String> itemIds});
 }
 
 class InventoryService implements BaseInventoryService {
@@ -65,6 +67,14 @@ class InventoryService implements BaseInventoryService {
       'records': itemIds.map((e) => {"item_id": e}).toList()
     });
   }
+
+  // @override
+  // Future<Response<dynamic>?> putToChecklist(
+  //     {required List<String> itemIds}) async {
+  //   return await BaseRepository().post(ApiUrl.putToChecklist, data: {
+  //     'records': itemIds.map((e) => {"item_id": e}).toList()
+  //   });
+  // }
 
   String getBse64String(String filePath) {
     final bytes = File(filePath).readAsBytesSync();

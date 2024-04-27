@@ -18,6 +18,8 @@ abstract class BaseChecklistService {
     required List<Map<String, dynamic>> data,
     required bool isEdit,
   });
+  Future<Response<dynamic>?> putBackToInventory(
+      {required List<String> itemIds});
 }
 
 class ChecklistService implements BaseChecklistService {
@@ -89,6 +91,13 @@ class ChecklistService implements BaseChecklistService {
         data: formData,
       );
     }
+  }
+
+  @override
+  Future<Response?> putBackToInventory({required List<String> itemIds}) async {
+    return await BaseRepository().post(ApiUrl.putBackToInventory, data: {
+      'records': itemIds.map((e) => {"item_id": e}).toList()
+    });
   }
 
   String getBse64String(String filePath) {
