@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
-import 'package:shopease_app_flutter/ui/widgets/add_item_manually_form.dart';
+import 'package:shopease_app_flutter/ui/widgets/add_inventory_form/add_item_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 
@@ -33,18 +33,9 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
   @override
   Widget build(BuildContext context) =>
       Consumer<InventoryProvider>(builder: (context, provider, _) {
-        return AddItemManuallyForm(
+        return AddItemFormWidget(
           isEdit: widget.isEdit,
           product: widget.product,
-          categoties: const [
-            'Fresh Fruits',
-            'Fresh Vegetables',
-            'Other Category'
-          ],
-          onFilePicked: () async {
-            return await provider.selectFile();
-          },
-          onFileClear: provider.clearFile,
           onSubmit: submit,
           isLoading: provider.isLoading,
         );
@@ -52,7 +43,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
 
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<InventoryProvider>().putInventoryItem(
-          data: data,
+          data: [data],
           isEdit: widget.isEdit,
           onError: (msg) => CustomToast.showError(context, msg),
           onSuccess: () {

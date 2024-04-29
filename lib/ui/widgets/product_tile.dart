@@ -29,6 +29,7 @@ class ProductTile extends StatefulWidget {
     this.onAddToCart,
     this.onLongPress,
     this.check,
+    this.isSlideEnabled = true,
   });
 
   final Product product;
@@ -37,6 +38,7 @@ class ProductTile extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onAddToCart;
   final VoidCallback? onLongPress;
+  final bool isSlideEnabled;
   final Function(InventoryType type)? onInventoryChange;
 
   @override
@@ -64,14 +66,18 @@ class _ProductTileState extends State<ProductTile>
   Widget build(BuildContext context) {
     return Slidable(
       controller: _slideController,
-      endActionPane: _buildRightSwipeActions(widget.product),
-      startActionPane: _buildLeftSwipeActions(widget.product),
+      endActionPane: !widget.isSlideEnabled
+          ? null
+          : _buildRightSwipeActions(widget.product),
+      startActionPane: !widget.isSlideEnabled
+          ? null
+          : _buildLeftSwipeActions(widget.product),
       child: ListTile(
-        onLongPress: widget.onLongPress,
         contentPadding: EdgeInsets.zero,
         onTap: widget.onTap,
         title: Container(
           color: Colors.grey[800]!.withOpacity(0.05),
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
           width: double.infinity,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -94,23 +100,25 @@ class _ProductTileState extends State<ProductTile>
               ),
               const SizedBox(
                   width: 8), // Assuming 8.horizontalSpace is a SizedBox
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.product.productName,
-                    style: textStyle16.copyWith(
-                        fontSize: 18, overflow: TextOverflow.ellipsis),
-                  ),
-                  SizedBox(height: 10.h),
-                  AppChip(
-                      text: widget.product.brand ??
-                          '') // Assuming 20.verticalSpace is a SizedBox
-                ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.product.productName!,
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle16.copyWith(
+                          fontSize: 18, overflow: TextOverflow.ellipsis),
+                    ),
+                    SizedBox(height: 10.h),
+                    AppChip(
+                        text: widget.product.brand ??
+                            '') // Assuming 20.verticalSpace is a SizedBox
+                  ],
+                ),
               ),
-              const Spacer(),
               if (widget.product.isInChecklist == true)
                 SvgIcon(
                   AppAssets.succcessCart,

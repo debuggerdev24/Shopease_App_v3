@@ -22,6 +22,7 @@ import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -35,253 +36,235 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-//   final List<Map<String, String>> userList = [
-//     {
-//       'img': AppAssets.lucy,
-//       'name': 'Lucy',
-//     },
-//     {
-//       'img': AppAssets.joe,
-//       'name': 'Joe',
-//     },
-//     {
-//       'img': AppAssets.noImage,
-//       'name': 'Manoj',
-//     },
-//     {
-//       'img': AppAssets.noImage,
-//       'name': 'Riya',
-//     },
-//   ];
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
-    SharedPrefs sharedPrefs = SharedPrefs();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await context.read<ProfileProvider>().getProfile();
+    });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(builder: (context, provider, _) {
-      return Container(
-        color: AppColors.whiteColor,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              50.h.verticalSpace,
-              GlobalText(
-                '  My Profile',
-                textStyle: appBarTitleStyle.copyWith(
-                    fontWeight: FontWeight.w600, fontSize: 25.sp),
-              ),
-              20.h.verticalSpace,
-              buildProfileTile(() {
-                _showEditProfileBottomSheet(context);
-              }, provider, sharedPrefs),
-              20.h.verticalSpace,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                child: Row(
+      return provider.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              color: AppColors.whiteColor,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    50.h.verticalSpace,
                     GlobalText(
-                      provider.userList.isEmpty
-                          ? ' My Group (0)'
-                          : ' My Group (${provider.userList.length}/12)',
-                      textStyle: textStyle16,
+                      '  My Profile',
+                      textStyle: appBarTitleStyle.copyWith(
+                          fontWeight: FontWeight.w600, fontSize: 25.sp),
                     ),
-                    Spacer(),
-                    GestureDetector(
-                      child: GlobalText(
-                        'Leave Group',
-                        textStyle: textStyle12.copyWith(
-                            decoration: TextDecoration.underline),
+                    20.h.verticalSpace,
+                    buildProfileTile(() {
+                      _showEditProfileBottomSheet(context);
+                    }, provider),
+                    20.h.verticalSpace,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GlobalText(
+                            provider.userList.isEmpty
+                                ? ' My Group (0)'
+                                : ' My Group (${provider.userList.length}/12)',
+                            textStyle: textStyle16,
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            child: GlobalText(
+                              'Leave Group',
+                              textStyle: textStyle12.copyWith(
+                                  decoration: TextDecoration.underline),
+                            ),
+                            onTap: () {
+                              _showLeavePopUp(context, provider);
+                            },
+                          ),
+                          25.w.horizontalSpace,
+                          GestureDetector(
+                            onTap: () {
+                              _showAddMember(context, provider);
+                            },
+                            child: SvgIcon(
+                              AppAssets.add,
+                              color: AppColors.primaryColor,
+                              size: 20.sp,
+                            ),
+                          ),
+                          4.w.horizontalSpace,
+                        ],
                       ),
-                      onTap: () {
-                        _showLeavePopUp(context, provider);
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: provider.userList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Map<String, dynamic> user = provider.userList[index];
+                        provider.selectedUserIndex == index;
+
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5.sp),
+                          child: ListTile(
+                            leading: provider.set
+                                ? BounceInDown(
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: AppColors
+                                                  .orangeColor, // Border color
+                                              width: 1.5, // Border width
+                                            ),
+                                          ),
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.transparent,
+                                            radius: 40.sp,
+                                            child: CircleAvatar(
+                                              radius: 38.0,
+                                              backgroundColor: Colors.white,
+                                              child: ClipOval(
+                                                child:
+                                                    // Image.asset(AppAssets.user), // Display user image
+                                                    Image.asset(
+                                                        user['img'].toString()),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        provider.selectedUserIndex == index
+                                            ? Positioned(
+                                                bottom: 5,
+                                                right: 8,
+                                                child: SvgPicture.asset(
+                                                  AppAssets.update,
+                                                  width: 20.sp,
+                                                ))
+                                            : SizedBox(),
+                                      ],
+                                    ),
+                                  )
+                                : BounceInUp(
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: AppColors
+                                                  .orangeColor, // Border color
+                                              width: 1.5, // Border width
+                                            ),
+                                          ),
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.transparent,
+                                            radius: 40.sp,
+                                            child: CircleAvatar(
+                                              radius: 38.0,
+                                              child: ClipOval(
+                                                child:
+                                                    // Image.asset(AppAssets.user), // Display user image
+                                                    Image.asset(
+                                                        user['img'].toString()),
+                                              ),
+                                              backgroundColor: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        provider.selectedUserIndex == index
+                                            ? Positioned(
+                                                bottom: 5,
+                                                right: 8,
+                                                child: SvgPicture.asset(
+                                                  AppAssets.update,
+                                                  width: 20.sp,
+                                                ))
+                                            : SizedBox(),
+                                      ],
+                                    ),
+                                  ),
+                            title: GlobalText(user['name'].toString()),
+                            trailing: user['invite']
+                                ? GlobalText(
+                                    'Invited',
+                                    textStyle: textStyle14,
+                                  )
+                                : Container(
+                                    width: 70.sp,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        provider.selectedUserIndex == index
+                                            ? SvgIcon(
+                                                AppAssets.userEdit,
+                                                size: 18.sp,
+                                                color: AppColors.blackGreyColor,
+                                              )
+                                            : SizedBox(),
+                                        GestureDetector(
+                                          onTap: () {
+                                            provider.deleteUser(
+                                                user['img'].toString());
+                                          },
+                                          child: SvgIcon(
+                                            AppAssets.delete,
+                                            size: 16.sp,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                          ),
+                        );
                       },
                     ),
-                    25.w.horizontalSpace,
-                    GestureDetector(
-                      onTap: () {
-                        _showAddMember(context, provider);
-                      },
-                      child: SvgIcon(
-                        AppAssets.add,
-                        color: AppColors.primaryColor,
-                        size: 20.sp,
-                      ),
-                    ),
-                    4.w.horizontalSpace,
+                    ListTile(
+                        title: GlobalText(
+                          'Support',
+                          textStyle:
+                              textStyle16.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: RichText(
+                          text: TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'If you have any queries, write to ',
+                                ),
+                                TextSpan(
+                                  text: 'support@ShopEaseApp.com',
+                                  style: textStyle12.copyWith(
+                                      decoration: TextDecoration.underline),
+                                ),
+                              ],
+                              style: textStyle12.copyWith(
+                                color: AppColors.blackColor,
+                              )),
+                        )),
+                    20.h.verticalSpace,
                   ],
                 ),
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: provider.userList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Map<String, dynamic> user = provider.userList[index];
-                  provider.selectedUserIndex == index;
-
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5.sp),
-                    child: ListTile(
-                      leading: provider.set
-                          ? BounceInDown(
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: AppColors
-                                            .orangeColor, // Border color
-                                        width: 1.5, // Border width
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.transparent,
-                                      radius: 40.sp,
-                                      child: CircleAvatar(
-                                        radius: 38.0,
-                                        child: ClipOval(
-                                          child:
-                                              // Image.asset(AppAssets.user), // Display user image
-                                              Image.asset(
-                                                  user['img'].toString()),
-                                        ),
-                                        backgroundColor: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  provider.selectedUserIndex == index
-                                      ? Positioned(
-                                          bottom: 5,
-                                          right: 8,
-                                          child: SvgPicture.asset(
-                                            AppAssets.update,
-                                            width: 20.sp,
-                                          ))
-                                      : SizedBox(),
-                                ],
-                              ),
-                            )
-                          : BounceInUp(
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: AppColors
-                                            .orangeColor, // Border color
-                                        width: 1.5, // Border width
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.transparent,
-                                      radius: 40.sp,
-                                      child: CircleAvatar(
-                                        radius: 38.0,
-                                        child: ClipOval(
-                                          child:
-                                              // Image.asset(AppAssets.user), // Display user image
-                                              Image.asset(
-                                                  user['img'].toString()),
-                                        ),
-                                        backgroundColor: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  provider.selectedUserIndex == index
-                                      ? Positioned(
-                                          bottom: 5,
-                                          right: 8,
-                                          child: SvgPicture.asset(
-                                            AppAssets.update,
-                                            width: 20.sp,
-                                          ))
-                                      : SizedBox(),
-                                ],
-                              ),
-                            ),
-                      title: GlobalText(user['name'].toString()),
-                      trailing: user['invite']
-                          ? GlobalText(
-                              'Invited',
-                              textStyle: textStyle14,
-                            )
-                          : Container(
-                              width: 70.sp,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  provider.selectedUserIndex == index
-                                      ? SvgIcon(
-                                          AppAssets.userEdit,
-                                          size: 18.sp,
-                                          color: AppColors.blackGreyColor,
-                                        )
-                                      : SizedBox(),
-                                  GestureDetector(
-                                    onTap: () {
-                                      provider
-                                          .deleteUser(user['img'].toString());
-                                    },
-                                    child: SvgIcon(
-                                      AppAssets.delete,
-                                      size: 16.sp,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                onTap: () {
-                  provider.toggleSet(provider.set);
-                },
-                title: GlobalText(
-                  'Support',
-                  textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
-                ),
-                trailing: SvgIcon(
-                  AppAssets.arrow,
-                  color: AppColors.blackGreyColor,
-                ),
-                tileColor: AppColors.whiteColor,
-              ),
-              provider.set
-                  ? Column(
-                      children: [
-                        GlobalText(
-                          '    If you have any queries, write to ',
-                          fontSize: 12.sp,
-                          color: AppColors.lightGreyColor.withOpacity(0.8),
-                        ),
-                        2.h.verticalSpace,
-                        GlobalText(
-                          'support@ShopEaseApp.com',
-                          textDecoration: TextDecoration.underline,
-                          fontSize: 12.sp,
-                          color: AppColors.lightGreyColor.withOpacity(0.8),
-                        ),
-                      ],
-                    )
-                  : SizedBox(),
-              20.h.verticalSpace,
-            ],
-          ),
-        ),
-      );
+            );
     });
   }
 
@@ -685,119 +668,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildProfileTile(VoidCallback ontap, ProfileProvider profileProvider,
-      SharedPrefs sharedPrefs) {
-    return Container(
-      alignment: Alignment.center,
-      color: AppColors.lightGreyColor.withOpacity(0.05),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.sp),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            profileProvider.set
-                ? BounceInUp(
-                    child: InkWell(
-                      onTap: () => _showEditProfileBottomSheet(context),
-                      // onTap: getImage, // Assuming getImage is your function to update the image
-                      child: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: 40.sp,
-                            child: CircleAvatar(
-                              radius: 38.0,
-                              child: ClipOval(
-                                child:
-                                    // Image.asset(AppAssets.user), // Display user image
-                                    Image.asset(
-                                        ProfileProvider().uploadedFilePath ??
-                                            AppAssets.user),
-                              ),
-                              backgroundColor: Colors.white,
-                            ),
-                          ),
-                          Positioned(
-                              bottom: 10,
-                              right: 0,
-                              child: SvgPicture.asset(
-                                AppAssets.update,
-                                width: 20.sp,
-                              )),
-                        ],
-                      ),
-                    ),
-                  )
-                : BounceInDown(
-                    child: InkWell(
-                      onTap: () => _showEditProfileBottomSheet(context),
-                      // onTap: getImage, // Assuming getImage is your function to update the image
-                      child: Stack(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: 40.sp,
-                            child: CircleAvatar(
-                              radius: 38.0,
-                              child: ClipOval(
-                                child:
-                                    // Image.asset(AppAssets.user), // Display user image
-                                    Image.asset(
-                                        ProfileProvider().uploadedFilePath ??
-                                            AppAssets.user),
-                              ),
-                              backgroundColor: Colors.white,
-                            ),
-                          ),
-                          Positioned(
-                              bottom: 10,
-                              right: 0,
-                              child: SvgPicture.asset(
-                                AppAssets.update,
-                                width: 20.sp,
-                              )),
-                        ],
-                      ),
-                    ),
-                  ),
-            15.w.horizontalSpace,
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                4.h.verticalSpace,
-                GlobalText(
-                  sharedPrefs.userName ?? 'Jessica',
-                  textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
-                ),
-                2.h.verticalSpace,
-                buildProfileRow(sharedPrefs.phone ?? '8888987121', "Change",
-                    () {
-                  context.pushNamed(AppRoute.mobileLoginScreen.name,
-                      extra: true);
-                }),
-                2.h.verticalSpace,
-                buildProfileRow('abc@gmail.com', 'Verify', () {}),
-              ],
-            ),
-            Spacer(),
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10.sp),
-                child: GestureDetector(
-                  onTap: ontap,
-                  child: SvgIcon(
-                    AppAssets.edit,
-                    color: AppColors.blackGreyColor,
-                    size: 20.sp,
-                  ),
-                ),
+  Widget buildProfileTile(VoidCallback ontap, ProfileProvider profileProvider) {
+    return ListTile(
+      tileColor: AppColors.lightGreyColor.withOpacity(0.05),
+      isThreeLine: true,
+      leading: Stack(
+        children: [
+          CircleAvatar(
+            radius: 40.0,
+            child: CircleAvatar(
+              radius: 38.0,
+              backgroundColor: Colors.white,
+              child: ClipOval(
+                child: Image.network((profileProvider.profileData?.imageUrl ==
+                            null ||
+                        profileProvider.profileData?.imageUrl?.isEmpty == true)
+                    ? Constants.placeholdeImg
+                    : profileProvider.profileData?.imageUrl ?? ''),
               ),
             ),
-            20.w.horizontalSpace,
-          ],
+          ),
+          Positioned(
+              bottom: 10,
+              right: 0,
+              child: SvgPicture.asset(
+                AppAssets.update,
+                width: 20.sp,
+              )),
+        ],
+      ),
+      title: GlobalText(
+        profileProvider.profileData?.preferredUsername ?? 'user name',
+        textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Column(
+        children: [
+          buildProfileRow(
+              profileProvider.profileData?.phoneNumber ?? 'phone number',
+              "Change", () {
+            context.pushNamed(AppRoute.mobileLoginScreen.name, extra: true);
+          }),
+          2.h.verticalSpace,
+          buildProfileRow('email', 'Verify', () {}),
+        ],
+      ),
+      trailing: GestureDetector(
+        onTap: ontap,
+        child: SvgIcon(
+          AppAssets.edit,
+          color: AppColors.blackGreyColor,
+          size: 20.sp,
         ),
       ),
     );

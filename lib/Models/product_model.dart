@@ -1,8 +1,8 @@
 class Product {
-  String itemId;
-  String productName;
-  String itemCategory;
-  bool isInChecklist;
+  String? itemId;
+  String? productName;
+  String? itemCategory;
+  bool? isInChecklist;
   String? productDescription;
   String? brand;
   String? itemLevel;
@@ -13,9 +13,9 @@ class Product {
   String? barcode;
 
   Product({
-    required this.itemId,
-    required this.productName,
-    required this.itemCategory,
+    this.itemId,
+    this.productName,
+    this.itemCategory,
     this.isInChecklist = false,
     this.productDescription,
     this.brand,
@@ -64,8 +64,10 @@ class Product {
       itemLevel: json["item_level"],
       itemCount: json["item_count"],
       locationId: json["location_id"],
-      itemImage: json["image_url"],
-      itemStorage: json['item_storage'],
+      itemImage: (json["image_url"] is List)
+          ? json['image_url'][0]
+          : json['image_url'],
+         itemStorage: json['item_storage'],
       barcode: json['barcode']);
 
   Map<String, dynamic> toJson() => {

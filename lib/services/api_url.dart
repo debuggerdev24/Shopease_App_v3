@@ -19,11 +19,15 @@ class ApiUrl {
 
   static const String deletInventoryItems = '/deleteinventoryitems';
 
-  static const String putBackToInventory = '/putinventoryfromchecklist';
+  static const String putChecklistFromInventory = '/putchecklistfrominventory';
+
+  static const String putInventoryFromChecklist = '/putinventoryfromchecklist';
 
   static const String getChecklistItems = '/getchecklistitems';
 
   static const String putChecklistItems = '/putchecklistitems';
+
+  static const String deleteChecklistItems = '/deletechecklistitems';
 
   static const String getShops = '/getshops';
 

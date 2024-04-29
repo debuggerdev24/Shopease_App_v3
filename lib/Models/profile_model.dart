@@ -1,31 +1,40 @@
-class Profile {
+class ProfileData {
   String preferredUsername;
-  String locationId;
   String userId;
   String phoneNumber;
-  String userPhoto;
+  String? imageUrl;
 
-  Profile({
+  ProfileData({
     required this.preferredUsername,
-    required this.locationId,
     required this.userId,
     required this.phoneNumber,
-    required this.userPhoto,
+    this.imageUrl,
   });
 
-  factory Profile.fromJson(Map<String, dynamic> json) => Profile(
+  ProfileData copyWith({
+    String? preferredUsername,
+    String? userId,
+    String? phoneNumber,
+    String? imageUrl,
+  }) =>
+      ProfileData(
+        preferredUsername: preferredUsername ?? this.preferredUsername,
+        userId: userId ?? this.userId,
+        phoneNumber: phoneNumber ?? this.phoneNumber,
+        imageUrl: imageUrl ?? this.imageUrl,
+      );
+
+  factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
         preferredUsername: json["preferred_username"],
-        locationId: json["location_id"],
         userId: json["user_id"],
         phoneNumber: json["phone_number"],
-        userPhoto: json["user_photo"],
+        imageUrl: json["image_url"],
       );
 
   Map<String, dynamic> toJson() => {
         "preferred_username": preferredUsername,
-        "location_id": locationId,
         "user_id": userId,
         "phone_number": phoneNumber,
-        "user_photo": userPhoto,
+        "image_url": imageUrl,
       };
 }

@@ -23,13 +23,14 @@ class AppChip extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10),
-        alignment: Alignment.center,
+        // alignment: Alignment.center,
         decoration: BoxDecoration(
           color: AppColors.primaryColor.withOpacity(0.2),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (isSelected) ...[
               SvgIcon(

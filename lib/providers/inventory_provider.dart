@@ -18,30 +18,16 @@ class InventoryProvider extends ChangeNotifier {
 
   InventoryProvider(this.services);
 
+  /// Variables
   bool _isLoading = false;
   final List<Product> _products = [];
-
   final List<Product> _selectedProducts = [];
+  final int _selectedProduct = 0;
 
-  final List<Map<String, dynamic>> _searchedProducts = [];
-  String? _addInvSelectedCategory;
-  String _addInvSelectedInvType = 'low';
-  XFile? _addInvSelectedFile;
-
+  /// getters
   bool get isLoading => _isLoading;
   List<Product> get products => _products;
   List<Product> get selectedProducts => _selectedProducts;
-  List<Map<String, dynamic>> get searchedProducts => _searchedProducts;
-  String? get addInvSelectedCategory => _addInvSelectedCategory;
-  String? get addInvSelectedInvType => _addInvSelectedInvType;
-  XFile? get addInvSelectedFile => _addInvSelectedFile;
-
-  String? imagekey;
-  File? imagefile;
-  String imageurl = '';
-  String? uploadedFilePath;
-  final int _selectedProduct = 0;
-
   int get selectedProduct => _selectedProduct;
 
   void setLoading(bool newValue) {
@@ -49,21 +35,10 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteProduct(String title, BuildContext context) {
-    _productList.removeWhere((element) => element['title'] == title);
-
-    CustomToast.showSuccess(context, 'Successfully deleted');
-
-    notifyListeners();
-  }
-
-  void changeAddInvSelectedCategory(String? newValue) {
-    _addInvSelectedCategory = newValue;
-    notifyListeners();
-  }
-
-  void changeAddInvSelectedInvType(String? newValue) {
-    _addInvSelectedInvType = newValue ?? 'low';
+  void deleteProduct(List<String> productIds) {
+    for (String itemId in productIds) {
+      _products.removeWhere((element) => element.itemId == itemId);
+    }
     notifyListeners();
   }
 
@@ -82,33 +57,20 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> selectFile() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return null;
-    _addInvSelectedFile = file;
-    notifyListeners();
-    return file.name;
-  }
-
-  void clearFile() {
-    _addInvSelectedFile = null;
-    notifyListeners();
-  }
-
   void changeInventoryType(String itemId, InventoryType newType) async {
     final product = _products.firstWhere((element) => element.itemId == itemId);
     if (product.itemLevel == newType.name) return;
     product.itemLevel = newType.name;
     await putInventoryItem(
-        data: product.copyWith(itemLevel: newType.name).toJson(), isEdit: true);
+        data: [product.copyWith(itemLevel: newType.name).toJson()], isEdit: true);
   }
 
   void addToChecklist(
       List<Product> products, BuildContext context, bool isFromMulti) async {
     for (Product product in products) {
-      product.isInChecklist = !product.isInChecklist;
+      product.isInChecklist = !(product.isInChecklist ?? false);
 
-      if (!product.isInChecklist) {
+      if (product.isInChecklist == false) {
         if (isFromMulti) {
           CustomToast.showSuccess(context, 'Successfully added to Cart');
         }
@@ -117,34 +79,6 @@ class InventoryProvider extends ChangeNotifier {
       }
     }
     clearSelectedProducts();
-  }
-
-  // void deleteCheckList(BuildContext context) {
-  //   List<Map<dynamic, dynamic>> checkOutList = List.from(_checkoutList);
-  //   for (Map<dynamic, dynamic> product in checkOutList) {
-  //     if (product['isInCart']) {
-  //       product['isInCart'] = false;
-
-  //       _checkoutList.remove(product);
-  //     }
-  //   }
-
-  //   notifyListeners();
-  // }
-
-  void onSearch(String query) {
-    _searchedProducts.addAll(
-      _productList.where(
-          (element) => element['title'].toString().toLowerCase().contains(
-                query.toLowerCase(),
-              )),
-    );
-    notifyListeners();
-  }
-
-  void clearUploadedFilePath() {
-    uploadedFilePath = null;
-    notifyListeners();
   }
 
   Future<void> getInventoryItems({
@@ -178,14 +112,14 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<void> putInventoryItem({
-    required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> data,
     required bool isEdit,
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
     try {
       setLoading(true);
-      final res = await services.putInventoryItem(data: [data], isEdit: isEdit);
+      final res = await services.putInventoryItem(data: data, isEdit: isEdit);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);
@@ -222,6 +156,7 @@ class InventoryProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
+        deleteProduct(itemIds);
         clearSelectedProducts();
         onSuccess?.call();
       } else {
@@ -235,35 +170,6 @@ class InventoryProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
-
-  // Future<void> putToChecklist({
-  //   required List<String> itemIds,
-  //   Function(String)? onError,
-  //   VoidCallback? onSuccess,
-  // }) async {
-  //   try {
-  //     setLoading(true);
-  //     final res = await services.putToChecklist(itemIds: itemIds);
-
-  //     if (res == null) {
-  //       onError?.call(Constants.tokenExpiredMessage);
-  //       return;
-  //     }
-
-  //     if (res.statusCode == 200) {
-  //       clearSelectedProducts();
-  //       onSuccess?.call();
-  //     } else {
-  //       onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-  //     }
-  //   } on DioException {
-  //     rethrow;
-  //   } catch (e) {
-  //     debugPrint("Error while putToChecklist: $e");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
 
   final List<Map<String, dynamic>> _productList = [
     {

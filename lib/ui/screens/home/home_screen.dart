@@ -10,6 +10,7 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/home/inventory_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_icon_button.dart';
@@ -31,27 +32,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  final TextEditingController searchController = TextEditingController();
-  List<Product> searchedProducts = [];
-  bool search = false;
-  bool searchable = false;
-  bool check = false;
-
-  void _onSearchChanged(String query) {
-    final products = context.read<InventoryProvider>().products;
-    setState(() {
-      if (query.isEmpty) {
-        searchedProducts = products;
-      } else {
-        searchedProducts = products
-            .where((product) =>
-                product.productName.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
-      search = true;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -70,119 +50,51 @@ class _HomeScreenState extends State<HomeScreen>
 
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
-            title: !searchable
-                ? GlobalText(
-                    "Inventory List",
-                    textStyle: appBarTitleStyle.copyWith(
-                        fontWeight: FontWeight.w600, fontSize: 24.sp),
-                  )
-                : const SizedBox.shrink(),
+            title: GlobalText(
+              "Inventory List",
+              textStyle: appBarTitleStyle.copyWith(
+                  fontWeight: FontWeight.w600, fontSize: 24.sp),
+            ),
             actions: [
-              !searchable
-                  ? IconButton(
-                      onPressed: () {
-                        setState(() {
-                          searchable = !searchable;
-                        });
-                        searchController.clear();
-                      },
-                      icon: SvgIcon(
-                        AppAssets.search,
-                        size: 20.sp,
-                        color: AppColors.blackGreyColor,
-                      ))
-                  : Stack(
-                      clipBehavior: Clip.hardEdge,
-                      children: [
-                        Container(
-                            color: Colors.white,
-                            height: 500,
-                            width: 370.w,
-                            child: AppTextField(
-                              hintText: 'Search Product',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(40.r),
-                                borderSide: const BorderSide(
-                                  color: AppColors.blackGreyColor,
-                                ),
-                              ),
-                              prefixIcon: AppIconButton(
-                                onTap: () {
-                                  setState(() {
-                                    searchable = !searchable;
-                                  });
-                                  searchController.text.isNotEmpty
-                                      ? showSearch(
-                                          context: context,
-                                          delegate: CustomSearchDelegate())
-                                      : const SizedBox();
-                                },
-                                child: searchController.text.isEmpty
-                                    ? const Icon(Icons.arrow_back)
-                                    : const SvgIcon(
-                                        AppAssets.search,
-                                        size: 15,
-                                      ),
-                              ),
-                              controller: searchController,
-                              onChanged: (value) {
-                                _onSearchChanged(searchController.text);
-                                log("search text:${searchController.text}");
-                              },
-                              name: 'Search',
-                            )),
-                        Positioned(
-                            top: 15,
-                            right: 40,
-                            child: GestureDetector(
-                                onTap: () {
-                                  log('Search clicked!');
-                                  setState(() {
-                                    searchable = !searchable;
-                                  });
-                                },
-                                child: const Center(
-                                    child: SvgIcon(
-                                  AppAssets.cancel,
-                                  size: 18,
-                                )))),
-                      ],
-                    ),
-              !searchable
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 5),
-                      child: AppIconButton(
-                          onTap: () {
-                            context.pushNamed(AppRoute.scanAndAddScreen.name,
-                                extra: {
-                                  'isReplace': false,
-                                  'isInvoice': false
-                                });
-                          },
-                          child: const SvgIcon(
-                            AppAssets.scanner,
-                            size: 23,
-                            color: AppColors.blackGreyColor,
-                          )),
-                    )
-                  : const SizedBox.shrink(),
-              !searchable
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 5, right: 10),
-                      child: AppIconButton(
-                          onTap: () {
-                            context.pushNamed(
-                              AppRoute.addinventoryForm.name,
-                              extra: {'isEdit': false},
-                            );
-                          },
-                          child: const SvgIcon(
-                            AppAssets.add,
-                            size: 20,
-                            color: AppColors.orangeColor,
-                          )),
-                    )
-                  : const SizedBox.shrink(),
+              IconButton(
+                onPressed: () {
+                  showSearch(
+                      context: context,
+                      delegate: ProductSearchDelegate(provider.products));
+                },
+                icon: SvgIcon(
+                  AppAssets.search,
+                  size: 20.sp,
+                  color: AppColors.blackGreyColor,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: AppIconButton(
+                    onTap: () {
+                      context.pushNamed(AppRoute.scanAndAddScreen.name);
+                    },
+                    child: const SvgIcon(
+                      AppAssets.scanner,
+                      size: 23,
+                      color: AppColors.blackGreyColor,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5, right: 10),
+                child: AppIconButton(
+                    onTap: () {
+                      context.pushNamed(
+                        AppRoute.addinventoryForm.name,
+                        extra: {'isEdit': false},
+                      );
+                    },
+                    child: const SvgIcon(
+                      AppAssets.add,
+                      size: 20,
+                      color: AppColors.orangeColor,
+                    )),
+              ),
             ],
           ),
           body: provider.isLoading
@@ -191,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ? SingleChildScrollView(
                       child: Column(
                         children: [
-                          _buildInventoryHeaingBar(provider),
+                          _buildInventoryHeadingBar(provider),
                           _buildProductsList(provider),
                         ],
                       ),
@@ -209,25 +121,14 @@ class _HomeScreenState extends State<HomeScreen>
                                   image: AssetImage(AppAssets.addInventory)),
                             ),
                           ),
-                          50.h.verticalSpace,
-                          if (searchable)
-                            GlobalText(
-                              'No matching search results',
-                              textStyle: textStyle16.copyWith(
+                          10.h.verticalSpace,
+                          GlobalText(
+                            'Add your First Inventory',
+                            textStyle: textStyle16.copyWith(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w400,
-                                color: AppColors.blackGreyColor,
-                              ),
-                            ),
-                          10.h.verticalSpace,
-                          if (!searchable)
-                            GlobalText(
-                              'Add your First Inventory',
-                              textStyle: textStyle16.copyWith(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.blackGreyColor),
-                            ),
+                                color: AppColors.blackGreyColor),
+                          ),
                           const Spacer(),
                           Padding(
                             padding: EdgeInsets.all(20.sp),
@@ -246,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildInventoryHeaingBar(InventoryProvider provider) {
+  Widget _buildInventoryHeadingBar(InventoryProvider provider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       child: Row(
@@ -275,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen>
     return ListView.builder(
         shrinkWrap: true,
         primary: false,
-        itemCount: search ? searchedProducts.length : provider.products.length,
+        itemCount: provider.products.length,
         itemBuilder: (BuildContext context, int index) {
           return ProductTile(
             onLongPress: () {
@@ -289,30 +190,34 @@ class _HomeScreenState extends State<HomeScreen>
                   extra: provider.products[index]);
             },
             onAddToCart: () {
-              context.read<ChecklistProvider>().putCheklistItems(
-                data: [
-                  provider.products[index]
-                      .copyWith(isInChecklist: true)
-                      .toJson()
-                ],
-                isEdit: true,
-                onSuccess: () {
-                  provider.addToChecklist(
-                      [provider.products[index]], context, false);
-                },
-              );
+              if (provider.products[index].isInChecklist == true) {
+                context.read<ChecklistProvider>().putInventoryFromChecklist(
+                    data: [provider.products[index].itemId!],
+                    onSuccess: () {
+                      provider.addToChecklist(
+                          [provider.products[index]], context, false);
+                    });
+              } else {
+                context.read<ChecklistProvider>().putChecklistFromInventory(
+                  data: [provider.products[index].itemId!],
+                  onSuccess: () {
+                    provider.addToChecklist(
+                        [provider.products[index]], context, false);
+                  },
+                );
+              }
             },
             onDelete: () {
               provider.deletInventoryItems(
-                  itemIds: [provider.products[index].itemId],
+                  itemIds: [provider.products[index].itemId!],
                   onSuccess: () {
-                    provider.getInventoryItems();
+                    // provider.getInventoryItems();
                     CustomToast.showSuccess(context, 'Successfully deleted');
                   });
             },
             onInventoryChange: (newType) {
               provider.changeInventoryType(
-                provider.products[index].itemId,
+                provider.products[index].itemId!,
                 newType,
               );
             },
@@ -340,23 +245,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSearchResults() {
-    return ListView.builder(
-      itemCount: searchedProducts.length,
-      itemBuilder: (context, index) {
-        Product product = searchedProducts[index];
-        return ListTile(
-          title: Text(product.productName),
-          subtitle: Text(product.brand ?? ''),
-          onTap: () {
-            // Handle tap on search result
-            // context.pushNamed(AppRoute.productDetail.name, extra: product);
-          },
-        );
-      },
     );
   }
 
@@ -431,255 +319,5 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           );
         });
-  }
-}
-
-class ProductSearchDelegate extends SearchDelegate<String> {
-  final List<String> productList;
-
-  ProductSearchDelegate(this.productList);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final List<String> searchResults = productList
-        .where((product) => product.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: searchResults.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(searchResults[index]),
-          onTap: () {
-            close(context, searchResults[index]);
-          },
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final List<String> suggestionList = productList
-        .where((product) => product.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestionList[index]),
-          onTap: () {
-            query = suggestionList[index];
-            showResults(context);
-          },
-        );
-      },
-    );
-  }
-}
-
-class CustomSearchDelegate extends SearchDelegate {
-// Demo list to show querying
-  List<String> searchTerms = [
-    "Apple",
-    "Banana",
-    "Mango",
-    "Pear",
-    "Watermelons",
-    "Blueberries",
-    "Pineapples",
-    "Strawberries"
-  ];
-  bool searchable = true;
-  final TextEditingController searchController = TextEditingController();
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      // AppTextField(name: 'Search'),
-      IconButton(
-        onPressed: () {
-          query = '';
-        },
-        icon: const Icon(Icons.clear),
-      ),
-    ];
-
-    // return [
-    //   searchable
-    //       ? IconButton(
-    //           onPressed: () {
-    //             // setState(() {
-    //             //   searchable = !searchable;
-    //             // });
-    //             searchController.clear();
-    //           },
-    //           icon: SvgIcon(
-    //             AppAssets.search,
-    //             size: 20.sp,
-    //             color: AppColors.blackGreyColor,
-    //           ))
-    //       : Stack(
-    //           clipBehavior: Clip.hardEdge,
-    //           children: [
-    //             Container(
-    //                 color: Colors.white,
-    //                 height: 500,
-    //                 width: 370.w,
-    //                 child: AppTextField(
-    //                   hintText: 'Search Product',
-    //                   border: OutlineInputBorder(
-    //                     borderRadius: BorderRadius.circular(40.r),
-    //                     borderSide: const BorderSide(
-    //                       color: AppColors.blackGreyColor,
-    //                     ),
-    //                   ),
-    //                   prefixIcon: AppIconButton(
-    //                     onTap: () {
-    //                       // setState(() {
-    //                       //   searchable = !searchable;
-    //                       // });
-    //                     },
-    //                     child: searchController.text.isEmpty
-    //                         ? const Icon(Icons.arrow_back)
-    //                         : const SvgIcon(
-    //                             AppAssets.search,
-    //                             size: 15,
-    //                           ),
-    //                   ),
-    //                   controller: searchController,
-    //                   onChanged: (value) {
-    //                     // _onSearchChanged(searchController.text);
-    //                     log("search text:${searchController.text}");
-    //                   },
-    //                   name: 'Search',
-    //                 )),
-    //             Positioned(
-    //                 top: 15,
-    //                 right: 40,
-    //                 child: GestureDetector(
-    //                     onTap: () {
-    //                       log('Search clicked!');
-    //                     },
-    //                     child: const Center(
-    //                         child: SvgIcon(
-    //                       AppAssets.cancel,
-    //                       size: 18,
-    //                     )))),
-    //           ],
-    //         ),
-    //   searchable
-    //       ? Padding(
-    //           padding: const EdgeInsets.only(left: 5),
-    //           child: AppIconButton(
-    //               onTap: () {
-    //                 context.pushNamed(AppRoute.scanAndAddScreen.name,
-    //                     extra: {'isReplace': false, 'isInvoice': false});
-    //               },
-    //               child: const SvgIcon(
-    //                 AppAssets.scanner,
-    //                 size: 23,
-    //                 color: AppColors.blackGreyColor,
-    //               )),
-    //         )
-    //       : Container(),
-    //   searchable
-    //       ? Padding(
-    //           padding: const EdgeInsets.only(left: 5, right: 10),
-    //           child: AppIconButton(
-    //               onTap: () {
-    //                 context.pushNamed(
-    //                   AppRoute.addinventoryForm.name,
-    //                   extra: {
-    //                     'isEdit': false,
-    //                     'isReplace': false,
-    //                   },
-    //                 );
-    //               },
-    //               child: const SvgIcon(
-    //                 AppAssets.add,
-    //                 size: 20,
-    //                 color: AppColors.orangeColor,
-    //               )),
-    //         )
-    //       : Container(),
-    // ];
-  }
-
-// second overwrite to pop out of search menu
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: const Icon(Icons.arrow_back),
-    );
-  }
-
-// third overwrite to show query result
-  @override
-  Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var fruit in searchTerms) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(fruit);
-      }
-    }
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var result = matchQuery[index];
-        return ListTile(
-          title: Text(result),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var fruit in searchTerms) {
-      if (fruit.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(fruit);
-      }
-    }
-    return Container(
-      height: 300,
-      color: Colors.yellow,
-      child: ListView.builder(
-        itemCount: matchQuery.length,
-        itemBuilder: (context, index) {
-          var result = matchQuery[index];
-          return ListTile(
-            title: Text(result),
-          );
-        },
-      ),
-    );
   }
 }

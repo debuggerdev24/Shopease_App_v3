@@ -40,7 +40,7 @@ class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
               onPressed: () async {
                 await provider.deletInventoryItems(
                   itemIds:
-                      provider.selectedProducts.map((e) => e.itemId).toList(),
+                      provider.selectedProducts.map((e) => e.itemId!).toList(),
                   onSuccess: () {
                     CustomToast.showSuccess(context, 'Successfully deleted.');
                     context.pop();
@@ -54,11 +54,10 @@ class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
             ),
             IconButton(
               onPressed: () async {
-                context.read<ChecklistProvider>().putCheklistItems(
+                context.read<ChecklistProvider>().putChecklistFromInventory(
                       data: provider.selectedProducts
-                          .map((e) => e.copyWith(isInChecklist: true).toJson())
+                          .map((e) => e.itemId!)
                           .toList(),
-                      isEdit: true,
                       onSuccess: () {
                         provider.addToChecklist(
                             provider.selectedProducts, context, false);

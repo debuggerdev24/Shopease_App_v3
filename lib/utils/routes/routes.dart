@@ -140,10 +140,12 @@ class AppNavigator {
         path: AppRoute.scanAndAddScreen.path,
         name: AppRoute.scanAndAddScreen.name,
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
+          final extra =
+              (state.extra ?? <String, dynamic>{}) as Map<String, dynamic>;
           return ScanAndAddScreen(
-            isInvoice: extra['isInvoice'] as bool,
-            isReplace: extra['isReplace'] as bool,
+            isInvoice: extra['isInvoice'] ?? false,
+            isReplace: extra['isReplace'] ?? false,
+            isFromChecklist: extra['isFromChecklist'] ?? false,
           );
         },
       ),
@@ -153,8 +155,9 @@ class AppNavigator {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
           return ScanScreen(
-            isInvoice: extra['isInvoice'] as bool,
-            isReplace: extra['isReplace'] as bool,
+            isInvoice: extra['isInvoice'] ?? false,
+            isReplace: extra['isReplace'] ?? false,
+            isFromChecklist: extra['isFromChecklist'] ?? false,
           );
         },
       ),

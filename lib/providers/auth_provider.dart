@@ -122,7 +122,6 @@ class AuthProvider extends ChangeNotifier {
         SharedPrefs().setAccessToken(res.data['AccessToken']);
         SharedPrefs().setIdToken(res.data['IdToken']);
         BaseRepository().addToken(res.data['IdToken']);
-        await getProfile();
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
@@ -131,35 +130,6 @@ class AuthProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while refreshAuth: $e");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> getProfile({
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await services.getProfile();
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        SharedPrefs().setLocationId(res.data['location_id']);
-        SharedPrefs().setUserId(res.data['user_id']);
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e) {
-      debugPrint("Error while getProfile: $e");
     } finally {
       setLoading(false);
     }

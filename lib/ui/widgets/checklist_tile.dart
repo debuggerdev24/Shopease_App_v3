@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,17 +16,18 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class ChecklistTile extends StatefulWidget {
-  const ChecklistTile(
-      {super.key,
-      required this.product,
-      this.onDelete,
-      this.onChangeBrand,
-      required this.isUpload});
+  const ChecklistTile({
+    super.key,
+    required this.product,
+    this.onDelete,
+    this.onChangeBrand,
+    this.isSlideEnabled = true,
+  });
 
   final Product product;
   final VoidCallback? onDelete;
   final VoidCallback? onChangeBrand;
-  final bool isUpload;
+  final bool isSlideEnabled;
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
 }
@@ -50,12 +52,14 @@ class _ChecklistTileState extends State<ChecklistTile>
   Widget build(BuildContext context) {
     return Slidable(
       controller: _slideController,
-      endActionPane:
-          widget.isUpload ? null : _buildRightSwipeActions(widget.product),
+      endActionPane: widget.isSlideEnabled
+          ? _buildRightSwipeActions(widget.product)
+          : null,
       child: ListTile(
         contentPadding: EdgeInsets.zero,
         title: Container(
           color: Colors.grey[800]!.withOpacity(0.05),
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
           width: double.infinity,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -77,29 +81,31 @@ class _ChecklistTileState extends State<ChecklistTile>
                 ),
               ),
               const SizedBox(width: 8),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.product.productName,
-                    style: textStyle16.copyWith(
-                        fontSize: 18, overflow: TextOverflow.ellipsis),
-                  ),
-                  SizedBox(height: 10.h),
-                  AppChip(
-                      text: widget.product.brand ??
-                          '') // Assuming 20.verticalSpace is a SizedBox
-                ],
-              ),
-              const Spacer(),
-              if (!widget.product.isInChecklist)
-                SvgIcon(
-                  AppAssets.addCart,
-                  size: 25.sp,
-                  color: AppColors.greenColor,
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.product.productName!,
+                      style: textStyle16.copyWith(
+                        fontSize: 18,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                    AppChip(text: widget.product.brand ?? ''),
+                    SizedBox(width: 10.h),
+                  ],
                 ),
+              ),
+              SizedBox(width: 10.h),
+              SvgIcon(
+                AppAssets.addCart,
+                size: 25.sp,
+                color: AppColors.greenColor,
+              ),
               SizedBox(width: 25.sp),
               SvgPicture.asset(
                 widget.product.itemLevel == InventoryType.high.name
@@ -197,7 +203,7 @@ class _ChecklistTileState extends State<ChecklistTile>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Are you sure want to delete from Checklist?',
+              'Are you sure want to delete from\nChecklist?',
               style: textStyle18SemiBold,
               textAlign: TextAlign.center,
             ),

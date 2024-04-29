@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 
@@ -21,7 +25,6 @@ class TabScreen extends StatefulWidget {
 
 class _TabScreenState extends State<TabScreen> {
   // late TabController _controller;
-  late int selectedIndex;
 
   // final TextEditingController _textController = TextEditingController();
 
@@ -38,7 +41,6 @@ class _TabScreenState extends State<TabScreen> {
 
   @override
   void initState() {
-    selectedIndex = widget.navigationShell.currentIndex;
     super.initState();
   }
 
@@ -65,28 +67,41 @@ class _TabScreenState extends State<TabScreen> {
 
   Widget bottomNavigationBar() {
     return KBottomNavBar(
-      currentIndex: selectedIndex,
+      currentIndex: widget.navigationShell.currentIndex,
       onTap: (index) {
-        setState(() {
-          selectedIndex = index;
-        });
+        // setState(() {
+        //   selectedIndex = index;
+        // });
+
+        if (index == 0) {
+          context.read<InventoryProvider>().getInventoryItems();
+        }
+
+        if (index == 1) {
+          context.read<ChecklistProvider>().getChecklistItems();
+        }
+
+        if (index == 2) {
+          context.read<ProfileProvider>().getProfile();
+        }
+
         goToBranch(index);
       },
       items: [
         KBottomNavItem(
           svgIcon: AppAssets.menu,
-          isSelected: selectedIndex == 0,
+          isSelected: widget.navigationShell.currentIndex == 0,
         ),
         KBottomNavItem(
           svgIcon: AppAssets.addtocart,
-          isSelected: selectedIndex == 1,
+          isSelected: widget.navigationShell.currentIndex == 1,
         ),
         KBottomNavItem(
-          isSelected: selectedIndex == 2,
+          isSelected: widget.navigationShell.currentIndex == 2,
           svgIcon: AppAssets.person,
         ),
         KBottomNavItem(
-          isSelected: selectedIndex == 3,
+          isSelected: widget.navigationShell.currentIndex == 3,
           svgIcon: AppAssets.notification,
         )
       ],
