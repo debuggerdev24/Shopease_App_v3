@@ -137,7 +137,8 @@ class ScannerProvider extends ChangeNotifier {
       }
 
       if (response.statusCode == 200) {
-        final result = Product.fromJson(response.data);
+        final result = Product.fromJson(
+            (response.data is List) ? response.data[0] : response.data);
         changeProduct(result);
         onSuccess?.call();
       } else {

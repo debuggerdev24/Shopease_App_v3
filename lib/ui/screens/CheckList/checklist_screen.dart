@@ -10,8 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
-import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
@@ -55,112 +55,12 @@ class _ChecklistScreenState extends State<ChecklistScreen>
       log('${provider.currentTab}');
       return Scaffold(
         appBar: AppBar(
-          title: provider.searchable
-              ? const SizedBox.shrink()
-              : Text(
-                  "Check List",
-                  style: appBarTitleStyle.copyWith(
-                      fontWeight: FontWeight.w600, fontSize: 24.sp),
-                ),
-          actions: [
-            provider.searchable
-                ? Stack(
-                    clipBehavior: Clip.hardEdge,
-                    children: [
-                      Container(
-                        color: Colors.white,
-                        height: 500,
-                        width: 370.w,
-                        child: AppTextField(
-                          hintText: 'Search Product',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(40.r),
-                            borderSide: const BorderSide(
-                              color: AppColors.blackGreyColor,
-                            ),
-                          ),
-                          prefixIcon: AppIconButton(
-                            onTap: () {
-                              provider.toggleSearchable();
-                            },
-                            child: searchController.text.isEmpty
-                                ? const Icon(Icons.arrow_back)
-                                : const SvgIcon(
-                                    AppAssets.search,
-                                    size: 15,
-                                  ),
-                          ),
-                          controller: searchController,
-                          onChanged: (value) {
-                            log("search text:${searchController.text}");
-                          },
-                          name: 'Search',
-                        ),
-                      ),
-                      Positioned(
-                          top: 15,
-                          right: 40,
-                          child: GestureDetector(
-                              onTap: () {
-                                log('Search clicked!');
-                                provider.toggleSearchable();
-                              },
-                              child: const Center(
-                                  child: SvgIcon(
-                                AppAssets.cancel,
-                                size: 18,
-                              )))),
-                    ],
-                  )
-                : IconButton(
-                    onPressed: () {
-                      provider.toggleSearchable();
-                    },
-                    icon: const SvgIcon(
-                      AppAssets.search,
-                      size: 24,
-                      color: AppColors.blackGreyColor,
-                    )),
-            provider.searchable
-                ? const SizedBox.shrink()
-                : provider.currentTab == 0
-                    ? AppIconButton(
-                        onTap: () {
-                          context
-                              .goNamed(AppRoute.scanAndAddScreen.name, extra: {
-                            'isInvoice': false,
-                            'isReplace': false,
-                          });
-                        },
-                        child: const SvgIcon(
-                          AppAssets.scanner,
-                          size: 23,
-                          color: AppColors.blackGreyColor,
-                        ))
-                    : const SizedBox.shrink(),
-            provider.searchable
-                ? const SizedBox.shrink()
-                : provider.currentTab == 0
-                    ? Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: AppIconButton(
-                            onTap: () {
-                              context.pushNamed(
-                                AppRoute.addChecklistForm.name,
-                                extra: {'isEdit': false},
-                              );
-                            },
-                            child: const SvgIcon(
-                              AppAssets.add,
-                              size: 23,
-                              color: AppColors.orangeColor,
-                            )),
-                      )
-                    : const SizedBox.shrink(),
-            provider.currentTab != 0
-                ? 5.horizontalSpace
-                : const SizedBox.shrink(),
-          ],
+          title: Text(
+            "Check List",
+            style: appBarTitleStyle.copyWith(
+                fontWeight: FontWeight.w600, fontSize: 24.sp),
+          ),
+          actions: _buildActions(provider),
           bottom: TabBar(
             controller: _tabsController,
             indicatorColor: AppColors.orangeColor,
@@ -190,6 +90,54 @@ class _ChecklistScreenState extends State<ChecklistScreen>
     });
   }
 
+  List<Widget> _buildActions(ChecklistProvider provider) => [
+        IconButton(
+          onPressed: () {
+            if (provider.currentTab == 0) {
+              showSearch(
+                context: context,
+                delegate: ChecklistSearchDelegate(provider.checklist),
+              );
+            } else {
+              /// Show history search delegate here.
+            }
+          },
+          icon: const SvgIcon(
+            AppAssets.search,
+            size: 24,
+            color: AppColors.blackGreyColor,
+          ),
+        ),
+        if (provider.currentTab == 0) ...[
+          AppIconButton(
+            onTap: () {
+              context.pushNamed(
+                AppRoute.scanAndAddScreen.name,
+                extra: {'isFromChecklist': true},
+              );
+            },
+            child: const SvgIcon(
+              AppAssets.scanner,
+              size: 23,
+              color: AppColors.blackGreyColor,
+            ),
+          ),
+          AppIconButton(
+            onTap: () {
+              context.pushNamed(
+                AppRoute.addChecklistForm.name,
+                extra: {'isEdit': false},
+              );
+            },
+            child: const SvgIcon(
+              AppAssets.add,
+              size: 23,
+              color: AppColors.orangeColor,
+            ),
+          ),
+        ],
+      ];
+
   Widget _buildCurrentListView(ChecklistProvider provider) {
     return provider.isLoading
         ? const Center(child: CircularProgressIndicator())
@@ -203,15 +151,18 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     Text('${provider.checklist.length} Products'),
                     const Spacer(),
                     TextButton(
-                        onPressed: () {
-                          context.pushNamed(AppRoute.selectShop.name);
-                        },
-                        style: TextButton.styleFrom(
-                            foregroundColor: AppColors.orangeColor),
-                        child: Text(provider.selectedShopIndex < 0
+                      onPressed: () {
+                        context.pushNamed(AppRoute.selectShop.name);
+                      },
+                      style: TextButton.styleFrom(
+                          foregroundColor: AppColors.orangeColor),
+                      child: Text(
+                        provider.selectedShopIndex < 0
                             ? 'Select shop'
-                            : provider.shops[provider.selectedShopIndex]
-                                ['title']))
+                            : provider
+                                .shops[provider.selectedShopIndex].shopName,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -223,22 +174,16 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           : 'Nothing inside checklist.'),
                     )
                   : Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: provider.checklist
-                              .map(
-                                (e) => ChecklistTile(
-                                  product: e,
-                                  onDelete: () async {
-                                    await provider
-                                        .putBackToInventory(data: [e.itemId]);
-                                  },
-                                  isUpload: false,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
+                      child: ListView.builder(
+                          itemCount: provider.checklist.length,
+                          itemBuilder: (context, index) => ChecklistTile(
+                                product: provider.checklist[index],
+                                onDelete: () async {
+                                  await provider.deleteChecklistItems(data: [
+                                    provider.checklist[index].itemId!
+                                  ]);
+                                },
+                              )),
                     ),
               // Buy button
               Padding(

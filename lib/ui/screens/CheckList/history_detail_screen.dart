@@ -111,9 +111,9 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 (e) => ChecklistTile(
                   product: e,
                   onDelete: () {
-                    provider.deleteProduct(e.itemId);
+                    provider.deleteProduct(e.itemId!);
                   },
-                  isUpload: true,
+                  isSlideEnabled: true,
                 ),
               )
               .toList(),

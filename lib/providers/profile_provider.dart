@@ -1,41 +1,18 @@
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shopease_app_flutter/models/profile_model.dart';
+import 'package:shopease_app_flutter/services/profile_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
-import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
-import 'package:shopease_app_flutter/utils/styles.dart';
-import 'package:toastification/toastification.dart';
 
 class ProfileProvider extends ChangeNotifier {
-  final List<Map<String, dynamic>> userList = [
-    {
-      'img': AppAssets.lucy,
-      'name': 'Lucy',
-      'admin': true,
-      'phone': 123456789,
-      'invite': false,
-    },
-    {
-      'img': AppAssets.joe,
-      'name': 'Joe',
-      'admin': false,
-      'phone': 123456789,
-      'invite': false,
-    },
-    {
-      'img': AppAssets.noImage,
-      'name': 'Riya',
-      'admin': false,
-      'phone': 123456789,
-      'invite': false,
-    },
-  ];
+  final BaseProfileService services;
+
+  ProfileProvider(this.services);
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
@@ -48,6 +25,8 @@ class ProfileProvider extends ChangeNotifier {
   bool _set = false;
   String username = '';
   String phone = '';
+  bool _isLoading = false;
+  ProfileData? _profileData;
 
   bool get set => _set;
   int _selectedUser = -1;
@@ -55,9 +34,16 @@ class ProfileProvider extends ChangeNotifier {
   String get _phone => phone;
 
   int get selectedUserIndex => _selectedUser;
+  bool get isLoading => _isLoading;
+  ProfileData? get profileData => _profileData;
 
   void toggleSet(bool value) {
     _set = !set;
+    notifyListeners();
+  }
+
+  void setLoading(bool newValue) {
+    _isLoading = newValue;
     notifyListeners();
   }
 
@@ -80,15 +66,17 @@ class ProfileProvider extends ChangeNotifier {
     userList.add(user);
     notifyListeners();
   }
-List<Map<String, dynamic>> _uninvitedUsers = [];
 
-List<Map<String, dynamic>> get uninvitedUsers => _uninvitedUsers;
+  List<Map<String, dynamic>> _uninvitedUsers = [];
 
-void updateUninvitedUsers() {
-  _uninvitedUsers =
-      userList.where((user) => user['invite'] == false).toList();
-  notifyListeners();
-}
+  List<Map<String, dynamic>> get uninvitedUsers => _uninvitedUsers;
+
+  void updateUninvitedUsers() {
+    _uninvitedUsers =
+        userList.where((user) => user['invite'] == false).toList();
+    notifyListeners();
+  }
+
   Future<void> openFilePicker(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
@@ -130,4 +118,57 @@ void updateUninvitedUsers() {
     uploadedFilePath = key;
     notifyListeners();
   }
+
+  Future<void> getProfile({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.getProfile();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        _profileData = ProfileData.fromJson((res.data as List).first);
+        SharedPrefs().setUserId(_profileData?.userId ?? '');
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while getProfile: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  final List<Map<String, dynamic>> userList = [
+    {
+      'img': AppAssets.lucy,
+      'name': 'Lucy',
+      'admin': true,
+      'phone': 123456789,
+      'invite': false,
+    },
+    {
+      'img': AppAssets.joe,
+      'name': 'Joe',
+      'admin': false,
+      'phone': 123456789,
+      'invite': false,
+    },
+    {
+      'img': AppAssets.noImage,
+      'name': 'Riya',
+      'admin': false,
+      'phone': 123456789,
+      'invite': false,
+    },
+  ];
 }

@@ -9,7 +9,6 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
@@ -45,7 +44,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                       EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
                   child: GlobalText(
                       color: AppColors.orangeColor,
-                      '${provider.shops[provider.selectedShopIndex]['title'].toString()}',
+                      provider.shops[provider.selectedShopIndex].shopName,
                       textStyle: textStyle14.copyWith(
                         decoration: TextDecoration.underline,
                         decorationColor: AppColors.orangeColor,
@@ -61,9 +60,9 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                           (e) => ChecklistTile(
                             product: e,
                             onDelete: () {
-                              provider.deleteProduct(e.itemId);
+                              provider.deleteProduct(e.itemId!);
                             },
-                            isUpload: true,
+                            isSlideEnabled: true,
                           ),
                         )
                         .toList(),
@@ -74,8 +73,8 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                   onPressed: () {
                     context
                         .pushReplacementNamed(AppRoute.addInvoice.name, extra: {
-                      'shop': provider.shops[provider.selectedShopIndex]
-                              ['title']
+                      'shop': provider
+                          .shops[provider.selectedShopIndex].shopName
                           .toString(),
                       'total': 300
                     });
@@ -87,17 +86,16 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                   context.pop();
 
                   Map<String, dynamic> newData = {
-                    'shop': provider.shops[provider.selectedShopIndex]['title']
+                    'shop': provider.shops[provider.selectedShopIndex].shopName
                         .toString(),
                     'total': 0,
                     'img': AppAssets.addInvoice,
                     'products': 2,
-                    'isInvoice':false
+                    'isInvoice': false
                   };
 
                   log("history $newData");
                   provider.addToHistory(newData);
-                 
 
                   context.goNamed(AppRoute.checkList.name);
                 },

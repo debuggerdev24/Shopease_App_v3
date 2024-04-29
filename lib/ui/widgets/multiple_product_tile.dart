@@ -79,7 +79,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    widget.product.productName,
+                    widget.product.productName!,
                     style: textStyle16.copyWith(
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
@@ -90,7 +90,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 ],
               ),
               const Spacer(),
-              if (widget.product.isInChecklist)
+              if (widget.product.isInChecklist == true)
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,

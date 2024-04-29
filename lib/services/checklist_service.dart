@@ -18,7 +18,11 @@ abstract class BaseChecklistService {
     required List<Map<String, dynamic>> data,
     required bool isEdit,
   });
-  Future<Response<dynamic>?> putBackToInventory(
+  Future<Response<dynamic>?> putChecklistFromInventory(
+      {required List<String> itemIds});
+  Future<Response<dynamic>?> putInventoryFromchecklist(
+      {required List<String> itemIds});
+  Future<Response<dynamic>?> deletChecklistItems(
       {required List<String> itemIds});
 }
 
@@ -67,7 +71,7 @@ class ChecklistService implements BaseChecklistService {
 
   @override
   Future<Response?> putShops(
-      {required List<Map<String, dynamic>> data, required bool isEdit}) async {
+      {required List<Map<String, dynamic>> data, bool isEdit = false}) async {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
@@ -75,7 +79,7 @@ class ChecklistService implements BaseChecklistService {
         record['image_url'] = getBse64String(record['image_url']);
       }
       // recordMap['item_details'] = record;
-      (formData['records'] as List).add({'item_details': record});
+      (formData['records'] as List).add({'shop_details': record});
     }
 
     log('form data: ${formData.toString()}', name: 'putShops-service');
@@ -94,8 +98,24 @@ class ChecklistService implements BaseChecklistService {
   }
 
   @override
-  Future<Response?> putBackToInventory({required List<String> itemIds}) async {
-    return await BaseRepository().post(ApiUrl.putBackToInventory, data: {
+  Future<Response?> putChecklistFromInventory(
+      {required List<String> itemIds}) async {
+    return await BaseRepository().post(ApiUrl.putChecklistFromInventory, data: {
+      'records': itemIds.map((e) => {"item_id": e}).toList()
+    });
+  }
+
+  @override
+  Future<Response?> putInventoryFromchecklist(
+      {required List<String> itemIds}) async {
+    return await BaseRepository().post(ApiUrl.putInventoryFromChecklist, data: {
+      'records': itemIds.map((e) => {"item_id": e}).toList()
+    });
+  }
+
+  @override
+  Future<Response?> deletChecklistItems({required List<String> itemIds}) async {
+    return await BaseRepository().post(ApiUrl.deleteChecklistItems, data: {
       'records': itemIds.map((e) => {"item_id": e}).toList()
     });
   }

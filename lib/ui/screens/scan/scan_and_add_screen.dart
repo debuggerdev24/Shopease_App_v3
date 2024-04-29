@@ -13,11 +13,13 @@ import '../../../utils/routes/routes.dart';
 class ScanAndAddScreen extends StatefulWidget {
   const ScanAndAddScreen({
     super.key,
-    required this.isReplace,
-    required this.isInvoice,
+    this.isReplace = false,
+    this.isInvoice = false,
+    this.isFromChecklist = false,
   });
   final bool isReplace;
   final bool isInvoice;
+  final bool isFromChecklist;
   @override
   State<ScanAndAddScreen> createState() => _ScanAndAddScreenState();
 }
@@ -54,7 +56,8 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
               AppRoute.scanScreen.name,
               extra: {
                 'isInvoice': widget.isInvoice,
-                'isReplace': widget.isReplace
+                'isReplace': widget.isReplace,
+                'isFromChecklist': widget.isFromChecklist,
               },
             );
           },

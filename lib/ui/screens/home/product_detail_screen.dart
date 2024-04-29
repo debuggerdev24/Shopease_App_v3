@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
@@ -92,12 +94,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GlobalText(
-                        widget.product.productName,
+                        widget.product.productName!,
                         textStyle:
                             textStyle18SemiBold.copyWith(fontSize: 19.sp),
                       ),
                       const Spacer(),
-                      widget.product.isInChecklist
+                      widget.product.isInChecklist!
                           ? SvgIcon(
                               AppAssets.succcessCart,
                               color: AppColors.greenColor,
@@ -136,7 +138,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   AppChip(text: widget.product.brand.toString()),
                   // buildCustomContainer(widget.product!['brand'] ?? ''),
                   10.horizontalSpace,
-                  AppChip(text: widget.product.itemCategory),
+                  AppChip(text: widget.product.itemCategory!),
                   10.horizontalSpace,
                   if (widget.product.itemStorage != null)
                     AppChip(text: widget.product.itemStorage ?? ''),
@@ -165,10 +167,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
         child: AppButton(
-            colorType: widget.product.isInChecklist
+            colorType: widget.product.isInChecklist == true
                 ? AppButtonColorType.secondary
                 : AppButtonColorType.primary,
-            icon: widget.product.isInChecklist
+            icon: widget.product.isInChecklist == true
                 ? const SizedBox()
                 : Padding(
                     padding:
@@ -180,14 +182,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
             onPressed: () {
-              setState(() {
-                if (widget.product.isInChecklist) {
-                  widget.product.isInChecklist = !widget.product.isInChecklist;
-                }
-              });
+              context
+                  .read<ChecklistProvider>()
+                  .putChecklistFromInventory(data: [widget.product.itemId!]);
               context.goNamed(AppRoute.home.name);
             },
-            text: widget.product.isInChecklist
+            text: widget.product.isInChecklist == true
                 ? 'Remove from Checklist'
                 : 'Add to Checklist'),
       ),

@@ -11,10 +11,15 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 import '../../../providers/scan_provider.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen(
-      {super.key, required this.isReplace, required this.isInvoice});
+  const ScanScreen({
+    super.key,
+    this.isReplace = false,
+    this.isInvoice = false,
+    this.isFromChecklist = false,
+  });
   final bool isReplace;
   final bool isInvoice;
+  final bool isFromChecklist;
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -76,11 +81,19 @@ class _ScanScreenState extends State<ScanScreen> {
                           ? context.goNamed(AppRoute.saveInvoice.name)
                           : widget.isReplace
                               ? context.goNamed(AppRoute.checkList.name)
-                              : context.pushReplacement(
-                                  AppRoute.addinventoryForm.name,
-                                  extra: {
-                                      'details': provider.scannedProduct,
-                                    });
+                              : widget.isFromChecklist
+                                  ? context.goNamed(
+                                      AppRoute.addChecklistForm.name,
+                                      extra: {
+                                          'isEdit': true,
+                                          'details': provider.scannedProduct,
+                                        })
+                                  : context.goNamed(
+                                      AppRoute.addinventoryForm.name,
+                                      extra: {
+                                          'isEdit': true,
+                                          'details': provider.scannedProduct,
+                                        });
                     },
                     onError: (msg) {
                       context.pushReplacementNamed(
