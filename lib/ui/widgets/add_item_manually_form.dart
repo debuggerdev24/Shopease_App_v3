@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/back_button.dart';
-import 'package:shopease_app_flutter/ui/widgets/card_dropdown.dart';
+import 'package:shopease_app_flutter/ui/widgets/card_drop_down.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
@@ -19,20 +21,20 @@ class AddItemManuallyForm extends StatefulWidget {
     super.key,
     required this.onSubmit,
     required this.categoties,
-    required this.onCategoryChange,
-    required this.onInventoryLevelChanged,
     required this.onFilePicked,
     required this.onFileClear,
     this.isLoading = false,
+    this.isEdit = false,
+    this.product,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
   final List<dynamic> categoties;
-  final Function(dynamic) onCategoryChange;
-  final Function(dynamic) onInventoryLevelChanged;
   final Future<String?> Function() onFilePicked;
   final Function() onFileClear;
   final bool isLoading;
+  final Product? product;
+  final bool isEdit;
 
   @override
   State<AddItemManuallyForm> createState() => _AddItemManuallyFormState();
@@ -50,6 +52,22 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
   final TextEditingController _fileFieldController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool isEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setFromFields();
+      if (widget.product == null || !widget.isEdit) {
+        context.read<InventoryProvider>().changeAddInvSelectedInvType(null);
+        context.read<InventoryProvider>().changeAddInvSelectedCategory(null);
+        context.read<ChecklistProvider>().changeAddCLSelectedCategory(null);
+        context.read<ChecklistProvider>().changeAddCLSelectedInvType(null);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,25 +132,35 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
                     ),
                     12.h.verticalSpace,
                     CardDropDownField(
+                      name: 'inventoryLevelDropDown',
                       labelText: 'Inventory Level',
                       hintText: 'Select a inventory level',
+                      value: context
+                          .read<InventoryProvider>()
+                          .addInvSelectedInvType,
                       dropDownList: inventoryDropdownList(),
-                      onChanged: widget.onInventoryLevelChanged,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please select an inventory level';
-                        }
-                        return null;
+                      onChanged: (value) {
+                        context
+                            .read<InventoryProvider>()
+                            .changeAddInvSelectedInvType(value);
                       },
                     ),
                     12.h.verticalSpace,
                     CardDropDownField(
+                      name: 'categoryDropDown',
                       isRequired: true,
                       labelText: 'Category',
                       hintText: 'Select a category',
+                      value: context
+                          .read<InventoryProvider>()
+                          .addInvSelectedCategory,
                       dropDownList: categoryList(),
                       trailing: SvgPicture.asset(AppAssets.dropDown),
-                      onChanged: widget.onCategoryChange,
+                      onChanged: (value) {
+                        context
+                            .read<InventoryProvider>()
+                            .changeAddInvSelectedCategory(value);
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please select a Category';
@@ -144,6 +172,7 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
                     AppTextField(
                       name: 'productImg',
                       controller: _fileFieldController,
+                      maxLines: 1,
                       readOnly: true,
                       labelText: 'Upload Photo',
                       hintText: 'Select a photo',
@@ -173,9 +202,12 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
                       labelText: "Storage Details",
                     ),
                     30.h.verticalSpace,
-
                     AppButton(
-                      colorType: _formKey.currentState?.validate() == true
+                      colorType: (_nameController.text.isNotEmpty &&
+                              context
+                                      .read<InventoryProvider>()
+                                      .addInvSelectedCategory !=
+                                  null)
                           ? AppButtonColorType.primary
                           : AppButtonColorType.greyed,
                       isLoading: widget.isLoading,
@@ -191,15 +223,42 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
                             'item_category': context
                                 .read<InventoryProvider>()
                                 .addInvSelectedCategory,
+                            'item_storage': _storageController.text,
+                            'is_in_checklist': false,
                           };
 
-                          if (_fileFieldController.text.isNotEmpty) {
+                          if (!widget.isEdit &&
+                              _fileFieldController.text.isNotEmpty) {
                             data.addAll({
-                              'item_image': context
-                                  .read<InventoryProvider>()
-                                  .addInvSelectedFile!
-                                  .path
+                              'image_url': context
+                                      .read<InventoryProvider>()
+                                      .addInvSelectedFile
+                                      ?.path ??
+                                  widget.product?.itemImage
                             });
+                          }
+
+                          if (widget.isEdit && widget.product != null) {
+                            data.clear();
+                            data.addAll(widget.product!
+                                .copyWith(
+                                  productName: _nameController.text,
+                                  productDescription: _descController.text,
+                                  brand: _brandController.text,
+                                  itemLevel: context
+                                      .read<InventoryProvider>()
+                                      .addInvSelectedInvType,
+                                  itemCategory: context
+                                      .read<InventoryProvider>()
+                                      .addInvSelectedCategory,
+                                  itemImage: context
+                                          .read<InventoryProvider>()
+                                          .addInvSelectedFile
+                                          ?.path ??
+                                      widget.product?.itemImage,
+                                  itemStorage: _storageController.text,
+                                )
+                                .toJson());
                           }
 
                           log('data: ${data.toString()}', name: 'onsubmit');
@@ -218,6 +277,22 @@ class _AddItemManuallyFormState extends State<AddItemManuallyForm> {
         ),
       ),
     );
+  }
+
+  setFromFields() {
+    if (widget.product == null) return;
+
+    _nameController.text = widget.product!.productName;
+    _descController.text = widget.product!.productDescription ?? '';
+    _brandController.text = widget.product!.brand ?? '';
+    context
+        .read<InventoryProvider>()
+        .changeAddInvSelectedInvType(widget.product!.itemLevel);
+    context
+        .read<InventoryProvider>()
+        .changeAddInvSelectedCategory(widget.product!.itemCategory);
+    _fileFieldController.text = widget.product!.itemImage ?? '';
+    _storageController.text = widget.product!.itemStorage ?? '';
   }
 
   onSelectFileTap() async {

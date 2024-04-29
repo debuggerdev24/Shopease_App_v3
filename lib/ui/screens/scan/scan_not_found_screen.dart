@@ -42,10 +42,7 @@ class ScanNotFoundScreen extends StatelessWidget {
                 onPressed: () {
                   context.goNamed(
                     AppRoute.addinventoryForm.name,
-                    extra: {
-                      'isEdit': false,
-                     
-                    },
+                    extra: {'isEdit': false},
                   );
                 },
                 text: 'Add Manually',

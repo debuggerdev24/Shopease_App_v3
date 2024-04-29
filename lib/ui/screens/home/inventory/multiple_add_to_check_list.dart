@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
@@ -31,10 +32,9 @@ class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
-      log("CheckOut List :${provider.checkOutList.length}");
       return Scaffold(
         appBar: AppBar(
-          title: GlobalText('${provider.checkOutList.length} Selected'),
+          title: GlobalText('${provider.selectedProducts.length} Selected'),
           actions: [
             IconButton(
               onPressed: () async {
@@ -53,8 +53,18 @@ class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                context.pushReplacementNamed(AppRoute.checkList.name);
+              onPressed: () async {
+                context.read<ChecklistProvider>().putCheklistItems(
+                      data: provider.selectedProducts
+                          .map((e) => e.copyWith(isInChecklist: true).toJson())
+                          .toList(),
+                      isEdit: true,
+                      onSuccess: () {
+                        provider.addToChecklist(
+                            provider.selectedProducts, context, false);
+                        context.pop();
+                      },
+                    );
               },
               icon: SvgIcon(
                 AppAssets.addCart,

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
@@ -172,9 +173,7 @@ class _HomeScreenState extends State<HomeScreen>
                           onTap: () {
                             context.pushNamed(
                               AppRoute.addinventoryForm.name,
-                              extra: {
-                                'isEdit': false,
-                              },
+                              extra: {'isEdit': false},
                             );
                           },
                           child: const SvgIcon(
@@ -192,73 +191,8 @@ class _HomeScreenState extends State<HomeScreen>
                   ? SingleChildScrollView(
                       child: Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 8),
-                            child: Row(
-                              children: [
-                                10.horizontalSpace,
-                                Text(
-                                  '${provider.products.length} Products',
-                                  style: textStyle16.copyWith(fontSize: 18),
-                                ),
-                                const Spacer(),
-                                InkWell(
-                                  onTap: showFilterSheet,
-                                  child: SvgPicture.asset(
-                                    AppAssets.selectedFilterIcon,
-                                    width: 22.h,
-                                    height: 22.h,
-                                  ),
-                                ),
-                                8.w.horizontalSpace,
-                              ],
-                            ),
-                          ),
-                          ListView.separated(
-                              shrinkWrap: true,
-                              primary: false,
-                              itemCount: search
-                                  ? searchedProducts.length
-                                  : provider.products.length,
-                              separatorBuilder: (context, index) =>
-                                  1.h.verticalSpace,
-                              itemBuilder: (BuildContext context, int index) {
-                                return ProductTile(
-                                  onLongPress: () {
-                                    context.goNamed(
-                                      AppRoute.multipleSelectProduct.name,
-                                    );
-                                  },
-                                  product: provider.products[index],
-                                  onAddToCart: () {
-                                    provider.addtoCart(provider.products[index],
-                                        context, true);
-                                  },
-                                  onTap: () {
-                                    context.pushNamed(
-                                        AppRoute.productDetail.name,
-                                        extra: provider.products[index]);
-                                  },
-                                  onDelete: () {
-                                    provider.deletInventoryItems(
-                                        itemIds: [
-                                          provider.products[index].itemId
-                                        ],
-                                        onSuccess: () {
-                                          provider.getInventoryItems();
-                                          CustomToast.showSuccess(
-                                              context, 'Successfully deleted');
-                                        });
-                                  },
-                                  onInventoryChange: (newType) {
-                                    provider.changeInventoryType(
-                                        provider.products[index].itemId,
-                                        newType,
-                                        context);
-                                  },
-                                );
-                              }),
+                          _buildInventoryHeaingBar(provider),
+                          _buildProductsList(provider),
                         ],
                       ),
                     )
@@ -310,6 +244,80 @@ class _HomeScreenState extends State<HomeScreen>
         );
       },
     );
+  }
+
+  Widget _buildInventoryHeaingBar(InventoryProvider provider) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      child: Row(
+        children: [
+          10.horizontalSpace,
+          Text(
+            '${provider.products.length} Products',
+            style: textStyle16.copyWith(fontSize: 18),
+          ),
+          const Spacer(),
+          InkWell(
+            onTap: showFilterSheet,
+            child: SvgPicture.asset(
+              AppAssets.selectedFilterIcon,
+              width: 22.h,
+              height: 22.h,
+            ),
+          ),
+          8.w.horizontalSpace,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductsList(InventoryProvider provider) {
+    return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        itemCount: search ? searchedProducts.length : provider.products.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ProductTile(
+            onLongPress: () {
+              context.goNamed(
+                AppRoute.multipleSelectProduct.name,
+              );
+            },
+            product: provider.products[index],
+            onTap: () {
+              context.pushNamed(AppRoute.productDetail.name,
+                  extra: provider.products[index]);
+            },
+            onAddToCart: () {
+              context.read<ChecklistProvider>().putCheklistItems(
+                data: [
+                  provider.products[index]
+                      .copyWith(isInChecklist: true)
+                      .toJson()
+                ],
+                isEdit: true,
+                onSuccess: () {
+                  provider.addToChecklist(
+                      [provider.products[index]], context, false);
+                },
+              );
+            },
+            onDelete: () {
+              provider.deletInventoryItems(
+                  itemIds: [provider.products[index].itemId],
+                  onSuccess: () {
+                    provider.getInventoryItems();
+                    CustomToast.showSuccess(context, 'Successfully deleted');
+                  });
+            },
+            onInventoryChange: (newType) {
+              provider.changeInventoryType(
+                provider.products[index].itemId,
+                newType,
+              );
+            },
+          );
+        });
   }
 
   Widget buildInventoryContainer(String text, String level) {

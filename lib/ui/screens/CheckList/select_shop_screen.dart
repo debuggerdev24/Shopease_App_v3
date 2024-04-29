@@ -32,29 +32,9 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   Widget build(BuildContext context) {
     return Consumer<ChecklistProvider>(builder: (context, provider, _) {
       return Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('Select Shop'),
-        //   actions: [
-        //     IconButton(
-        //         onPressed: () {},
-        //         icon: const SvgIcon(
-        //           AppAssets.search,
-        //           size: 24,
-        //           color: AppColors.blackGreyColor,
-        //         )),
-        //     AppIconButton(
-        //         onTap: _showAddShopSheet,
-        //         child: const SvgIcon(
-        //           AppAssets.add,
-        //           size: 23,
-        //           color: AppColors.orangeColor,
-        //         ))
-        //   ],
-        // ),
-
         appBar: AppBar(
           title: provider.searchable
-              ? SizedBox()
+              ? const SizedBox.shrink()
               : Text(
                   "Select Shop",
                   style: appBarTitleStyle.copyWith(
@@ -134,7 +114,6 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                   )
           ],
         ),
-
         body: Consumer<ChecklistProvider>(builder: (context, provider, _) {
           return SingleChildScrollView(
             child: Column(

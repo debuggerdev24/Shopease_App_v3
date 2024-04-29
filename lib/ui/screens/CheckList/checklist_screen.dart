@@ -16,8 +16,6 @@ import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
-import 'package:toastification/toastification.dart';
-
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/routes/routes.dart';
@@ -39,8 +37,10 @@ class _ChecklistScreenState extends State<ChecklistScreen>
   @override
   void initState() {
     super.initState();
-    setState(() {});
     _tabsController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<ChecklistProvider>().getChecklistItems();
+    });
   }
 
   void _handleTabChange(int newIndex) {
@@ -56,7 +56,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
       return Scaffold(
         appBar: AppBar(
           title: provider.searchable
-              ? SizedBox()
+              ? const SizedBox.shrink()
               : Text(
                   "Check List",
                   style: appBarTitleStyle.copyWith(
@@ -145,8 +145,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                         padding: const EdgeInsets.only(right: 10),
                         child: AppIconButton(
                             onTap: () {
-                              context.goNamed(
-                                AppRoute.addManuallyForm.name,
+                              context.pushNamed(
+                                AppRoute.addChecklistForm.name,
+                                extra: {'isEdit': false},
                               );
                             },
                             child: const SvgIcon(
@@ -189,115 +190,74 @@ class _ChecklistScreenState extends State<ChecklistScreen>
     });
   }
 
-  // void _showFilter(
-  //   BuildContext context,
-  // ) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       showDragHandle: true,
-  //       isScrollControlled: true,
-  //       builder: (context) {
-  //         return Container(
-  //           width: double.infinity,
-  //           margin: EdgeInsets.symmetric(vertical: 10.sp),
-  //           padding: EdgeInsets.symmetric(horizontal: 20.w),
-  //           child: SingleChildScrollView(
-  //             child: BounceInUp(
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.max,
-  //                 children: [
-  //                   GlobalText('Filters', textStyle: textStyle18SemiBold),
-  //                   20.h.verticalSpace,
-  //                   Column(children: [
-  //                     GlobalText(
-  //                       'Value 1',
-  //                       textStyle: textStyle16,
-  //                     ),
-  //                     GlobalText(
-  //                       'Value 2',
-  //                       textStyle: textStyle16,
-  //                     ),
-  //                     GlobalText(
-  //                       'Value 3',
-  //                       textStyle: textStyle16,
-  //                     ),
-  //                   ]),
-  //                   30.h.verticalSpace,
-  //                   AppButton(
-  //                       onPressed: () {
-  //                         Navigator.pop(context);
-  //                       },
-  //                       text: 'Apply'),
-  //                   15.h.verticalSpace,
-  //                   AppButton(
-  //                       colorType: AppButtonColorType.greyed,
-  //                       onPressed: () {
-  //                         context.pop();
-  //                       },
-  //                       text: 'cancel'),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
-
   Widget _buildCurrentListView(ChecklistProvider provider) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-          child: Row(
+    return provider.isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
             children: [
-              Text('${provider.checklist.length} Products'),
-              const Spacer(),
-              TextButton(
-                  onPressed: () {
-                    context.pushNamed(AppRoute.selectShop.name);
-                  },
-                  style: TextButton.styleFrom(
-                      foregroundColor: AppColors.orangeColor),
-                  child: Text(provider.selectedShopIndex < 0
-                      ? 'Select shop'
-                      : provider.shops[provider.selectedShopIndex]['title']))
-            ],
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: provider.checklist
-                  .map(
-                    (e) => ChecklistTile(
-                      product: e,
-                      onDelete: () {
-                        provider.deleteProduct(e['title']);
-                      },
-                      isUpload: false,
+              // Checklist Heading Bar
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+                child: Row(
+                  children: [
+                    Text('${provider.checklist.length} Products'),
+                    const Spacer(),
+                    TextButton(
+                        onPressed: () {
+                          context.pushNamed(AppRoute.selectShop.name);
+                        },
+                        style: TextButton.styleFrom(
+                            foregroundColor: AppColors.orangeColor),
+                        child: Text(provider.selectedShopIndex < 0
+                            ? 'Select shop'
+                            : provider.shops[provider.selectedShopIndex]
+                                ['title']))
+                  ],
+                ),
+              ),
+              // Checklist List view
+              provider.checklist.isEmpty
+                  ? Center(
+                      child: GlobalText(provider.searchable
+                          ? 'No matching result found'
+                          : 'Nothing inside checklist.'),
+                    )
+                  : Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: provider.checklist
+                              .map(
+                                (e) => ChecklistTile(
+                                  product: e,
+                                  onDelete: () async {
+                                    await provider
+                                        .putBackToInventory(data: [e.itemId]);
+                                  },
+                                  isUpload: false,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
                     ),
-                  )
-                  .toList(),
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          child: AppButton(
-              onPressed: () {
-                if (provider.selectedShopIndex < 0) {
-                  CustomToast.showWarning(context, 'Please select shop');
-                } else {
-                  CustomToast.showSuccess(context,
-                      '${provider.checklist.length} Products purchased ');
+              // Buy button
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                child: AppButton(
+                    onPressed: () {
+                      if (provider.selectedShopIndex < 0) {
+                        CustomToast.showWarning(context, 'Please select shop');
+                      } else {
+                        CustomToast.showSuccess(context,
+                            '${provider.checklist.length} Products purchased ');
 
-                  context.goNamed(AppRoute.uploadInvoice.name);
-                }
-              },
-              text: 'Buy products (${provider.checklist.length})'),
-        )
-      ],
-    );
+                        context.goNamed(AppRoute.uploadInvoice.name);
+                      }
+                    },
+                    text: 'Buy products (${provider.checklist.length})'),
+              )
+            ],
+          );
   }
 
   Widget _buildHistoryView(ChecklistProvider provider) {

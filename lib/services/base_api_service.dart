@@ -55,7 +55,7 @@ class BaseRepository {
 
   Future<Response<dynamic>?> get(String path, {dynamic data}) async {
     try {
-      final res = await _dio.post(path, data: data);
+      final res = await _dio.get(path, data: data);
       if (res.statusCode == 200) {
         return res;
       }
@@ -104,7 +104,7 @@ class BaseRepository {
 
   Future<Response<dynamic>?> put(String path, {dynamic data}) async {
     try {
-      final res = await _dio.post(path, data: data);
+      final res = await _dio.put(path, data: data);
       if (res.statusCode == 200) {
         return res;
       }
@@ -128,7 +128,7 @@ class BaseRepository {
 
   Future<Response<dynamic>?> delete(String path, {dynamic data}) async {
     try {
-      final res = await _dio.post(path, data: data);
+      final res = await _dio.delete(path, data: data);
       if (res.statusCode == 200) {
         return res;
       }

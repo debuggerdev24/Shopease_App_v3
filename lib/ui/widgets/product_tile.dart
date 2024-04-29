@@ -15,6 +15,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -36,7 +37,6 @@ class ProductTile extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onAddToCart;
   final VoidCallback? onLongPress;
-
   final Function(InventoryType type)? onInventoryChange;
 
   @override
@@ -66,7 +66,6 @@ class _ProductTileState extends State<ProductTile>
       controller: _slideController,
       endActionPane: _buildRightSwipeActions(widget.product),
       startActionPane: _buildLeftSwipeActions(widget.product),
-      // controller: _slidableController,
       child: ListTile(
         onLongPress: widget.onLongPress,
         contentPadding: EdgeInsets.zero,
@@ -86,7 +85,7 @@ class _ProductTileState extends State<ProductTile>
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: NetworkImage(
-                        widget.product.itemImage ?? '',
+                        widget.product.itemImage ?? Constants.placeholdeImg,
                       ),
                       fit: BoxFit.contain,
                     ),
@@ -112,7 +111,7 @@ class _ProductTileState extends State<ProductTile>
                 ],
               ),
               const Spacer(),
-              if (widget.product.isInCart == true)
+              if (widget.product.isInChecklist == true)
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,
@@ -142,10 +141,11 @@ class _ProductTileState extends State<ProductTile>
         children: [
           AppSlidableaction(
             isRight: true,
-            height: product.isInCart == true ? 29.sp : 18.sp,
-            icon:
-                product.isInCart == true ? AppAssets.rmCart : AppAssets.addCart,
-            forgroundColor: product.isInCart == true
+            height: product.isInChecklist == true ? 29.sp : 18.sp,
+            icon: product.isInChecklist == true
+                ? AppAssets.rmCart
+                : AppAssets.addCart,
+            forgroundColor: product.isInChecklist == true
                 ? AppColors.redColor
                 : AppColors.primaryColor,
             onTap: () {

@@ -61,7 +61,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                           (e) => ChecklistTile(
                             product: e,
                             onDelete: () {
-                              provider.deleteProduct(e['title']);
+                              provider.deleteProduct(e.itemId);
                             },
                             isUpload: true,
                           ),

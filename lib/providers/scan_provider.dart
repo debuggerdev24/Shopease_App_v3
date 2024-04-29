@@ -3,7 +3,8 @@ import "package:dio/dio.dart";
 import 'package:flutter/foundation.dart';
 import "package:shopease_app_flutter/models/product_model.dart";
 import 'dart:developer';
-import "package:shopease_app_flutter/services/scanner_service.dart";
+import "package:shopease_app_flutter/services/scan_service.dart";
+import "package:shopease_app_flutter/utils/constants.dart";
 
 enum ScanningStatus { ntg, prepare, scanning, scanned }
 
@@ -16,14 +17,21 @@ class ScannerProvider extends ChangeNotifier {
   String barcodeResults = 'No Barcode Detected';
   Product? _scannedProduct;
   Product? get scannedProduct => _scannedProduct;
+  bool _isLoading = false;
 
   Uint8List? _scannedCode;
   ScanningStatus get scanningStatus => _scanningStatus;
   Uint8List? get scannedCode => _scannedCode;
+  bool get isLoading => _isLoading;
 
   void changeScanningStatus(ScanningStatus value) {
     _scanningStatus = value;
     log("Scanning status $scanningStatus");
+    notifyListeners();
+  }
+
+  void setLoading(bool newValue) {
+    _isLoading = newValue;
     notifyListeners();
   }
 
@@ -43,25 +51,39 @@ class ScannerProvider extends ChangeNotifier {
     _mobileScannerController = MobileScannerController(
         detectionSpeed: DetectionSpeed.normal,
         returnImage: true,
+        autoStart: true,
         formats: [BarcodeFormat.all]);
     notifyListeners();
   }
 
+  Future<void> startScanner() async {
+    if (_mobileScannerController == null) return;
+    log("object ==>  _mobileScannerController.isStarting: ${_mobileScannerController!.isStarting}");
+
+    await _mobileScannerController!.start();
+  }
+
   void disposeScan() {
-    _mobileScannerController?.dispose();
+    if (_mobileScannerController == null) {
+      log("object ==> _mobileScannerController == null");
+      return;
+    }
+    _mobileScannerController!.stop();
+    _mobileScannerController!.dispose();
+    _mobileScannerController = null;
   }
 
   captureImage(
     BarcodeCapture captureData, {
     VoidCallback? onSuccess,
-    VoidCallback? onError,
+    Function(String)? onError,
     VoidCallback? onAPISuccess,
     VoidCallback? onAPIError,
   }) async {
     if (captureData.barcodes.isEmpty) {
       // No barcode found, handle this case
       log('No barcode found in the captured image.');
-      onError?.call();
+      onError?.call('Not found any product in barcode.');
       return; // Exit the function early since there's nothing more to do.
     }
 
@@ -100,45 +122,19 @@ class ScannerProvider extends ChangeNotifier {
     }
   }
 
-  // Future<ProductModel> fetchBarcodeData(
-  //   String barcode,
-  // ) async {
-  //   ProductModel? result;
-  //   String apiKey = "taro7zm1s49u1hej0a146zj2tdy6tw";
-
-  //   try {
-  //     final Uri uri = Uri.parse(
-  //         'https://api.barcodelookup.com/v3/products?barcode=$barcode&formatted=y&key=$apiKey');
-
-  //     final response =
-  //         await http.get(uri, headers: {"Content-Type": "application/json"});
-
-  //     print("Response status code: ${response.statusCode}");
-  //     print("Response body: ${response.body}");
-
-  //     if (response.statusCode == 200) {
-  //       final item = json.decode(response.body);
-  //       result = ProductModel.fromJson(item);
-  //       return result;
-
-  //     } else {
-  //       print("Error: ${response.statusCode}");
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   }
-  // }
-
   Future<void> fetchBarcodeData({
     required String barcode,
     VoidCallback? onSuccess,
-    VoidCallback? onError,
+    Function(String)? onError,
   }) async {
     try {
+      setLoading(true);
       final response = await service.scanItem(barcode);
 
-        log("Response status code: ${response.statusCode}");
-        log("Response body: ${response.data}");
+      if (response == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
 
       if (response.statusCode == 200) {
         final result = Product.fromJson(response.data);
@@ -146,36 +142,15 @@ class ScannerProvider extends ChangeNotifier {
         onSuccess?.call();
       } else {
         log("Error: ${response.statusCode}");
-        onError?.call();
+        onError?.call(response.data['message']);
       }
     } on DioException catch (e) {
       log('error while scanning code : $e');
-      onError?.call();
+      onError?.call(e.message ?? Constants.commonErrMsg);
     } catch (e) {
-      log('Error while scanning code: $e');
-      onError?.call();
+      debugPrint('Error while scanning code: $e');
+    } finally {
+      setLoading(false);
     }
   }
-
-  // void getProductInfo(String barcodeValue) {
-  //   // Assuming you have a mapping of barcode values to product information
-  //   Map<String, Product> productMap = {
-  //     '8901719101038': Product(name: 'Parle G', price: 10.99),
-  //     '4007993012504	': Product(name: 'IceCream', price: 20.99),
-  //     // Add more mappings as needed
-  //   };
-
-  //   // Lookup the barcode value in the product map
-  //   Product? product = productMap[barcodeValue];
-
-  //   if (product != null) {
-  //     // Product found for the scanned barcode
-  //     log('Product Name: ${product.name}');
-  //     log('Product Price: \$${product.price}');
-  //     // You can further process the product information here as needed
-  //   } else {
-  //     // Product information not found for the scanned barcode
-  //     log('Product information not found for the scanned barcode.');
-  //   }
-  // }
 }

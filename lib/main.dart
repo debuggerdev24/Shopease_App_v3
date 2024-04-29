@@ -12,8 +12,9 @@ import 'package:shopease_app_flutter/providers/theme_provider.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
+import 'package:shopease_app_flutter/services/checklist_service.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
-import 'package:shopease_app_flutter/services/scanner_service.dart';
+import 'package:shopease_app_flutter/services/scan_service.dart';
 import 'package:shopease_app_flutter/utils/app_themes.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
@@ -26,7 +27,7 @@ Future<void> main() async {
   Workmanager().initialize(callbackDispatcher);
   await SharedPrefs().init();
   await BaseRepository().intialize();
-  if(SharedPrefs().idToken != null) {
+  if (SharedPrefs().idToken != null) {
     BaseRepository().addToken(SharedPrefs().idToken!);
   }
   runApp(const MyApp());
@@ -89,7 +90,7 @@ class MyApp extends StatelessWidget {
           create: (_) => InventoryProvider(InventoryService()),
         ),
         ChangeNotifierProvider<ChecklistProvider>(
-          create: (_) => ChecklistProvider(),
+          create: (_) => ChecklistProvider(ChecklistService()),
         ),
         ChangeNotifierProvider<ProfileProvider>(
           create: (_) => ProfileProvider(),

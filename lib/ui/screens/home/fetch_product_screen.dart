@@ -18,7 +18,7 @@ class _FetchProductScreenState extends State<FetchProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ScannerProvider>(builder: (context, provider, _) {
-      return Scaffold(
+      return Scaffold(    
         body: Column(
           children: [
              ProductTile(product: widget.product!),
