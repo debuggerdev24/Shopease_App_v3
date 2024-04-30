@@ -79,6 +79,7 @@ class _TabScreenState extends State<TabScreen> {
 
         if (index == 1) {
           context.read<ChecklistProvider>().getChecklistItems();
+          context.read<ChecklistProvider>().getHistoryItems();
         }
 
         if (index == 2) {

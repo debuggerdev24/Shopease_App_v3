@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/services/checklist_service.dart';
@@ -31,20 +32,31 @@ class ChecklistProvider extends ChangeNotifier {
   ];
   bool _isLoading = false;
   final List<Product> _checklist = [];
+
+  Shop? _selectedShop;
   final List<Shop> _shops = [];
+  List<Shop> _filteredShops = [];
+  String? _selectedShopFilter;
+  final Set<String> _shopLoacations = <String>{};
+
+  final List<History> _histories = [];
   final List<Map<String, dynamic>> _historylist = historyData;
 
   int _currentTab = 0;
 
-  int _selectedShop = -1;
-
   bool get isLoading => _isLoading;
   List<Product> get checklist => _checklist;
+
+  Shop? get selectedShop => _selectedShop;
   List<Shop> get shops => _shops;
+  List<Shop> get filteredShops => _filteredShops;
+  String? get selectedShopFilter => _selectedShopFilter;
+  Set<String> get shopLoacations => _shopLoacations;
+
+  List<History> get histories => _histories;
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
-  int get selectedShopIndex => _selectedShop;
 
   String? imagekey;
   File? imagefile;
@@ -55,6 +67,11 @@ class ChecklistProvider extends ChangeNotifier {
 
   bool get searchable => _searchable;
   int get selectedValueIndex => _selectedValue;
+
+  set shopFilter(String? newFilter) {
+    _selectedShopFilter = newFilter;
+    notifyListeners();
+  }
 
   void toggleSearchable() {
     _searchable = !_searchable;
@@ -76,13 +93,18 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSelectedShop(int newShopIndex) {
-    _selectedShop = newShopIndex;
+  void changeSelectedShop(String shopId) {
+    _selectedShop = _shops.firstWhere((element) => element.shopId == shopId);
     notifyListeners();
   }
 
-  void deleteProduct(String itemId) {
+  void deleteChecklistItem(String itemId) {
     _checklist.removeWhere((element) => element.itemId == itemId);
+    notifyListeners();
+  }
+
+  void deleteHistory(String itemId) {
+    _histories.removeWhere((element) => element.histId == itemId);
     notifyListeners();
   }
 
@@ -92,14 +114,14 @@ class ChecklistProvider extends ChangeNotifier {
     log('data add to historyList');
   }
 
-  void deleteFromHistory(Map<String, dynamic> dataToDelete) {
-    if (historylist.contains(dataToDelete)) {
-      historylist.remove(dataToDelete);
-      notifyListeners();
-      log('Data deleted from historyList');
-    } else {
-      log('Item not found in historyList');
-    }
+  void filterShops() {
+    // _filteredShops.clear();
+    // _filteredShops.addAll(
+    //     _shops.where((element) => element.shopLocation == _selectedShopFilter));
+
+    _filteredShops =
+        _shops.where((e) => e.shopLocation == _selectedShopFilter).toList();
+    notifyListeners();
   }
 
   Future<void> openFilePicker(BuildContext context) async {
@@ -144,6 +166,8 @@ class ChecklistProvider extends ChangeNotifier {
     uploadedFilePath = key;
     notifyListeners();
   }
+
+  /// Checklist - APIs
 
   Future<void> getChecklistItems({
     Function(String)? onError,
@@ -297,6 +321,8 @@ class ChecklistProvider extends ChangeNotifier {
     }
   }
 
+  /// Shops - APIs
+
   Future<void> getShops({
     Function(String)? onError,
     VoidCallback? onSuccess,
@@ -312,7 +338,12 @@ class ChecklistProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         _shops.clear();
+        _filteredShops.clear();
         _shops.addAll((res.data as List).map((e) => Shop.fromJson(e)));
+        _filteredShops.addAll(_shops);
+        for (Shop shop in _shops) {
+          _shopLoacations.add(shop.shopLocation ?? '');
+        }
         notifyListeners();
         onSuccess?.call();
       } else {
@@ -343,6 +374,9 @@ class ChecklistProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
+        for (var shop in data) {
+          _shopLoacations.add(shop['shop_location']);
+        }
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
@@ -351,6 +385,67 @@ class ChecklistProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while putShops: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /// History - APIs
+
+  Future<void> getHistoryItems({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.getHistoryItems();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        _histories.clear();
+        _histories.addAll((res.data as List).map((e) => History.fromJson(e)));
+        notifyListeners();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while getHistoryItems: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> puthistoryItems({
+    required List<Map<String, dynamic>> data,
+    required bool isEdit,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.putHistoryItems(data: data, isEdit: isEdit);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while puthistoryItems: $e");
     } finally {
       setLoading(false);
     }

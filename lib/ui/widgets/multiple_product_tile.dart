@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,7 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
+import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -48,8 +50,8 @@ class _MultipleProductTileState extends State<MultipleProductTile>
         tileColor: Colors.grey[800]!.withOpacity(0.05),
         activeColor: AppColors.primaryColor,
         checkColor: AppColors.lightGreenColor,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 5,
+        contentPadding: const EdgeInsets.only(
+          left: 10,
         ),
         title: SizedBox(
           width: double.infinity,
@@ -57,46 +59,47 @@ class _MultipleProductTileState extends State<MultipleProductTile>
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const SizedBox(width: 8),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 100.h,
-                  width: 100.h,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                          widget.product.itemImage ?? Constants.placeholdeImg),
-                      fit: BoxFit.contain,
-                    ),
+              Container(
+                height: 100.h,
+                width: 100.h,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                        widget.product.itemImage ?? Constants.placeholdeImg),
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
               const SizedBox(
                   width: 8), // Assuming 8.horizontalSpace is a SizedBox
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.product.productName!,
-                    style: textStyle16.copyWith(
-                        fontSize: 18, overflow: TextOverflow.ellipsis),
-                  ),
-                  SizedBox(height: 10.h),
-                  AppChip(
-                      text: widget.product.brand ??
-                          '') // Assuming 20.verticalSpace is a SizedBox
-                ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.product.productName!,
+                      style: textStyle16.copyWith(
+                          fontSize: 18, overflow: TextOverflow.ellipsis),
+                    ),
+                    SizedBox(height: 10.h),
+                    AppChip(
+                        text: widget.product.brand ??
+                            '') // Assuming 20.verticalSpace is a SizedBox
+                  ],
+                ),
               ),
-              const Spacer(),
-              if (widget.product.isInChecklist == true)
+
+              if (widget.product.isInChecklist == true) ...[
+                20.horizontalSpace,
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,
                   color: AppColors.greenColor,
                 ),
-              SizedBox(width: 25.sp),
+              ],
+              20.horizontalSpace,
               SvgPicture.asset(
                 widget.product.itemLevel == InventoryType.high.name
                     ? AppAssets.inventoryHigh

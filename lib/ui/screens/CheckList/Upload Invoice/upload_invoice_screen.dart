@@ -44,7 +44,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                       EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
                   child: GlobalText(
                       color: AppColors.orangeColor,
-                      provider.shops[provider.selectedShopIndex].shopName,
+                      provider.selectedShop?.shopName ?? '',
                       textStyle: textStyle14.copyWith(
                         decoration: TextDecoration.underline,
                         decorationColor: AppColors.orangeColor,
@@ -60,7 +60,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                           (e) => ChecklistTile(
                             product: e,
                             onDelete: () {
-                              provider.deleteProduct(e.itemId!);
+                              provider.deleteChecklistItem(e.itemId!);
                             },
                             isSlideEnabled: true,
                           ),
@@ -71,13 +71,11 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
               ),
               AppButton(
                   onPressed: () {
-                    context
-                        .pushReplacementNamed(AppRoute.addInvoice.name, extra: {
-                      'shop': provider
-                          .shops[provider.selectedShopIndex].shopName
-                          .toString(),
-                      'total': 300
-                    });
+                    context.pushReplacementNamed(AppRoute.addInvoice.name,
+                        extra: {
+                          'shop': provider.selectedShop?.shopName.toString(),
+                          'total': 300
+                        });
                   },
                   text: 'Upload Invoice'),
               20.h.verticalSpace,
@@ -86,8 +84,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                   context.pop();
 
                   Map<String, dynamic> newData = {
-                    'shop': provider.shops[provider.selectedShopIndex].shopName
-                        .toString(),
+                    'shop': provider.selectedShop?.shopName.toString(),
                     'total': 0,
                     'img': AppAssets.addInvoice,
                     'products': 2,

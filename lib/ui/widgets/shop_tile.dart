@@ -22,10 +22,9 @@ class ShopTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
+    return GestureDetector(
       onTap: onTap,
-      title: Container(
+      child: Container(
         color: Colors.grey[800]!.withOpacity(0.05),
         width: double.infinity,
         child: Row(
@@ -39,8 +38,10 @@ class ShopTile extends StatelessWidget {
                 width: 100.h,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image:
-                        NetworkImage(shop.imageUrl ?? Constants.placeholdeImg),
+                    image: NetworkImage((shop.itemImage == null ||
+                            shop.itemImage?.isEmpty == true)
+                        ? Constants.placeholdeImg
+                        : shop.itemImage ?? ''),
                     fit: BoxFit.contain,
                   ),
                 ),

@@ -55,9 +55,11 @@ class _ChecklistTileState extends State<ChecklistTile>
       endActionPane: widget.isSlideEnabled
           ? _buildRightSwipeActions(widget.product)
           : null,
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Container(
+      child: GestureDetector(
+        onTap: () {
+          context.pushNamed(AppRoute.productDetail.name, extra: widget.product);
+        },
+        child: Container(
           color: Colors.grey[800]!.withOpacity(0.05),
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           width: double.infinity,
@@ -101,11 +103,13 @@ class _ChecklistTileState extends State<ChecklistTile>
                 ),
               ),
               SizedBox(width: 10.h),
-              SvgIcon(
-                AppAssets.addCart,
-                size: 25.sp,
-                color: AppColors.greenColor,
-              ),
+
+              /// Saroj - told to remove this icon
+              // SvgIcon(
+              //   AppAssets.addCart,
+              //   size: 25.sp,
+              //   color: AppColors.greenColor,
+              // ),
               SizedBox(width: 25.sp),
               SvgPicture.asset(
                 widget.product.itemLevel == InventoryType.high.name

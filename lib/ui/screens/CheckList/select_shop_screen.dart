@@ -34,6 +34,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<ChecklistProvider>().shopFilter = null;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await context.read<ChecklistProvider>().getShops();
     });
@@ -83,38 +84,43 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
                 child: Row(
                   children: [
-                    Text('${provider.shops.length} Products'),
+                    Text('${provider.filteredShops.length} Products'),
                     const Spacer(),
                     IconButton(
-                        onPressed: () {
-                          _showFilterSheet(context, provider);
-                        },
-                        icon: SvgIcon(
-                          AppAssets.filterIcon,
-                          size: 20.r,
-                          color: AppColors.blackColor,
-                        ))
+                      onPressed: _showFilterSheet,
+                      icon: SvgIcon(
+                        provider.selectedShopFilter == null
+                            ? AppAssets.filterIcon
+                            : AppAssets.selectedFilterIcon,
+                        size: 20.r,
+                        // color: AppColors.blackColor,
+                      ),
+                    )
                   ],
                 ),
               ),
               Expanded(
                 child: provider.isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : provider.shops.isEmpty
+                    : provider.filteredShops.isEmpty
                         ? Center(
                             child: GlobalText(
                               'You haven\'y added any shop yet.',
                               textStyle: textStyle16,
                             ),
                           )
-                        : ListView.builder(
-                            itemCount: provider.shops.length,
+                        : ListView.separated(
+                            itemCount: provider.filteredShops.length,
+                            separatorBuilder: (context, index) =>
+                                10.verticalSpace,
                             itemBuilder: (context, index) {
                               return ShopTile(
-                                shop: provider.shops[index],
-                                isSelected: provider.selectedShopIndex == index,
+                                shop: provider.filteredShops[index],
+                                isSelected: provider.selectedShop?.shopId ==
+                                    provider.filteredShops[index].shopId,
                                 onTap: () {
-                                  provider.changeSelectedShop(index);
+                                  provider.changeSelectedShop(
+                                      provider.filteredShops[index].shopId);
                                 },
                               );
                             }),
@@ -145,14 +151,15 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       isEdit: false,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
+        CustomToast.showSuccess(
+            context, '${data['shop_name']} has been added.');
         context.read<ChecklistProvider>().getShops();
         context.pop();
       },
     );
   }
 
-  void _showFilterSheet(
-      BuildContext context, ChecklistProvider checklistProvider) {
+  void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -163,45 +170,37 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
           margin: EdgeInsets.symmetric(vertical: 10.sp),
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: SingleChildScrollView(
-            child: BounceInUp(
-              child: Column(
+            child: Consumer<ChecklistProvider>(builder: (context, provider, _) {
+              return Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
                   20.h.verticalSpace,
                   Column(
-                    children: checklistProvider.valueList
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      final int index = entry.key;
-                      final Map<String, String> filter = entry.value;
-
+                    children: provider.shopLoacations.indexed.map((e) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
                           onTap: () {
-                            checklistProvider.changeSelectedValue(index);
+                            if (provider.selectedShopFilter == e.$2) {
+                              provider.shopFilter = null;
+                              return;
+                            }
+                            provider.shopFilter = e.$2;
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              checklistProvider.selectedValueIndex == index
-                                  ? Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 1.sp,
-                                        vertical: 1.sp,
-                                      ),
-                                      child: const SvgIcon(
-                                        AppAssets.check,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    )
-                                  : SizedBox(width: 20.sp),
-                              2.horizontalSpace, // Adjust the width as needed
+                              if (provider.selectedShopFilter == e.$2) ...[
+                                const SvgIcon(
+                                  AppAssets.check,
+                                  color: AppColors.primaryColor,
+                                ),
+                                20.w.horizontalSpace,
+                              ],
                               GlobalText(
-                                filter['name'].toString(),
+                                e.$2,
                                 fontSize: 15.sp,
                               ),
                             ],
@@ -212,10 +211,16 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                   ),
                   30.h.verticalSpace,
                   AppButton(
-                      colorType: checklistProvider.selectedValueIndex == -1
+                      colorType: provider.selectedShopFilter == null
                           ? AppButtonColorType.secondary
                           : AppButtonColorType.primary,
                       onPressed: () {
+                        if (provider.selectedShopFilter == null) {
+                          CustomToast.showSuccess(
+                              context, 'Please select valid filter.');
+                          return;
+                        }
+                        provider.filterShops();
                         context.pop();
                       },
                       text: 'Apply'),
@@ -227,8 +232,8 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                       },
                       text: 'Cancel'),
                 ],
-              ),
-            ),
+              );
+            }),
           ),
         );
       },

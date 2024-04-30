@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -40,6 +41,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
     _tabsController = TabController(length: 2, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<ChecklistProvider>().getChecklistItems();
+      context.read<ChecklistProvider>().getHistoryItems();
     });
   }
 
@@ -157,10 +159,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                       style: TextButton.styleFrom(
                           foregroundColor: AppColors.orangeColor),
                       child: Text(
-                        provider.selectedShopIndex < 0
+                        provider.selectedShop == null
                             ? 'Select shop'
-                            : provider
-                                .shops[provider.selectedShopIndex].shopName,
+                            : provider.selectedShop!.shopName,
                       ),
                     )
                   ],
@@ -174,8 +175,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           : 'Nothing inside checklist.'),
                     )
                   : Expanded(
-                      child: ListView.builder(
+                      child: ListView.separated(
                           itemCount: provider.checklist.length,
+                          separatorBuilder: (context, index) => 10.verticalSpace,
                           itemBuilder: (context, index) => ChecklistTile(
                                 product: provider.checklist[index],
                                 onDelete: () async {
@@ -190,7 +192,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 padding: EdgeInsets.symmetric(vertical: 10.h),
                 child: AppButton(
                     onPressed: () {
-                      if (provider.selectedShopIndex < 0) {
+                      if (provider.selectedShop == null) {
                         CustomToast.showWarning(context, 'Please select shop');
                       } else {
                         CustomToast.showSuccess(context,
@@ -214,33 +216,31 @@ class _ChecklistScreenState extends State<ChecklistScreen>
             children: [
               10.horizontalSpace,
               Text(
-                '${provider.historylist.length} Items',
+                '${provider.histories.length} Items',
               ),
               const Spacer(),
               InkWell(
                 onTap: () => _showFilterSheet(context, provider),
-                child: SvgPicture.asset(
-                  AppAssets.filterIcon,
-                  width: 15.h,
-                  height: 15.h,
-                ),
+                child: SvgPicture.asset(AppAssets.filterIcon),
               ),
               8.w.horizontalSpace,
             ],
           ),
         ),
-        Column(
-          children: provider.historylist
-              .map(
-                (e) => HistorylistTile(
-                  product: e,
-                  onDelete: () {
-                    provider.deleteProduct(e['title']);
-                  },
-                  isUpload: false,
-                ),
-              )
-              .toList(),
+        SingleChildScrollView(
+          child: Column(
+            children: provider.histories
+                .map(
+                  (e) => HistorylistTile(
+                    product: e,
+                    isFromInvoice: false,
+                    onDelete: () {
+                      provider.deleteHistory(e.histId);
+                    },
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ],
     );

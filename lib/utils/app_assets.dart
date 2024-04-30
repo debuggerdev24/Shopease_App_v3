@@ -29,7 +29,7 @@ class AppAssets {
   static const String noImage = "assets/images/noImage.png";
   static const String beetroot = "assets/images/beetroot.png";
   static const String addInventory = "assets/images/addInventory.png";
-  static const String noSearch = "assets/images/noSearch.png";
+  static const String noSearch = "assets/images/no_search.png";
   static const String devider = "assets/images/devider.png";
   static const String delete = "assets/icons/delete.svg";
 
@@ -61,7 +61,7 @@ class AppAssets {
   static const String toastCheck = "assets/icons/toastCheck.svg";
   static const String errorToast = "assets/icons/errorToast.svg";
   static const String addToCheck = "assets/icons/addToCheck.svg";
-  static const String rmCart= "assets/icons/rmCart.svg";
+  static const String rmCart = "assets/icons/rmCart.svg";
 
   static const String scanner = "assets/icons/scanner.svg";
   static const String search = "assets/icons/search.svg";

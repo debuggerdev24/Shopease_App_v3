@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/tabs/tabs.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/add_invoice_screen.dart';
@@ -281,10 +282,8 @@ class AppNavigator {
                     path: AppRoute.historyDetail.name,
                     name: AppRoute.historyDetail.name,
                     builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>;
                       return HistoryDetailScreen(
-                        invoice: extra['invoice'] as Map<String, dynamic>,
-                        count: extra['count'] as int,
+                        invoice: state.extra as History,
                       );
                     },
                   ),

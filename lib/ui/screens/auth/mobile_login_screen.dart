@@ -161,13 +161,11 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
           children: [
             TextSpan(
               text: 'terms of service',
-              // style: textStyle16Bold,
               recognizer: TapGestureRecognizer()..onTap = () {},
             ),
             const TextSpan(text: ' and '),
             TextSpan(
               text: 'privacy of policy',
-              // style: textStyle16Bold,
               recognizer: TapGestureRecognizer()..onTap = () {},
             ),
           ],

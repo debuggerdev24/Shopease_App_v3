@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -14,10 +15,9 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
   const HistoryDetailScreen(
-      {super.key, required this.invoice, required this.count});
+      {super.key, required this.invoice});
 
-  final Map<String, dynamic> invoice;
-  final int count;
+  final History invoice;
 
   @override
   State<HistoryDetailScreen> createState() => _HistoryDetailScreenState();
@@ -33,7 +33,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           automaticallyImplyLeading: true,
           iconTheme: IconThemeData(color: AppColors.blackColor, size: 30.sp),
           title: GlobalText(
-            " ${widget.invoice['products']}  Products ",
+            " ${widget.invoice.itemCount}  Products ",
             textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
@@ -57,7 +57,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GlobalText(
-                        widget.invoice['shop'],
+                        widget.invoice.shopName,
                         maxLine: 3,
                         textStyle: textStyle16.copyWith(
                             decoration: TextDecoration.underline,
@@ -68,14 +68,14 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                             fontWeight: FontWeight.w600),
                       ),
                       GlobalText(
-                        '\$${widget.invoice['total']}',
+                        '\$${widget.invoice.totalPrice}',
                         textStyle: textStyle16.copyWith(
                             fontSize: 20, overflow: TextOverflow.ellipsis),
                       ),
                     ],
                   ),
                 ),
-                _buildCurrentListView(provider, widget.count),
+                _buildCurrentListView(provider),
               ]),
         ),
         floatingActionButton: Padding(
@@ -92,7 +92,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               onPressed: () {
                 context.goNamed(AppRoute.checkList.name);
 
-                provider.deleteFromHistory(widget.invoice);
+                provider.deleteHistory(widget.invoice.histId);
               },
               text: 'Add to Checklist'),
         ),
@@ -101,17 +101,17 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     });
   }
 
-  Widget _buildCurrentListView(ChecklistProvider provider, int count) {
+  Widget _buildCurrentListView(ChecklistProvider provider) {
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
           children: provider.checklist
-              .take(count)
+              .take(widget.invoice.itemCount ?? 0)
               .map(
                 (e) => ChecklistTile(
                   product: e,
                   onDelete: () {
-                    provider.deleteProduct(e.itemId!);
+                    provider.deleteChecklistItem(e.itemId!);
                   },
                   isSlideEnabled: true,
                 ),

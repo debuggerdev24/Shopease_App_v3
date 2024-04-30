@@ -173,10 +173,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildProductsList(InventoryProvider provider) {
-    return ListView.builder(
+    return ListView.separated(
         shrinkWrap: true,
         primary: false,
         itemCount: provider.products.length,
+        separatorBuilder: (context, index) => 10.verticalSpace,
         itemBuilder: (BuildContext context, int index) {
           return ProductTile(
             onLongPress: () {

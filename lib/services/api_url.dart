@@ -11,6 +11,8 @@ class ApiUrl {
 
   static const String getProfile = '/getprofile';
 
+  static const String getAllProfile = '/getallprofile';
+
   static const String scanItem = '/scanitem';
 
   static const String getInventoryItems = '/getinventoryitems';
@@ -28,6 +30,10 @@ class ApiUrl {
   static const String putChecklistItems = '/putchecklistitems';
 
   static const String deleteChecklistItems = '/deletechecklistitems';
+
+  static const String getHistoryItems = '/getpurchasehistory';
+
+  static const String putHistoryItems = '/putpurchasehistory';
 
   static const String getShops = '/getshops';
 

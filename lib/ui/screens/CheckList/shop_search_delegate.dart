@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
-import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/utils/app_assets.dart';
-import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/styles.dart';
+import 'package:shopease_app_flutter/ui/widgets/no_search_found.dart';
+import 'package:shopease_app_flutter/ui/widgets/shop_tile.dart';
 
 class ShopSearchDelegate extends SearchDelegate {
   final List<Shop> shopList;
@@ -44,7 +41,7 @@ class ShopSearchDelegate extends SearchDelegate {
             .contains(query.toLowerCase()))
         .toList();
 
-    return _buildResultView(context.read<ChecklistProvider>(), searchResults);
+    return _buildResultView(searchResults);
   }
 
   @override
@@ -56,40 +53,28 @@ class ShopSearchDelegate extends SearchDelegate {
             .contains(query.toLowerCase()))
         .toList();
 
-    return _buildResultView(context.read<ChecklistProvider>(), suggestionList);
+    return _buildResultView(suggestionList);
   }
 
-  _buildResultView(ChecklistProvider provider, List<Shop> shops) {
+  _buildResultView(List<Shop> shops) {
     return shops.isEmpty
-        ? Center(
-            child: GlobalText(
-              'Not found matching results.',
-              textStyle: textStyle16,
-            ),
+        ? const Center(
+            child: NoSearchFound(),
           )
         : ListView.builder(
             itemCount: shops.length,
             itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  provider.changeSelectedShop(index);
-                },
-                child: Consumer<ChecklistProvider>(
-                    builder: (context, provider, _) {
-                  return ListTile(
-                    title: GlobalText(shops[index].shopName),
-                    trailing: (provider.selectedShopIndex == index)
-                        ? Padding(
-                            padding: EdgeInsets.all(20.h),
-                            child: const SvgIcon(
-                              AppAssets.check,
-                              color: AppColors.primaryColor,
-                            ),
-                          )
-                        : null,
-                  );
-                }),
-              );
+              return      Consumer<ChecklistProvider>(
+                  builder: (context, provider, _) {
+                return ShopTile(
+                  shop: shops[index],
+                  isSelected:
+                      provider.selectedShop?.shopId == shops[index].shopId,
+                  onTap: () {
+                    provider.changeSelectedShop(shops[index].shopId);
+                  },  
+                );
+              });
             },
           );
   }

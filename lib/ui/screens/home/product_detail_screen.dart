@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
@@ -62,134 +63,143 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                child: Container(
-                  height: 250.h,
-                  // width:.
-                  decoration: BoxDecoration(
-                    border: Border.symmetric(
-                        horizontal: BorderSide(
-                            color: AppColors.mediumGreyColor.shade200,
-                            width: 2.8)),
-                    color: Colors.white,
-                    image: DecorationImage(
-                        image: NetworkImage(widget.product.itemImage ??
-                            Constants.placeholdeImg),
-                        fit: BoxFit.cover),
+          child: Consumer<InventoryProvider>(builder: (context, provider, _) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: Container(
+                    height: 250.h,
+                    // width:.
+                    decoration: BoxDecoration(
+                      border: Border.symmetric(
+                          horizontal: BorderSide(
+                              color: AppColors.mediumGreyColor.shade200,
+                              width: 2.8)),
+                      color: Colors.white,
+                      image: DecorationImage(
+                          image: NetworkImage(widget.product.itemImage ??
+                              Constants.placeholdeImg),
+                          fit: BoxFit.cover),
+                    ),
                   ),
                 ),
-              ),
-              10.verticalSpace,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.sp),
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GlobalText(
-                        widget.product.productName!,
-                        textStyle:
-                            textStyle18SemiBold.copyWith(fontSize: 19.sp),
-                      ),
-                      const Spacer(),
-                      widget.product.isInChecklist!
-                          ? SvgIcon(
-                              AppAssets.succcessCart,
-                              color: AppColors.greenColor,
-                              size: 20.sp,
-                            )
-                          : const SizedBox.shrink(),
-                      15.w.horizontalSpace,
-                      SvgPicture.asset(
-                        widget.product.itemLevel == InventoryType.high.name
-                            ? AppAssets.inventoryHigh
-                            : widget.product.itemLevel ==
-                                    InventoryType.medium.name
-                                ? AppAssets.inventoryMid
-                                : AppAssets.inventoryLow,
-                        width: 18.h,
-                        height: 18.h,
-                      ),
-                      5.w.horizontalSpace,
-                    ],
+                10.verticalSpace,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.sp),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GlobalText(
+                          widget.product.productName!,
+                          textStyle:
+                              textStyle18SemiBold.copyWith(fontSize: 19.sp),
+                        ),
+                        const Spacer(),
+                        widget.product.isInChecklist!
+                            ? SvgIcon(
+                                AppAssets.succcessCart,
+                                color: AppColors.greenColor,
+                                size: 20.sp,
+                              )
+                            : const SizedBox.shrink(),
+                        15.w.horizontalSpace,
+                        SvgPicture.asset(
+                          widget.product.itemLevel == InventoryType.high.name
+                              ? AppAssets.inventoryHigh
+                              : widget.product.itemLevel ==
+                                      InventoryType.medium.name
+                                  ? AppAssets.inventoryMid
+                                  : AppAssets.inventoryLow,
+                          width: 18.h,
+                          height: 18.h,
+                        ),
+                        5.w.horizontalSpace,
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              15.verticalSpace,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.sp),
-                child: GlobalText(
-                  widget.product.productDescription.toString(),
-                  textStyle: textStyle16.copyWith(
-                      fontSize: 16.sp, fontWeight: FontWeight.w400),
+                15.verticalSpace,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.sp),
+                  child: GlobalText(
+                    widget.product.productDescription.toString(),
+                    textStyle: textStyle16.copyWith(
+                        fontSize: 16.sp, fontWeight: FontWeight.w400),
+                  ),
                 ),
-              ),
-              15.verticalSpace,
-              Wrap(
-                children: [
-                  10.horizontalSpace,
-                  AppChip(text: widget.product.brand.toString()),
-                  // buildCustomContainer(widget.product!['brand'] ?? ''),
-                  10.horizontalSpace,
-                  AppChip(text: widget.product.itemCategory!),
-                  10.horizontalSpace,
-                  if (widget.product.itemStorage != null)
-                    AppChip(text: widget.product.itemStorage ?? ''),
-                ],
-              ),
-              10.verticalSpace,
-              20.verticalSpace,
-              // Center(
-              //   child: AppButton(
-              //       icon: Padding(
-              //         padding: const EdgeInsets.symmetric(horizontal: 4),
-              //         child: SvgIcon(
-              //           AppAssets.checkList,
-              //           color: Colors.white,
-              //           size: 20,
-              //         ),
-              //       ),
-              //       onPressed: () {},
-              //       text: 'Add to Checklist'),
-              // ),
-              20.verticalSpace,
-            ],
-          ),
+                15.verticalSpace,
+                Wrap(
+                  children: [
+                    10.horizontalSpace,
+                    AppChip(text: widget.product.brand.toString()),
+                    // buildCustomContainer(widget.product!['brand'] ?? ''),
+                    10.horizontalSpace,
+                    AppChip(text: widget.product.itemCategory!),
+                    10.horizontalSpace,
+                    if (widget.product.itemStorage != null)
+                      AppChip(text: widget.product.itemStorage ?? ''),
+                  ],
+                ),
+                10.verticalSpace,
+                20.verticalSpace,
+                // Center(
+                //   child: AppButton(
+                //       icon: Padding(
+                //         padding: const EdgeInsets.symmetric(horizontal: 4),
+                //         child: SvgIcon(
+                //           AppAssets.checkList,
+                //           color: Colors.white,
+                //           size: 20,
+                //         ),
+                //       ),
+                //       onPressed: () {},
+                //       text: 'Add to Checklist'),
+                // ),
+                20.verticalSpace,
+              ],
+            );
+          }),
         ),
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
-        child: AppButton(
-            colorType: widget.product.isInChecklist == true
-                ? AppButtonColorType.secondary
-                : AppButtonColorType.primary,
-            icon: widget.product.isInChecklist == true
-                ? const SizedBox()
-                : Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
-                    child: const SvgIcon(
-                      AppAssets.checkList,
-                      color: Colors.white,
-                      size: 20,
+        child: Consumer<InventoryProvider>(builder: (context, provider, _) {
+          return AppButton(
+              colorType: widget.product.isInChecklist == true
+                  ? AppButtonColorType.secondary
+                  : AppButtonColorType.primary,
+              isLoading: provider.isLoading,
+              icon: widget.product.isInChecklist == true
+                  ? const SizedBox()
+                  : Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
+                      child: const SvgIcon(
+                        AppAssets.checkList,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
-                  ),
-            onPressed: () {
-              context
-                  .read<ChecklistProvider>()
-                  .putChecklistFromInventory(data: [widget.product.itemId!]);
-              context.goNamed(AppRoute.home.name);
-            },
-            text: widget.product.isInChecklist == true
-                ? 'Remove from Checklist'
-                : 'Add to Checklist'),
+              onPressed: () {
+                if (widget.product.isInChecklist == true) {
+                  context.read<ChecklistProvider>().putInventoryFromChecklist(
+                      data: [widget.product.itemId!]);
+                } else {
+                  context.read<ChecklistProvider>().putChecklistFromInventory(
+                      data: [widget.product.itemId!]);
+                }
+                context.goNamed(AppRoute.home.name);
+              },
+              text: widget.product.isInChecklist == true
+                  ? 'Remove from Checklist'
+                  : 'Add to Checklist');
+        }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
