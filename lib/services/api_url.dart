@@ -9,9 +9,13 @@ class ApiUrl {
 
   static const String refreshAuth = '/refreshauth';
 
+  static const String getCategories = '/getcategory';
+
   static const String getProfile = '/getprofile';
 
   static const String getAllProfile = '/getallprofile';
+
+  static const String putProfile = '/putprofile';
 
   static const String scanItem = '/scanitem';
 

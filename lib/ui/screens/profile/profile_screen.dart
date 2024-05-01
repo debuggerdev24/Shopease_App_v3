@@ -279,151 +279,149 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showEditProfileBottomSheet() {
-    final ValueNotifier<bool> isEnabled = ValueNotifier(false);
-    late final TextEditingController mobileController;
-    late final TextEditingController nameController;
+    log('user name: ${context.read<ProfileProvider>().profileData!.preferredUsername}');
+    final TextEditingController nameController = TextEditingController()
+      ..text = context.read<ProfileProvider>().profileData!.preferredUsername;
+    final TextEditingController mobileController = TextEditingController();
+    log('image url: ${context.read<ProfileProvider>().profileData!.imageUrl ?? ''}');
+    final TextEditingController fileFieldController = TextEditingController()
+      ..text = context.read<ProfileProvider>().profileData!.imageUrl ?? '';
 
-    nameController = TextEditingController()
-      ..addListener(() {
-        if (mobileController.text.isNotEmpty &&
-            nameController.text.isNotEmpty) {
-          isEnabled.value = true;
-        } else {
-          isEnabled.value = false;
-        }
-      });
-    mobileController = TextEditingController()
-      ..addListener(() {
-        if (nameController.text.isNotEmpty &&
-            mobileController.text.isNotEmpty) {
-          isEnabled.value = true;
-        } else {
-          isEnabled.value = false;
-        }
-      });
+    onSelectFileTap() async {
+      final name = await context.read<ProfileProvider>().selectFile();
+      if (name != null) {
+        fileFieldController.text = name;
+      }
+    }
+
     showModalBottomSheet(
-      isScrollControlled: true,
       context: context,
-      enableDrag: true,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (context) {
         return Container(
-          alignment: Alignment.center,
-          height: 500.sp,
-          width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 14.w),
-          child: SingleChildScrollView(
-            child: Consumer<ProfileProvider>(
-              builder: (context, provider, child) {
-                return BounceInUp(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      GlobalText('Edit Profile',
-                          textStyle: textStyle18SemiBold),
-                      20.h.verticalSpace,
-                      buildTextLabel('Name'),
-                      9.verticalSpace,
-                      AppTextField(
-                        controller: nameController,
-                        name: "Enter User name",
-                        hintText: "Enter User name",
-                        // labelText: "  Product name",
-                        labelStyle: textStyle16.copyWith(
-                          color: AppColors.blackColor,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      10.h.verticalSpace,
-                      buildTextLabel('Mobile Number'),
-                      9.verticalSpace,
-                      AppTextField(
-                        controller: mobileController,
-                        name: "Enter Mobile Number",
-                        hintText: "Mobile Number",
-                        // labelText: "  Product name",
-                        labelStyle: textStyle16.copyWith(
-                          color: AppColors.blackColor,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      10.h.verticalSpace,
-                      buildTextLabel('Upload Photo'),
-                      9.verticalSpace,
-                      GestureDetector(
-                        onTap: () async {
-                          provider.openFilePicker(context);
-                          await provider.uploadFile();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(15.sp),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(36),
-                            border: Border.all(
-                              color: AppColors.mediumGreyColor,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(
-                                fit: FlexFit.tight,
-                                flex: 5,
-                                child: Text(
-                                  provider.uploadedFilePath ?? "Select a photo",
-                                  style: textStyle14.copyWith(
-                                    color: AppColors.mediumGreyColor,
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                fit: FlexFit.tight,
-                                flex: 1,
-                                child: SvgIcon(
-                                  AppAssets.upload,
-                                  color: AppColors.blackColor,
-                                  size: 16.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      40.h.verticalSpace,
-                      ValueListenableBuilder<bool>(
-                        valueListenable: isEnabled,
-                        builder: (context, value, child) {
-                          return AppButton(
-                            colorType: value
-                                ? AppButtonColorType.primary
-                                : AppButtonColorType.secondary,
-                            onPressed: () {
-                              provider.toggleSet(true);
-                              nameController.clear();
-                              mobileController.clear();
-                              Navigator.pop(context);
-                            },
-                            text: 'Save',
-                          );
-                        },
-                      ),
-                      10.h.verticalSpace,
-                      AppButton(
-                        colorType: AppButtonColorType.greyed,
-                        onPressed: () {
-                          nameController.clear();
-                          mobileController.clear();
-                          Navigator.pop(context); // Close the bottom sheet
-                        },
-                        text: 'Cancel',
-                      ),
-                    ],
+          child: Consumer<ProfileProvider>(
+            builder: (context, provider, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GlobalText('Edit Profile', textStyle: textStyle18SemiBold),
+                  20.h.verticalSpace,
+                  9.verticalSpace,
+                  AppTextField(
+                    controller: nameController,
+                    name: "Enter User name",
+                    hintText: "Enter User name",
+                    labelText: "Name",
+                    isRequired: true,
+                    labelStyle: textStyle16.copyWith(
+                      color: AppColors.blackColor,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                );
-              },
-            ),
+                  // 10.h.verticalSpace,
+                  // AppTextField(
+                  //   controller: mobileController,
+                  //   name: "Enter Mobile Number",
+                  //   hintText: "Mobile Number",
+                  //   labelText: "Mobile Number",
+                  //   isRequired: true,
+                  //   labelStyle: textStyle16.copyWith(
+                  //     color: AppColors.blackColor,
+                  //     fontWeight: FontWeight.w400,
+                  //   ),
+                  // ),
+                  10.h.verticalSpace,
+                  AppTextField(
+                    name: 'productImg',
+                    controller: fileFieldController,
+                    maxLines: 1,
+                    readOnly: true,
+                    isRequired: true,
+                    labelText: 'Upload Photo',
+                    hintText: 'Select a photo',
+                    bottomText: 'Max File Size:5MB',
+                    onTap: onSelectFileTap,
+                    suffixIcon: fileFieldController.text.isEmpty
+                        ? IconButton(
+                            onPressed: onSelectFileTap,
+                            icon: SvgIcon(
+                              AppAssets.upload,
+                              color: AppColors.blackColor,
+                              size: 18.sp,
+                            ),
+                          )
+                        : IconButton(
+                            onPressed: () {
+                              fileFieldController.clear();
+                              provider.clearFile();
+                            },
+                            icon: const Icon(Icons.clear),
+                          ),
+                  ),
+                  40.h.verticalSpace,
+                  AppButton(
+                    colorType: (nameController.text.isNotEmpty &&
+                            fileFieldController.text.isNotEmpty)
+                        ? AppButtonColorType.primary
+                        : AppButtonColorType.secondary,
+                    isLoading: provider.editProfileLoading,
+                    onPressed: () async {
+                      if (nameController.text.isEmpty) {
+                        CustomToast.showWarning(context, 'Enter valid name');
+                        return;
+                      }
+                      if (fileFieldController.text.isEmpty) {
+                        CustomToast.showWarning(
+                            context, 'Upload a valid image');
+                        return;
+                      }
+
+                      if (nameController.text.isNotEmpty &&
+                          fileFieldController.text.isNotEmpty) {
+                        provider.toggleSet(true);
+                        await provider.editProfile(
+                          data: [
+                            {
+                              'preferred_username': nameController.text,
+                              'profile_image': provider.selectedFile?.path,
+                            }
+                          ],
+                          isEdit: false,
+                          onSuccess: () {
+                            context.pop();
+                            provider.getProfile();
+                            nameController.clear();
+                            mobileController.clear();
+                          },
+                          onError: (msg) {
+                            CustomToast.showError(
+                              context,
+                              Constants.commonErrMsg,
+                            );
+                          },
+                        );
+                      }
+                    },
+                    text: 'Save',
+                  ),
+                  10.h.verticalSpace,
+                  AppButton(
+                    colorType: AppButtonColorType.greyed,
+                    onPressed: () {
+                      nameController.clear();
+                      mobileController.clear();
+                      Navigator.pop(context); // Close the bottom sheet
+                    },
+                    text: 'Cancel',
+                  ),
+                  10.h.verticalSpace,
+                ],
+              );
+            },
           ),
         );
       },
@@ -562,7 +560,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget buildProfileTile(ProfileProvider provider) {
     return ListTile(
-      isThreeLine: true,
+      isThreeLine: false,
       contentPadding: EdgeInsets.zero,
       leading: Stack(
         children: [
@@ -591,12 +589,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       subtitle: Column(
         children: [
           buildProfileRow(
-              provider.profileData?.phoneNumber ?? 'phone number', "Change",
-              () {
+              provider.profileData?.phoneNumber ?? 'phone number', '', () {
             context.pushNamed(AppRoute.mobileLoginScreen.name, extra: true);
           }),
-          2.h.verticalSpace,
-          buildProfileRow('email', 'Verify', () {}),
+          // 2.h.verticalSpace,
+          // buildProfileRow('email', 'Verify', () {}),
         ],
       ),
       trailing: GestureDetector(

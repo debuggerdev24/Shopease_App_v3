@@ -11,12 +11,14 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 class AddInventoryScreen extends StatefulWidget {
   const AddInventoryScreen({
     super.key,
-    this.isEdit = false,
     this.product,
+    this.isEdit = false,
+    this.isFromScan = false,
     this.isReplace = false,
   });
 
   final bool isEdit;
+  final bool isFromScan;
   final bool isReplace;
   final Product? product;
 
@@ -35,6 +37,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
       Consumer<InventoryProvider>(builder: (context, provider, _) {
         return AddItemFormWidget(
           isEdit: widget.isEdit,
+          isFromScan: widget.isFromScan,
           product: widget.product,
           onSubmit: submit,
           isLoading: provider.isLoading,
@@ -47,8 +50,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
       isEdit: widget.isEdit,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
-        CustomToast.showSuccess(
-            context, '${data['product_name']} added successfully!');
+        CustomToast.showSuccess(context, 'Product added successfully!');
         context.read<InventoryProvider>().getInventoryItems();
         context.goNamed(AppRoute.home.name);
       },

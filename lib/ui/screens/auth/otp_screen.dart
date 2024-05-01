@@ -40,7 +40,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void startResendOTPTimer() {
     _resendOTPTimer =
-        Timer.periodic(const Duration(seconds: 15), (Timer timer) {});
+        Timer.periodic(const Duration(seconds: 60), (Timer timer) {});
   }
 
   void resendOTP() {

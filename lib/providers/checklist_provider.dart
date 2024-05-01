@@ -30,13 +30,18 @@ class ChecklistProvider extends ChangeNotifier {
       'name': 'Value 3',
     },
   ];
+
+  /// Values
+
   bool _isLoading = false;
   final List<Product> _checklist = [];
+  final List<Product> _selectedChecklists = [];
+  bool _isAllSelected = false;
 
   Shop? _selectedShop;
   final List<Shop> _shops = [];
-  List<Shop> _filteredShops = [];
-  String? _selectedShopFilter;
+  final List<Shop> _filteredShops = [];
+  List<String> _selectedShopFilter = [];
   final Set<String> _shopLoacations = <String>{};
 
   final List<History> _histories = [];
@@ -44,13 +49,17 @@ class ChecklistProvider extends ChangeNotifier {
 
   int _currentTab = 0;
 
+  /// Getters
+
   bool get isLoading => _isLoading;
   List<Product> get checklist => _checklist;
+  List<Product> get selectedChecklists => _selectedChecklists;
+  bool get isAllSelected => _isAllSelected;
 
   Shop? get selectedShop => _selectedShop;
   List<Shop> get shops => _shops;
   List<Shop> get filteredShops => _filteredShops;
-  String? get selectedShopFilter => _selectedShopFilter;
+  List<String> get selectedShopFilter => _selectedShopFilter;
   Set<String> get shopLoacations => _shopLoacations;
 
   List<History> get histories => _histories;
@@ -68,8 +77,17 @@ class ChecklistProvider extends ChangeNotifier {
   bool get searchable => _searchable;
   int get selectedValueIndex => _selectedValue;
 
-  set shopFilter(String? newFilter) {
-    _selectedShopFilter = newFilter;
+  void changeShopFilter(String newFilter) {
+    if (_selectedShopFilter.contains(newFilter)) {
+      _selectedShopFilter.remove(newFilter);
+    } else {
+      _selectedShopFilter.add(newFilter);
+    }
+    notifyListeners();
+  }
+
+  void clearShopFilter() {
+    _selectedShopFilter.clear();
     notifyListeners();
   }
 
@@ -114,13 +132,41 @@ class ChecklistProvider extends ChangeNotifier {
     log('data add to historyList');
   }
 
-  void filterShops() {
-    // _filteredShops.clear();
-    // _filteredShops.addAll(
-    //     _shops.where((element) => element.shopLocation == _selectedShopFilter));
+  changeIsAllSelected(bool? newValue) {
+    _isAllSelected = newValue ?? false;
+    if (newValue == true) {
+      _selectedChecklists.clear();
+      _selectedChecklists.addAll(_checklist);
+    } else {
+      _selectedChecklists.clear();
+    }
+    notifyListeners();
+  }
 
-    _filteredShops =
-        _shops.where((e) => e.shopLocation == _selectedShopFilter).toList();
+  void addProductToSelected(bool? value, Product product) {
+    if (value == true) {
+      _selectedChecklists.add(product);
+    } else {
+      _selectedChecklists.remove(product);
+    }
+    notifyListeners();
+  }
+
+  void clearSelectedProducts() {
+    _selectedChecklists.clear();
+    getChecklistItems();
+    notifyListeners();
+  }
+
+  void filterShops() {
+    _filteredShops.clear();
+    if (_selectedShopFilter.isEmpty) {
+      _filteredShops.addAll(_shops);
+    } else {
+      _filteredShops.addAll(
+          _shops.where((e) => _selectedShopFilter.contains(e.shopLocation)));
+    }
+
     notifyListeners();
   }
 
@@ -258,13 +304,13 @@ class ChecklistProvider extends ChangeNotifier {
   }
 
   Future<void> putInventoryFromChecklist({
-    required List<String> data,
+    required List<String> itemIds,
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
     try {
       setLoading(true);
-      final res = await service.putInventoryFromchecklist(itemIds: data);
+      final res = await service.putInventoryFromchecklist(itemIds: itemIds);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);
@@ -272,7 +318,7 @@ class ChecklistProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
-        for (String itemId in data) {
+        for (String itemId in itemIds) {
           _checklist.removeWhere((element) => element.itemId == itemId);
         }
         notifyListeners();

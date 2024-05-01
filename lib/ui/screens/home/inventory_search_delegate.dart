@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/no_search_found.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -58,14 +59,10 @@ class ProductSearchDelegate extends SearchDelegate<String> {
 
   _buildResultView(InventoryProvider provider, List<Product> products) {
     return products.isEmpty
-        ? Center(
-            child: GlobalText(
-              'No Matching search results',
-              textStyle: textStyle16,
-            ),
-          )
+        ? const NoSearchFound()
         : ListView.separated(
             itemCount: products.length,
+            padding: EdgeInsets.symmetric(vertical: 10.h),
             separatorBuilder: (context, index) => 10.verticalSpace,
             itemBuilder: (context, index) {
               return ProductTile(
@@ -73,7 +70,7 @@ class ProductSearchDelegate extends SearchDelegate<String> {
                 isSlideEnabled: false,
                 onTap: () {
                   context.pushNamed(AppRoute.productDetail.name,
-                      extra: products[index]);
+                      extra: {'product': products[index]});
                 },
                 /*onAddToCart: () {
                   context.read<ChecklistProvider>().putCheklistItems(

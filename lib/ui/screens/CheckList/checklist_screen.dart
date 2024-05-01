@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -101,7 +103,10 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 delegate: ChecklistSearchDelegate(provider.checklist),
               );
             } else {
-              /// Show history search delegate here.
+              showSearch(
+                context: context,
+                delegate: HistorySearchDelegate(provider.histories),
+              );
             }
           },
           icon: const SvgIcon(
@@ -170,16 +175,40 @@ class _ChecklistScreenState extends State<ChecklistScreen>
               // Checklist List view
               provider.checklist.isEmpty
                   ? Center(
-                      child: GlobalText(provider.searchable
-                          ? 'No matching result found'
-                          : 'Nothing inside checklist.'),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          120.h.verticalSpace,
+                          Container(
+                            height: 200.h,
+                            width: double.infinity,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(AppAssets.addInventory)),
+                            ),
+                          ),
+                          10.h.verticalSpace,
+                          GlobalText(
+                            'Nothing inside checklist.',
+                            textStyle: textStyle16.copyWith(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.blackGreyColor),
+                          ),
+                        ],
+                      ),
                     )
                   : Expanded(
                       child: ListView.separated(
                           itemCount: provider.checklist.length,
-                          separatorBuilder: (context, index) => 10.verticalSpace,
+                          separatorBuilder: (context, index) =>
+                              10.verticalSpace,
                           itemBuilder: (context, index) => ChecklistTile(
                                 product: provider.checklist[index],
+                                onLongPress: () {
+                                  context.goNamed(
+                                      AppRoute.multipleChecklistSelection.name);
+                                },
                                 onDelete: () async {
                                   await provider.deleteChecklistItems(data: [
                                     provider.checklist[index].itemId!
@@ -188,61 +217,76 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                               )),
                     ),
               // Buy button
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10.h),
-                child: AppButton(
-                    onPressed: () {
-                      if (provider.selectedShop == null) {
-                        CustomToast.showWarning(context, 'Please select shop');
-                      } else {
-                        CustomToast.showSuccess(context,
-                            '${provider.checklist.length} Products purchased ');
+              if (provider.checklist.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  child: AppButton(
+                      onPressed: () async {
+                        if (provider.selectedChecklists.isEmpty) {
+                          CustomToast.showWarning(
+                              context, 'Please select product first.');
+                          return;
+                        }
 
-                        context.goNamed(AppRoute.uploadInvoice.name);
-                      }
-                    },
-                    text: 'Buy products (${provider.checklist.length})'),
-              )
+                        if (provider.selectedShop == null) {
+                          CustomToast.showWarning(
+                              context, 'Please select shop');
+                          return;
+                        }
+
+                        await provider.putInventoryFromChecklist(
+                          itemIds: provider.selectedChecklists
+                              .map((e) => e.itemId!)
+                              .toList(),
+                          onSuccess: () {
+                            CustomToast.showSuccess(context,
+                                '${provider.selectedChecklists.length} Products purchased.');
+                            context.goNamed(AppRoute.uploadInvoice.name);
+                          },
+                        );
+                      },
+                      text:
+                          'Buy products (${provider.selectedChecklists.length})'),
+                )
             ],
           );
   }
 
   Widget _buildHistoryView(ChecklistProvider provider) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
-          child: Row(
-            children: [
-              10.horizontalSpace,
-              Text(
-                '${provider.histories.length} Items',
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () => _showFilterSheet(context, provider),
-                child: SvgPicture.asset(AppAssets.filterIcon),
-              ),
-              8.w.horizontalSpace,
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+            child: Row(
+              children: [
+                10.horizontalSpace,
+                Text(
+                  '${provider.histories.length} Items',
+                ),
+                const Spacer(),
+                InkWell(
+                  onTap: () => _showFilterSheet(context, provider),
+                  child: SvgPicture.asset(AppAssets.filterIcon),
+                ),
+                8.w.horizontalSpace,
+              ],
+            ),
           ),
-        ),
-        SingleChildScrollView(
-          child: Column(
-            children: provider.histories
-                .map(
-                  (e) => HistorylistTile(
-                    product: e,
+          ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) => HistorylistTile(
+                    product: provider.histories[index],
                     isFromInvoice: false,
                     onDelete: () {
-                      provider.deleteHistory(e.histId);
+                      provider.deleteHistory(provider.histories[index].histId);
                     },
                   ),
-                )
-                .toList(),
-          ),
-        ),
-      ],
+              separatorBuilder: (context, index) => 10.verticalSpace,
+              itemCount: provider.histories.length),
+        ],
+      ),
     );
   }
 }

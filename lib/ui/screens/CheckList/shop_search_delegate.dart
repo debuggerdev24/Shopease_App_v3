@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
@@ -58,13 +59,12 @@ class ShopSearchDelegate extends SearchDelegate {
 
   _buildResultView(List<Shop> shops) {
     return shops.isEmpty
-        ? const Center(
-            child: NoSearchFound(),
-          )
+        ? const NoSearchFound()
         : ListView.builder(
             itemCount: shops.length,
+            padding: EdgeInsets.symmetric(vertical: 10.h),
             itemBuilder: (context, index) {
-              return      Consumer<ChecklistProvider>(
+              return Consumer<ChecklistProvider>(
                   builder: (context, provider, _) {
                 return ShopTile(
                   shop: shops[index],
@@ -72,7 +72,7 @@ class ShopSearchDelegate extends SearchDelegate {
                       provider.selectedShop?.shopId == shops[index].shopId,
                   onTap: () {
                     provider.changeSelectedShop(shops[index].shopId);
-                  },  
+                  },
                 );
               });
             },

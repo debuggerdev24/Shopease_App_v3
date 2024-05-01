@@ -41,7 +41,7 @@ class ScanNotFoundScreen extends StatelessWidget {
               AppButton(
                 onPressed: () {
                   context.goNamed(
-                    AppRoute.addinventoryForm.name,
+                    AppRoute.addInventoryForm.name,
                     extra: {'isEdit': false},
                   );
                 },

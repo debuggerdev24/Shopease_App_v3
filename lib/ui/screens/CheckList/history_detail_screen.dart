@@ -14,10 +14,9 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
-  const HistoryDetailScreen(
-      {super.key, required this.invoice});
+  const HistoryDetailScreen({super.key, required this.history});
 
-  final History invoice;
+  final History history;
 
   @override
   State<HistoryDetailScreen> createState() => _HistoryDetailScreenState();
@@ -33,7 +32,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
           automaticallyImplyLeading: true,
           iconTheme: IconThemeData(color: AppColors.blackColor, size: 30.sp),
           title: GlobalText(
-            " ${widget.invoice.itemCount}  Products ",
+            " ${widget.history.itemCount}  Products ",
             textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
@@ -57,7 +56,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GlobalText(
-                        widget.invoice.shopName,
+                        widget.history.shopName,
                         maxLine: 3,
                         textStyle: textStyle16.copyWith(
                             decoration: TextDecoration.underline,
@@ -68,7 +67,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                             fontWeight: FontWeight.w600),
                       ),
                       GlobalText(
-                        '\$${widget.invoice.totalPrice}',
+                        '\$${widget.history.totalPrice}',
                         textStyle: textStyle16.copyWith(
                             fontSize: 20, overflow: TextOverflow.ellipsis),
                       ),
@@ -92,7 +91,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               onPressed: () {
                 context.goNamed(AppRoute.checkList.name);
 
-                provider.deleteHistory(widget.invoice.histId);
+                provider.deleteHistory(widget.history.histId);
               },
               text: 'Add to Checklist'),
         ),
@@ -106,7 +105,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: provider.checklist
-              .take(widget.invoice.itemCount ?? 0)
+              .take(widget.history.itemCount ?? 0)
               .map(
                 (e) => ChecklistTile(
                   product: e,

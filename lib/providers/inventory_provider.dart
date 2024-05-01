@@ -2,16 +2,17 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shopease_app_flutter/models/category_model.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
-import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 class InventoryProvider extends ChangeNotifier {
   final BaseInventoryService services;
@@ -21,17 +22,82 @@ class InventoryProvider extends ChangeNotifier {
   /// Variables
   bool _isLoading = false;
   final List<Product> _products = [];
+  final List<Product> _filteredProducts = [];
+  final List<String> _selectedCategoryFilters = [];
+  String? _selectedInventoryLevelFilter;
   final List<Product> _selectedProducts = [];
-  final int _selectedProduct = 0;
+  final List<CategoryModel> _categories = [];
 
   /// getters
   bool get isLoading => _isLoading;
   List<Product> get products => _products;
+  List<String> get selectedCategoryFilters => _selectedCategoryFilters;
+  String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
+  List<Product> get filteredProducts => _filteredProducts;
+  List<CategoryModel> get categories => _categories;
   List<Product> get selectedProducts => _selectedProducts;
-  int get selectedProduct => _selectedProduct;
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
+    notifyListeners();
+  }
+
+  void changeFilterCategoty(String categoryId) {
+    if (_selectedCategoryFilters.contains(categoryId)) {
+      _selectedCategoryFilters.remove(categoryId);
+    } else {
+      _selectedCategoryFilters.add(categoryId);
+    }
+    notifyListeners();
+  }
+
+  void changeFilterInventoryLevel(String? level) {
+    if (_selectedInventoryLevelFilter == level) {
+      _selectedInventoryLevelFilter = null;
+    } else {
+      _selectedInventoryLevelFilter = level;
+    }
+    notifyListeners();
+  }
+
+  void filterProducts() {
+    _filteredProducts.clear();
+    if (_selectedCategoryFilters.isEmpty &&
+        _selectedInventoryLevelFilter == null) {
+      _filteredProducts.addAll(_products);
+      notifyListeners();
+      return;
+    }
+
+    if (_selectedCategoryFilters.isEmpty) {
+      _filteredProducts.addAll(
+        _products.where(
+          (element) => element.itemLevel == _selectedInventoryLevelFilter,
+        ),
+      );
+      notifyListeners();
+
+      return;
+    }
+
+    if (_selectedInventoryLevelFilter == null) {
+      _filteredProducts.addAll(
+        _products.where(
+          (element) => _selectedCategoryFilters.contains(element.itemCategory),
+        ),
+      );
+      notifyListeners();
+
+      return;
+    }
+
+    _filteredProducts.addAll(
+      _products.where(
+        (element) =>
+            element.itemLevel == _selectedInventoryLevelFilter &&
+            _selectedCategoryFilters.contains(element.itemCategory),
+      ),
+    );
     notifyListeners();
   }
 
@@ -62,7 +128,8 @@ class InventoryProvider extends ChangeNotifier {
     if (product.itemLevel == newType.name) return;
     product.itemLevel = newType.name;
     await putInventoryItem(
-        data: [product.copyWith(itemLevel: newType.name).toJson()], isEdit: true);
+        data: [product.copyWith(itemLevel: newType.name).toJson()],
+        isEdit: true);
   }
 
   void addToChecklist(
@@ -96,7 +163,9 @@ class InventoryProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         _products.clear();
+        _filteredProducts.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
+        _filteredProducts.addAll(_products);
         notifyListeners();
         onSuccess?.call();
       } else {
@@ -106,6 +175,37 @@ class InventoryProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while getInventoryItems: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getCategories({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.getCategories();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        _categories.clear();
+        _categories
+            .addAll((res.data as List).map((e) => CategoryModel.fromJson(e)));
+        notifyListeners();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while getCategories: $e");
     } finally {
       setLoading(false);
     }

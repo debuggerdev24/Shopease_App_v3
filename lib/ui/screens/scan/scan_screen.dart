@@ -86,12 +86,14 @@ class _ScanScreenState extends State<ScanScreen> {
                                       AppRoute.addChecklistForm.name,
                                       extra: {
                                           'isEdit': true,
+                                          'isFromScan': true,
                                           'details': provider.scannedProduct,
                                         })
                                   : context.goNamed(
-                                      AppRoute.addinventoryForm.name,
+                                      AppRoute.addInventoryForm.name,
                                       extra: {
                                           'isEdit': true,
+                                          'isFromScan': true,
                                           'details': provider.scannedProduct,
                                         });
                     },

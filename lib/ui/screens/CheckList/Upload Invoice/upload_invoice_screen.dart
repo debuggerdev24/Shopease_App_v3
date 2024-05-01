@@ -53,20 +53,17 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                 ),
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: provider.checklist
-                        .map(
-                          (e) => ChecklistTile(
-                            product: e,
-                            onDelete: () {
-                              provider.deleteChecklistItem(e.itemId!);
-                            },
-                            isSlideEnabled: true,
-                          ),
-                        )
-                        .toList(),
+                child: ListView.separated(
+                  itemBuilder: (context, index) => ChecklistTile(
+                    product: provider.selectedChecklists[index],
+                    onDelete: () {
+                      provider.deleteChecklistItem(
+                          provider.checklist[index].itemId!);
+                    },
+                    isSlideEnabled: true,
                   ),
+                  separatorBuilder: (context, index) => 10.verticalSpace,
+                  itemCount: provider.checklist.length,
                 ),
               ),
               AppButton(
@@ -92,7 +89,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                   };
 
                   log("history $newData");
-                  provider.addToHistory(newData);
+                  provider.puthistoryItems(data: [newData], isEdit: false);
 
                   context.goNamed(AppRoute.checkList.name);
                 },

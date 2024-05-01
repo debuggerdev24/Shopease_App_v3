@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,7 +49,7 @@ class _HistorylistTileState extends State<HistorylistTile>
     return Slidable(
       controller: _slideController,
       endActionPane: _buildRightSwipeActions(widget.product),
-      child: ListTile(
+      child: GestureDetector(
           onTap: () {
             widget.isFromInvoice == false
                 ? context.pushNamed(
@@ -59,10 +60,8 @@ class _HistorylistTileState extends State<HistorylistTile>
                     'shop': widget.product.shopName,
                     'total': widget.product.totalPrice
                   });
-            ;
           },
-          contentPadding: EdgeInsets.zero,
-          title: Container(
+          child: Container(
             color: Colors.grey[800]!.withOpacity(0.05),
             width: double.infinity,
             child: Row(
@@ -79,7 +78,11 @@ class _HistorylistTileState extends State<HistorylistTile>
                       color: AppColors.whiteColor,
                       image: DecorationImage(
                         image: NetworkImage(
-                          widget.product.imageUrl ?? Constants.placeholdeImg,
+                          (widget.product.imageUrl == null ||
+                                  widget.product.imageUrl?.isEmpty == true)
+                              ? Constants.placeholdeImg
+                              : widget.product.imageUrl ??
+                                  Constants.placeholdeImg,
                         ),
                         fit: BoxFit.fill,
                       ),
@@ -89,45 +92,47 @@ class _HistorylistTileState extends State<HistorylistTile>
 
                 const SizedBox(
                     width: 8), // Assuming 8.horizontalSpace is a SizedBox
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.isFromInvoice) {
-                          context.pushNamed(AppRoute.saveInvoice.name, extra: {
-                            'shop': widget.product.shopName,
-                            'total': widget.product.totalPrice
-                          });
-                        }
-                      },
-                      child: Text(
-                        '${widget.product.itemCount ?? 0} products',
-                        style: textStyle16.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          if (widget.isFromInvoice) {
+                            context.pushNamed(AppRoute.saveInvoice.name,
+                                extra: {
+                                  'shop': widget.product.shopName,
+                                  'total': widget.product.totalPrice
+                                });
+                          }
+                        },
+                        child: Text(
+                          '${widget.product.itemCount ?? 0} products',
+                          style: textStyle16.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10.h),
-                    if (widget.isFromInvoice)
-                      Text(
-                        '\$ ${widget.product.totalPrice}',
-                        style: textStyle16.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            overflow: TextOverflow.ellipsis),
-                      ),
-                    const SizedBox(),
-                  ],
-                ),
-                const Spacer(), // Assuming 8.horizontalSpace is a SizedBox
+                      SizedBox(height: 10.h),
+                      if (widget.isFromInvoice)
+                        Text(
+                          '\$ ${widget.product.totalPrice}',
+                          style: textStyle16.copyWith(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                      const SizedBox(),
+                    ],
+                  ),
+                ), // Assuming 8.horizontalSpace is a SizedBox
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     const SizedBox(height: 10),
                     GlobalText(

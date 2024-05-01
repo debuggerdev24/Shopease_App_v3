@@ -4,11 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
+import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/add_inventory_form/add_item_form_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/back_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/card_drop_down.dart';
+import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -19,18 +22,20 @@ class AddItemFormWidget extends StatelessWidget {
     required this.onSubmit,
     this.isLoading = false,
     this.isEdit = false,
+    this.isFromScan = false,
     this.product,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
   final bool isLoading;
   final Product? product;
+  final bool isFromScan;
   final bool isEdit;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AddItemFormProvider(),
+      create: (context) => AddItemFormProvider(InventoryService()),
       child: AddItemForm(
         onSubmit: onSubmit,
         isLoading: isLoading,
@@ -47,6 +52,7 @@ class AddItemForm extends StatefulWidget {
     required this.onSubmit,
     this.isLoading = false,
     this.isEdit = false,
+    this.isFromScan = false,
     this.product,
   });
 
@@ -54,6 +60,7 @@ class AddItemForm extends StatefulWidget {
   final bool isLoading;
   final Product? product;
   final bool isEdit;
+  final bool isFromScan;
 
   @override
   State<AddItemForm> createState() => _AddItemFormState();
@@ -82,6 +89,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
       if (widget.product == null || !widget.isEdit) {
         context.read<AddItemFormProvider>().changeSelectedCategory(null);
         context.read<AddItemFormProvider>().changeSelectedInvType(null);
+        context.read<AddItemFormProvider>().getCategories();
       }
     });
   }
@@ -91,23 +99,29 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
-        leading: const KBackButton(),
+        leading: KBackButton(
+          onBackClick: () {
+            if (widget.isFromScan) {
+              CustomToast.showWarning(context, 'Your item will be discardd');
+            }
+          },
+        ),
         titleSpacing: 0,
         title: Text(
           "Add Manually",
           style: textStyle20SemiBold.copyWith(fontSize: 24),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
-              child: Form(
-                key: _formKey,
-                child: Consumer<AddItemFormProvider>(
-                    builder: (context, provider, _) {
-                  return Column(
+      body: Consumer<AddItemFormProvider>(builder: (context, provider, _) {
+        return provider.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                     children: <Widget>[
                       AppTextField(
                         controller: _nameController,
@@ -166,7 +180,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         isRequired: true,
                         labelText: 'Category',
                         hintText: 'Select a category',
-                        value: provider.selectedCategory,
+                        value: provider.selectedCategoryId,
                         dropDownList: categoryList(),
                         trailing: SvgPicture.asset(AppAssets.dropDown),
                         onChanged: (value) {
@@ -215,7 +229,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       30.h.verticalSpace,
                       AppButton(
                         colorType: (_nameController.text.isNotEmpty &&
-                                provider.selectedCategory != null)
+                                provider.selectedCategoryId != null)
                             ? AppButtonColorType.primary
                             : AppButtonColorType.greyed,
                         isLoading: widget.isLoading,
@@ -226,7 +240,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               'product_description': _descController.text,
                               'brand': _brandController.text,
                               'item_level': provider.selectedInvType,
-                              'item_category': provider.selectedCategory,
+                              'item_category': provider.categories
+                                  .firstWhere((element) =>
+                                      element.categoryId ==
+                                      provider.selectedCategoryId)
+                                  .categoryName,
                               'item_storage': _storageController.text,
                               'is_in_checklist': false,
                             };
@@ -247,7 +265,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     productDescription: _descController.text,
                                     brand: _brandController.text,
                                     itemLevel: provider.selectedInvType,
-                                    itemCategory: provider.selectedCategory,
+                                    itemCategory: provider.categories
+                                        .firstWhere((element) =>
+                                            element.categoryId ==
+                                            provider.selectedCategoryId)
+                                        .categoryName,
                                     itemImage: provider.selectedFile?.path ??
                                         widget.product?.itemImage,
                                     itemStorage: _storageController.text,
@@ -264,13 +286,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       ),
                       //   // ),
                     ],
-                  );
-                }),
-              ),
-            ),
-          ],
-        ),
-      ),
+                  ),
+                ),
+              );
+      }),
     );
   }
 
@@ -283,9 +302,16 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     context
         .read<AddItemFormProvider>()
         .changeSelectedInvType(widget.product!.itemLevel);
-    context
-        .read<AddItemFormProvider>()
-        .changeSelectedCategory(widget.product!.itemCategory);
+    context.read<AddItemFormProvider>().changeSelectedCategory(
+          context
+              .read<AddItemFormProvider>()
+              .categories
+              .firstWhere(
+                (element) =>
+                    element.categoryName == widget.product!.itemCategory,
+              )
+              .categoryId,
+        );
     _fileFieldController.text = widget.product!.itemImage ?? '';
     _storageController.text = widget.product!.itemStorage ?? '';
   }
@@ -328,18 +354,19 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     }
   }
 
-  List<DropdownMenuItem<dynamic>> categoryList() =>
-      ['Fresh Fruits', 'Fresh Vegetables', 'Other Category']
-          .map(
-            (category) => DropdownMenuItem(
-              value: category.toLowerCase(),
-              child: Row(
-                children: [
-                  10.h.horizontalSpace,
-                  Text(category, style: textStyle16),
-                ],
-              ),
-            ),
-          )
-          .toList();
+  List<DropdownMenuItem<dynamic>> categoryList() => context
+      .read<AddItemFormProvider>()
+      .categories
+      .map(
+        (category) => DropdownMenuItem(
+          value: category.categoryId,
+          child: Row(
+            children: [
+              10.h.horizontalSpace,
+              Text(category.categoryName, style: textStyle16),
+            ],
+          ),
+        ),
+      )
+      .toList();
 }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/tabs/tabs.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/multiple_checklist_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/add_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_invoice.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/upload_invoice_screen.dart';
@@ -22,7 +23,7 @@ import 'package:shopease_app_flutter/ui/screens/auth/otp_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/fetch_product_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/home_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory/add_inventroy_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/home/inventory/multiple_add_to_check_list.dart';
+import 'package:shopease_app_flutter/ui/screens/home/inventory/multiple_inventory_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/product_detail_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/scan/scan_and_add_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/scan/scan_not_found_screen.dart';
@@ -42,11 +43,11 @@ enum AppRoute {
   home,
   scanAndAddScreen,
   scanScreen,
-  addinventoryForm,
+  addInventoryForm,
   productDetail,
   fetchProduct,
   scanNotFoundScreen,
-  multipleSelectProduct,
+  multipleInventorySelection,
 
   ////////// BRANCH 2 //////////
   checkList,
@@ -57,6 +58,7 @@ enum AppRoute {
   addInvoice,
   saveInvoice,
   historyDetail,
+  multipleChecklistSelection,
 
   ////////// BRANCH 3 //////////
   profile,
@@ -187,13 +189,14 @@ class AppNavigator {
                     const HomeScreen(),
                 routes: <RouteBase>[
                   GoRoute(
-                    path: AppRoute.addinventoryForm.name,
-                    name: AppRoute.addinventoryForm.name,
+                    path: AppRoute.addInventoryForm.name,
+                    name: AppRoute.addInventoryForm.name,
                     builder: (context, state) {
                       final extra =
                           (state.extra ?? {}) as Map<dynamic, dynamic>;
                       return AddInventoryScreen(
-                        isEdit: (extra['isEdit'] ?? false) as bool,
+                        isEdit: extra['isEdit'] ?? false,
+                        isFromScan: extra['isFromScan'] ?? false,
                         product: extra['details'],
                       );
                     },
@@ -201,9 +204,15 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.productDetail.name,
                     name: AppRoute.productDetail.name,
-                    builder: (context, state) => ProductDetailScreen(
-                      product: state.extra as Product,
-                    ),
+                    builder: (context, state) {
+                      final Map<String, dynamic> extra =
+                          state.extra as Map<String, dynamic>;
+                      return ProductDetailScreen(
+                        product: extra['product'] as Product,
+                        isFromChecklist:
+                            (extra['isFromChecklist'] ?? false) as bool,
+                      );
+                    },
                   ),
                   GoRoute(
                     path: AppRoute.fetchProduct.name,
@@ -212,10 +221,10 @@ class AppNavigator {
                         const FetchProductScreen(),
                   ),
                   GoRoute(
-                    path: AppRoute.multipleSelectProduct.name,
-                    name: AppRoute.multipleSelectProduct.name,
+                    path: AppRoute.multipleInventorySelection.name,
+                    name: AppRoute.multipleInventorySelection.name,
                     builder: (BuildContext context, GoRouterState state) =>
-                        const MultipleSelectionScreen(),
+                        const MultipleInventorySelectionScreen(),
                   ),
                 ],
               ),
@@ -242,6 +251,7 @@ class AppNavigator {
                       final extra = state.extra as Map<String, dynamic>;
                       return AddChecklistScreen(
                         isEdit: extra['isEdit'] ?? false,
+                        isFromScan: extra['isFromScan'] ?? false,
                         product: extra['details'],
                       );
                     },
@@ -283,9 +293,15 @@ class AppNavigator {
                     name: AppRoute.historyDetail.name,
                     builder: (context, state) {
                       return HistoryDetailScreen(
-                        invoice: state.extra as History,
+                        history: state.extra as History,
                       );
                     },
+                  ),
+                  GoRoute(
+                    path: AppRoute.multipleChecklistSelection.name,
+                    name: AppRoute.multipleChecklistSelection.name,
+                    builder: (context, state) =>
+                        const MultipleChecklistSelectionScreen(),
                   ),
                 ],
               ),

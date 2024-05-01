@@ -21,11 +21,13 @@ class ChecklistTile extends StatefulWidget {
     required this.product,
     this.onDelete,
     this.onChangeBrand,
+    this.onLongPress,
     this.isSlideEnabled = true,
   });
 
   final Product product;
   final VoidCallback? onDelete;
+  final VoidCallback? onLongPress;
   final VoidCallback? onChangeBrand;
   final bool isSlideEnabled;
   @override
@@ -57,8 +59,12 @@ class _ChecklistTileState extends State<ChecklistTile>
           : null,
       child: GestureDetector(
         onTap: () {
-          context.pushNamed(AppRoute.productDetail.name, extra: widget.product);
+          context.pushNamed(AppRoute.productDetail.name, extra: {
+            'product': widget.product,
+            'isFromChecklist': true,
+          });
         },
+        onLongPress: widget.onLongPress,
         child: Container(
           color: Colors.grey[800]!.withOpacity(0.05),
           padding: EdgeInsets.symmetric(horizontal: 10.w),
