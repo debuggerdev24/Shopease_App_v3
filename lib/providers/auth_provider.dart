@@ -12,6 +12,7 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider(this.services);
 
   bool _isLoading = false;
+  bool _needToResendOTP = false;
 
   Country _selectedCountry = Country.from(
     json: {
@@ -30,10 +31,16 @@ class AuthProvider extends ChangeNotifier {
   );
 
   bool get isLoading => _isLoading;
+  bool get needToResendOTP => _needToResendOTP;
   Country get selectedCountry => _selectedCountry;
 
   setLoading(bool isLoading) {
     _isLoading = isLoading;
+    notifyListeners();
+  }
+
+  setNeedToResendOTP(bool rensedOTP) {
+    _needToResendOTP = rensedOTP;
     notifyListeners();
   }
 
@@ -82,7 +89,7 @@ class AuthProvider extends ChangeNotifier {
       setLoading(true);
       final res = await services.confirmsignup(phone: phone, code: otp);
 
-      if(res == null ) {
+      if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);
         return;
       }
@@ -94,7 +101,8 @@ class AuthProvider extends ChangeNotifier {
         BaseRepository().addToken(res.data['IdToken']);
         onSuccess?.call();
       } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+        setNeedToResendOTP(true);
+        onError?.call(res.data["error"] ?? Constants.commonAuthErrMsg);
       }
     } on DioException {
       rethrow;
@@ -125,6 +133,7 @@ class AuthProvider extends ChangeNotifier {
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+        setNeedToResendOTP(true);
       }
     } on DioException {
       rethrow;

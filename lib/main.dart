@@ -1,15 +1,10 @@
-import 'dart:developer';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/providers/theme_provider.dart';
-import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 import 'package:shopease_app_flutter/services/checklist_service.dart';
@@ -21,7 +16,6 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:workmanager/workmanager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

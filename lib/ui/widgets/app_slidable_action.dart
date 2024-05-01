@@ -29,8 +29,8 @@ class AppSlidableaction extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          margin: EdgeInsets.fromLTRB(
-              isRight ? 5.w : 0, 10.h, isRight ? 0 : 5.w, 10.h),
+          margin:
+              EdgeInsets.fromLTRB(isRight ? 5.w : 0, 0, isRight ? 0 : 5.w, 0),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: backgroundColor ?? AppColors.lightGreyColor.withAlpha(20),

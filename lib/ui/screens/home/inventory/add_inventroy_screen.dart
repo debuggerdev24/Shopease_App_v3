@@ -43,13 +43,15 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
 
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<InventoryProvider>().putInventoryItem(
-          data: [data],
-          isEdit: widget.isEdit,
-          onError: (msg) => CustomToast.showError(context, msg),
-          onSuccess: () {
-            context.read<InventoryProvider>().getInventoryItems();
-            context.goNamed(AppRoute.home.name);
-          },
-        );
+      data: [data],
+      isEdit: widget.isEdit,
+      onError: (msg) => CustomToast.showError(context, msg),
+      onSuccess: () {
+        CustomToast.showSuccess(
+            context, '${data['product_name']} added successfully!');
+        context.read<InventoryProvider>().getInventoryItems();
+        context.goNamed(AppRoute.home.name);
+      },
+    );
   }
 }

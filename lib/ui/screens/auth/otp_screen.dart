@@ -11,6 +11,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -39,11 +40,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void startResendOTPTimer() {
     _resendOTPTimer =
-        Timer.periodic(const Duration(seconds: 15), (Timer timer) {
-      setState(() {
-        _showResendOTPText = true;
-      });
-    });
+        Timer.periodic(const Duration(seconds: 15), (Timer timer) {});
   }
 
   void resendOTP() {
@@ -80,44 +77,35 @@ class _OtpScreenState extends State<OtpScreen> {
                 onPressed: () async {
                   if (_otpController.text.isNotEmpty) {
                     provider.confirmSignUp(
-                      phone: widget.mobile,
-                      otp: _otpController.text,
-                      onSuccess: () {
-                        scheduleRefreshTokenTask();
-                        widget.isEdit
-                            ? context.goNamed(AppRoute.profile.name)
-                            : context
-                                .pushNamed(AppRoute.congratulationsScreen.name);
-                        if (widget.isEdit) {
+                        phone: widget.mobile,
+                        otp: _otpController.text,
+                        onSuccess: () {
+                          widget.isEdit
+                              ? context.goNamed(AppRoute.profile.name)
+                              : context.pushNamed(
+                                  AppRoute.congratulationsScreen.name);
                           CustomToast.showSuccess(
-                              context, 'Phone number changed');
-                        }
-                      },
-                    );
-                    // authService.confirmSignUp(
-
-                    //     , _otpController.text,context);
-                    // widget.isEdit
-                    //     ? context.goNamed(AppRoute.profile.name)
-                    //     : context.pushNamed(AppRoute.nickNameScreen.name);
-
-                    // widget.isEdit
-                    //     ? CustomToast.showSuccess(
-                    //         context, 'Phone number changed')
-                    //     : SizedBox();
+                            context,
+                            widget.isEdit
+                                ? 'Phone number changed'
+                                : 'Loggeed in successfully.',
+                          );
+                        },
+                        onError: (msg) {
+                          CustomToast.showError(context, msg);
+                        });
                   } else {
                     CustomToast.showWarning(context, 'Please Enter valid OTP.');
                   }
                 },
                 text: 'Continue',
-                isLoading: false,
+                isLoading: provider.isLoading,
                 colorType: (_otpController.text.length != 6)
                     ? AppButtonColorType.greyed
                     : AppButtonColorType.primary,
               ),
               20.verticalSpace,
-              if (_otpController.text.isEmpty)
-                if (!_showResendOTPText) _buildRetryLine(context),
+              // if (provider.needToResendOTP) _buildRetryLine(context),
             ],
           ),
         );
@@ -155,95 +143,79 @@ class _OtpScreenState extends State<OtpScreen> {
           ),
         ),
         5.h.verticalSpace,
-        if (_otpController.text.isEmpty)
-          if (!_showResendOTPText)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  'Time Remaining: ',
-                  style: textStyle14,
-                ),
-                TimeRemaining(
-                  formatter: (duration) {
-                    final minutes = duration.inMinutes
-                        .remainder(60)
-                        .toString()
-                        .padLeft(2, '0');
-                    final seconds = duration.inSeconds
-                        .remainder(60)
-                        .toString()
-                        .padLeft(2, '0');
-                    return '$minutes:$seconds ';
+        // if (_otpController.text.isEmpty)
+        if (!context.read<AuthProvider>().needToResendOTP)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'Time Remaining: ',
+                style: textStyle14,
+              ),
+              TimeRemaining(
+                formatter: (duration) {
+                  final minutes = duration.inMinutes
+                      .remainder(60)
+                      .toString()
+                      .padLeft(2, '0');
+                  final seconds = duration.inSeconds
+                      .remainder(60)
+                      .toString()
+                      .padLeft(2, '0');
+                  return '$minutes:$seconds ';
 
-                    // Custom format
-                  },
-                  duration: const Duration(seconds: 15),
-                  style: textStyle12,
-                  onTimeOver: () {
-                    setState(() {
-                      _showResendOTPText = true;
-                    });
-                  },
-                )
-              ],
-            )
-          else
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _showResendOTPText = false;
-                });
-                resendOTP();
-              },
-              child: GlobalText(
+                  // Custom format
+                },
+                duration: const Duration(seconds: 15),
+                style: textStyle12,
+                onTimeOver: () {
+                  context.read<AuthProvider>().setNeedToResendOTP(true);
+                },
+              )
+            ],
+          ),
+
+        if (context.read<AuthProvider>().needToResendOTP)
+          GestureDetector(
+            onTap: () {
+              resendOTP();
+              context.read<AuthProvider>().signUp(
+                  phone: widget.mobile,
+                  onSuccess: () {
+                    CustomToast.showSuccess(context, 'OTP sent successfully.');
+                  });
+            },
+            child: GlobalText(
+              color: AppColors.orangeColor,
+              'Resend OTP',
+              textStyle: textStyle14.copyWith(
+                decoration: TextDecoration.underline,
+                decorationColor: AppColors.orangeColor,
                 color: AppColors.orangeColor,
-                'Resend OTP',
-                textStyle: textStyle14.copyWith(
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.orangeColor,
-                  color: AppColors.orangeColor,
-                ),
               ),
             ),
+          ),
       ],
     );
   }
 
   Widget _buildRetryLine(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _showResendOTPText = true;
-        });
-      },
-      child: RichText(
-        text: TextSpan(
-            children: [
-              TextSpan(
-                  text: 'Didn\'t recieve it? ',
-                  style: textStyle14.copyWith(color: AppColors.blackGreyColor)),
-              TextSpan(
-                text: 'Retry',
-                style: textStyle16.copyWith(color: AppColors.blackGreyColor),
-                recognizer: TapGestureRecognizer()..onTap = () {},
-              ),
-            ],
-            style: textStyle16.copyWith(
-              color: AppColors.orangeColor,
-            )),
-      ),
+    return RichText(
+      text: TextSpan(
+          children: [
+            TextSpan(
+                text: 'Didn\'t recieve it? ',
+                style: textStyle14.copyWith(color: AppColors.blackGreyColor)),
+            TextSpan(
+              text: 'Retry',
+              style: textStyle16.copyWith(color: AppColors.blackGreyColor),
+              recognizer: TapGestureRecognizer()..onTap = () {},
+            ),
+          ],
+          style: textStyle16.copyWith(
+            color: AppColors.orangeColor,
+          )),
     );
-  }
-
-  void scheduleRefreshTokenTask() {
-    Workmanager().registerPeriodicTask(
-      'refreshMyToken',
-      'callRefreshAuthAPI',
-      frequency: const Duration(hours: 1),
-      inputData: <String, dynamic>{'refresh_token': SharedPrefs().refreshToken},
-    );
-    log('workmanager scheduled');
   }
 }

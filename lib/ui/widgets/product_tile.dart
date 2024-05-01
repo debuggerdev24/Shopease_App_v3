@@ -72,10 +72,10 @@ class _ProductTileState extends State<ProductTile>
       startActionPane: !widget.isSlideEnabled
           ? null
           : _buildLeftSwipeActions(widget.product),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
+      child: GestureDetector(
         onTap: widget.onTap,
-        title: Container(
+        onLongPress: widget.onLongPress,
+        child: Container(
           color: Colors.grey[800]!.withOpacity(0.05),
           padding: EdgeInsets.symmetric(horizontal: 10.w),
           width: double.infinity,
@@ -119,13 +119,15 @@ class _ProductTileState extends State<ProductTile>
                   ],
                 ),
               ),
-              if (widget.product.isInChecklist == true)
+              if (widget.product.isInChecklist == true) ...[
+                20.horizontalSpace,
                 SvgIcon(
                   AppAssets.succcessCart,
                   size: 20.sp,
                   color: AppColors.greenColor,
                 ),
-              SizedBox(width: 25.sp),
+              ],
+              20.horizontalSpace,
               SvgPicture.asset(
                 widget.product.itemLevel == InventoryType.high.name
                     ? AppAssets.inventoryHigh
@@ -149,7 +151,6 @@ class _ProductTileState extends State<ProductTile>
         children: [
           AppSlidableaction(
             isRight: true,
-            height: product.isInChecklist == true ? 29.sp : 18.sp,
             icon: product.isInChecklist == true
                 ? AppAssets.rmCart
                 : AppAssets.addCart,

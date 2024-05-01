@@ -72,6 +72,8 @@ class BaseRepository {
           return get(path, data: data);
         }
       }
+
+      return e.response;
     }
 
     return null;
@@ -97,6 +99,8 @@ class BaseRepository {
           return get(path, data: data);
         }
       }
+
+      return e.response;
     }
 
     return null;
@@ -121,6 +125,8 @@ class BaseRepository {
           return get(path, data: data);
         }
       }
+
+      return e.response;
     }
 
     return null;
@@ -145,6 +151,8 @@ class BaseRepository {
           return get(path, data: data);
         }
       }
+
+      return e.response;
     }
 
     return null;

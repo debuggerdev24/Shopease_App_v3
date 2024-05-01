@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
@@ -59,12 +60,13 @@ class ProductSearchDelegate extends SearchDelegate<String> {
     return products.isEmpty
         ? Center(
             child: GlobalText(
-              'Not found matching results.',
+              'No Matching search results',
               textStyle: textStyle16,
             ),
           )
-        : ListView.builder(
+        : ListView.separated(
             itemCount: products.length,
+            separatorBuilder: (context, index) => 10.verticalSpace,
             itemBuilder: (context, index) {
               return ProductTile(
                 product: products[index],

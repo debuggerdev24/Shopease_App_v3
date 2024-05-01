@@ -27,15 +27,15 @@ class ProfileProvider extends ChangeNotifier {
   String phone = '';
   bool _isLoading = false;
   ProfileData? _profileData;
+  List<ProfileData> _groupProfiles = [];
 
   bool get set => _set;
   int _selectedUser = -1;
-  String get _username => username;
-  String get _phone => phone;
 
   int get selectedUserIndex => _selectedUser;
   bool get isLoading => _isLoading;
   ProfileData? get profileData => _profileData;
+  List<ProfileData> get groupProfiles => _groupProfiles;
 
   void toggleSet(bool value) {
     _set = !set;
@@ -52,18 +52,18 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteUser(String image) {
-    userList.removeWhere((element) => element['img'] == image);
+  void deleteUser(String userId) {
+    groupProfiles.removeWhere((element) => element.userId == userId);
     notifyListeners();
   }
 
-  void deleteUserList(List list) {
-    list.clear();
+  void clearGroupProfiles() {
+    _groupProfiles.clear();
     notifyListeners();
   }
 
-  void saveUser(Map<String, dynamic> user) {
-    userList.add(user);
+  void saveUser(ProfileData user) {
+    groupProfiles.add(user);
     notifyListeners();
   }
 
@@ -143,6 +143,38 @@ class ProfileProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while getProfile: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getAllProfile({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.getAllProfile();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        _groupProfiles.clear();
+        _groupProfiles.addAll(
+          (res.data as List).map((e) => ProfileData.fromJson(e)),
+        );
+        SharedPrefs().setUserId(_profileData?.userId ?? '');
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while getAllProfile: $e");
     } finally {
       setLoading(false);
     }

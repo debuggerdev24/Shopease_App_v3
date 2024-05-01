@@ -18,16 +18,16 @@ class AppChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicWidth(
-      stepWidth: text.isEmpty ? 100 : null,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10),
-        // alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(20),
-        ),
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10),
+      // alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.primaryColor.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: IntrinsicWidth(
+        stepWidth: text.isEmpty ? 100 : null,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -40,11 +40,14 @@ class AppChip extends StatelessWidget {
               ),
               10.horizontalSpace,
             ],
-            Text(
-              text,
-              style: textStyle14.copyWith(
+            Expanded(
+              child: Text(
+                text,
+                style: textStyle14.copyWith(
                   color: AppColors.primaryColor,
-                  overflow: TextOverflow.ellipsis),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ),
           ],
         ),

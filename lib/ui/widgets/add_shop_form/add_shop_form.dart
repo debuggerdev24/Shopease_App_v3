@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -82,7 +83,7 @@ class _AddShopFormState extends State<AddShopForm> {
                 controller: _fileFieldController,
                 maxLines: 1,
                 readOnly: true,
-                labelText: 'Shop image',
+                labelText: 'Upload shop image',
                 hintText: 'Select a photo',
                 bottomText: 'Max File Size:5MB',
                 onTap: onSelectFileTap,
@@ -104,24 +105,29 @@ class _AddShopFormState extends State<AddShopForm> {
                       ),
               ),
               60.h.verticalSpace,
-              AppButton(
-                onPressed: () {
-                  if (_formKey.currentState?.validate() == true) {
-                    final data = {
-                      'shop_name': _nameController.text,
-                      'shop_location': _locationController.text,
-                    };
-                    if (_fileFieldController.text.isNotEmpty) {
-                      data.addAll({'image_url': provider.selectedFile!.path});
+              Consumer2<AddShopFormProvider, ChecklistProvider>(
+                  builder: (context, provider, checklistProvider, _) {
+                return AppButton(
+                  isLoading: checklistProvider.isLoading,
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() == true) {
+                      final data = {
+                        'shop_name': _nameController.text,
+                        'shop_location': _locationController.text,
+                      };
+                      if (_fileFieldController.text.isNotEmpty) {
+                        data.addAll(
+                            {'item_image': provider.selectedFile!.path});
+                      }
+                      widget.onSubmit(data);
                     }
-                    widget.onSubmit(data);
-                  }
-                },
-                text: 'Create',
-                colorType: _nameController.text.isNotEmpty
-                    ? AppButtonColorType.primary
-                    : AppButtonColorType.greyed,
-              ),
+                  },
+                  text: 'Create',
+                  colorType: _nameController.text.isNotEmpty
+                      ? AppButtonColorType.primary
+                      : AppButtonColorType.greyed,
+                );
+              }),
               20.h.verticalSpace,
               AppButton(
                 onPressed: context.pop,
