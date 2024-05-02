@@ -64,9 +64,6 @@ class HistorySearchDelegate extends SearchDelegate {
               return HistorylistTile(
                 product: products[index],
                 isFromInvoice: false,
-                onDelete: () {
-                  provider.deleteHistory(provider.histories[index].histId);
-                },
               );
             },
           );

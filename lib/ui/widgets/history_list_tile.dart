@@ -14,6 +14,7 @@ import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
+import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -21,15 +22,11 @@ class HistorylistTile extends StatefulWidget {
   const HistorylistTile({
     super.key,
     required this.product,
-    this.onDelete,
-    this.onChangeBrand,
     this.isFromInvoice = true,
   });
 
   final History product;
   final bool isFromInvoice;
-  final VoidCallback? onDelete;
-  final VoidCallback? onChangeBrand;
   @override
   State<HistorylistTile> createState() => _HistorylistTileState();
 }
@@ -136,7 +133,7 @@ class _HistorylistTileState extends State<HistorylistTile>
                   children: [
                     const SizedBox(height: 10),
                     GlobalText(
-                      'today',
+                      widget.product.updatedDate?.toMonthDD ?? '',
                       textStyle: textStyle16.copyWith(
                           fontSize: 12, overflow: TextOverflow.ellipsis),
                     ),
@@ -145,7 +142,9 @@ class _HistorylistTileState extends State<HistorylistTile>
                       maxLine: 3,
                       textStyle: textStyle16.copyWith(
                           decoration: TextDecoration.underline,
+                          decorationColor: AppColors.orangeColor,
                           fontSize: 15,
+                          height: 1,
                           overflow: TextOverflow.ellipsis,
                           color: AppColors.orangeColor,
                           fontWeight: FontWeight.w600),

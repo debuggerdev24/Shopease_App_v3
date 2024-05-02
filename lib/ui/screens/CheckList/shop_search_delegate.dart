@@ -60,8 +60,9 @@ class ShopSearchDelegate extends SearchDelegate {
   _buildResultView(List<Shop> shops) {
     return shops.isEmpty
         ? const NoSearchFound()
-        : ListView.builder(
+        : ListView.separated(
             itemCount: shops.length,
+            separatorBuilder: (context, index) => 10.verticalSpace,
             padding: EdgeInsets.symmetric(vertical: 10.h),
             itemBuilder: (context, index) {
               return Consumer<ChecklistProvider>(

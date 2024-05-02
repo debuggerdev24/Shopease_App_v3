@@ -11,7 +11,22 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class ReplaceManuallyscvreen extends StatefulWidget {
+class ReplaceManuallyscreen extends StatefulWidget {
+  const ReplaceManuallyscreen({super.key});
+
+  @override
+  State<ReplaceManuallyscreen> createState() => _ReplaceManuallyscreenState();
+}
+
+class _ReplaceManuallyscreenState extends State<ReplaceManuallyscreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+
+/*class ReplaceManuallyscvreen extends StatefulWidget {
   const ReplaceManuallyscvreen({super.key});
 
   @override
@@ -170,4 +185,4 @@ class _ReplaceManuallyscvreenState extends State<ReplaceManuallyscvreen> {
       ),
     );
   }
-}
+}*/

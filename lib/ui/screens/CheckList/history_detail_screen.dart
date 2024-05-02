@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
@@ -25,7 +26,7 @@ class HistoryDetailScreen extends StatefulWidget {
 class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChecklistProvider>(builder: (context, provider, _) {
+    return Consumer<HistoryProvider>(builder: (context, provider, _) {
       return Scaffold(
         appBar: AppBar(
           centerTitle: false,
@@ -78,11 +79,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
               ]),
         ),
         floatingActionButton: Padding(
-          padding: EdgeInsets.symmetric(vertical: 25, horizontal: 5),
+          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
           child: AppButton(
               icon: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
-                child: SvgIcon(
+                child: const SvgIcon(
                   AppAssets.checkList,
                   color: Colors.white,
                   size: 20,
@@ -100,17 +101,19 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
     });
   }
 
-  Widget _buildCurrentListView(ChecklistProvider provider) {
+  Widget _buildCurrentListView(HistoryProvider provider) {
     return Expanded(
       child: SingleChildScrollView(
         child: Column(
-          children: provider.checklist
+          children: context
+              .read<ChecklistProvider>()
+              .checklist
               .take(widget.history.itemCount ?? 0)
               .map(
                 (e) => ChecklistTile(
                   product: e,
                   onDelete: () {
-                    provider.deleteChecklistItem(e.itemId!);
+                    // provider.deleteChecklistItem(e.itemId!);
                   },
                   isSlideEnabled: true,
                 ),

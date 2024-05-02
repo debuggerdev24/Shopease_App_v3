@@ -23,6 +23,7 @@ class AddItemFormWidget extends StatelessWidget {
     this.isLoading = false,
     this.isEdit = false,
     this.isFromScan = false,
+    this.title,
     this.product,
   });
 
@@ -31,6 +32,7 @@ class AddItemFormWidget extends StatelessWidget {
   final Product? product;
   final bool isFromScan;
   final bool isEdit;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class AddItemFormWidget extends StatelessWidget {
         isLoading: isLoading,
         isEdit: isEdit,
         product: product,
+        title: title,
       ),
     );
   }
@@ -54,6 +57,7 @@ class AddItemForm extends StatefulWidget {
     this.isEdit = false,
     this.isFromScan = false,
     this.product,
+    this.title,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
@@ -61,6 +65,7 @@ class AddItemForm extends StatefulWidget {
   final Product? product;
   final bool isEdit;
   final bool isFromScan;
+  final String? title;
 
   @override
   State<AddItemForm> createState() => _AddItemFormState();
@@ -85,11 +90,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<AddItemFormProvider>().getCategories();
       setFromFields();
       if (widget.product == null || !widget.isEdit) {
         context.read<AddItemFormProvider>().changeSelectedCategory(null);
         context.read<AddItemFormProvider>().changeSelectedInvType(null);
-        context.read<AddItemFormProvider>().getCategories();
       }
     });
   }
@@ -108,7 +113,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
         ),
         titleSpacing: 0,
         title: Text(
-          "Add Manually",
+          widget.title ?? "Add Manually",
           style: textStyle20SemiBold.copyWith(fontSize: 24),
         ),
       ),

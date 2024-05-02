@@ -14,12 +14,10 @@ class AddInventoryScreen extends StatefulWidget {
     this.product,
     this.isEdit = false,
     this.isFromScan = false,
-    this.isReplace = false,
   });
 
   final bool isEdit;
   final bool isFromScan;
-  final bool isReplace;
   final Product? product;
 
   @override
@@ -40,6 +38,7 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
           isFromScan: widget.isFromScan,
           product: widget.product,
           onSubmit: submit,
+          title: widget.isEdit ? 'Edit' : 'Add Manually',
           isLoading: provider.isLoading,
         );
       });
@@ -50,7 +49,9 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
       isEdit: widget.isEdit,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
-        CustomToast.showSuccess(context, 'Product added successfully!');
+        if (!widget.isEdit) {
+          CustomToast.showSuccess(context, 'Product added successfully!');
+        }
         context.read<InventoryProvider>().getInventoryItems();
         context.goNamed(AppRoute.home.name);
       },

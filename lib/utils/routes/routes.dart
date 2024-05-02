@@ -146,7 +146,7 @@ class AppNavigator {
           final extra =
               (state.extra ?? <String, dynamic>{}) as Map<String, dynamic>;
           return ScanAndAddScreen(
-            isInvoice: extra['isInvoice'] ?? false,
+            // isInvoice: extra['isInvoice'] ?? false,
             isReplace: extra['isReplace'] ?? false,
             isFromChecklist: extra['isFromChecklist'] ?? false,
           );
@@ -158,7 +158,7 @@ class AppNavigator {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
           return ScanScreen(
-            isInvoice: extra['isInvoice'] ?? false,
+            // isInvoice: extra['isInvoice'] ?? false,
             isReplace: extra['isReplace'] ?? false,
             isFromChecklist: extra['isFromChecklist'] ?? false,
           );
@@ -167,8 +167,14 @@ class AppNavigator {
       GoRoute(
         path: AppRoute.scanNotFoundScreen.path,
         name: AppRoute.scanNotFoundScreen.name,
-        builder: (BuildContext context, GoRouterState state) =>
-            const ScanNotFoundScreen(),
+        builder: (BuildContext context, GoRouterState state) {
+          final extra =
+              (state.extra ?? <String, dynamic>{}) as Map<String, dynamic>;
+          return ScanNotFoundScreen(
+            isFromChecklist: extra['isFromChecklist'],
+            isReplace: extra['isReplace'],
+          );
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -248,10 +254,12 @@ class AppNavigator {
                     path: AppRoute.addChecklistForm.name,
                     name: AppRoute.addChecklistForm.name,
                     builder: (BuildContext context, GoRouterState state) {
-                      final extra = state.extra as Map<String, dynamic>;
+                      final extra = (state.extra ?? <String, dynamic>{})
+                          as Map<String, dynamic>;
                       return AddChecklistScreen(
                         isEdit: extra['isEdit'] ?? false,
                         isFromScan: extra['isFromScan'] ?? false,
+                        isReplace: extra['isReplace'] ?? false,
                         product: extra['details'],
                       );
                     },
@@ -259,7 +267,7 @@ class AppNavigator {
                   GoRoute(
                     path: AppRoute.replaceManually.name,
                     name: AppRoute.replaceManually.name,
-                    builder: (context, state) => const ReplaceManuallyscvreen(),
+                    builder: (context, state) => const ReplaceManuallyscreen(),
                   ),
                   GoRoute(
                     path: AppRoute.uploadInvoice.name,
@@ -270,11 +278,11 @@ class AppNavigator {
                     path: AppRoute.addInvoice.name,
                     name: AppRoute.addInvoice.name,
                     builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>;
-                      return AddInvoiceScreen(
-                        shop: extra['shop'] as String,
-                        total: extra['total'] as int,
-                      );
+                      // final extra = state.extra as Map<String, dynamic>;
+                      return const AddInvoiceScreen(
+                          // shop: extra['shop'] as String,
+                          // total: extra['total'] as int,
+                          );
                     },
                   ),
                   GoRoute(
@@ -283,7 +291,7 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra = state.extra as Map<String, dynamic>;
                       return SaveInvoiceScreen(
-                        shop: extra['shop'] as String,
+                        // shop: extra['shop'] as String,
                         total: extra['total'] as int,
                       );
                     },

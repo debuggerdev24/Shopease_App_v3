@@ -19,18 +19,6 @@ class ChecklistProvider extends ChangeNotifier {
 
   ChecklistProvider(this.service);
 
-  final List<Map<String, String>> valueList = [
-    {
-      'name': 'Value 1',
-    },
-    {
-      'name': 'Value 2',
-    },
-    {
-      'name': 'Value 3',
-    },
-  ];
-
   /// Values
 
   bool _isLoading = false;
@@ -41,12 +29,11 @@ class ChecklistProvider extends ChangeNotifier {
   Shop? _selectedShop;
   final List<Shop> _shops = [];
   final List<Shop> _filteredShops = [];
-  List<String> _selectedShopFilter = [];
+  final List<String> _selectedShopFilter = [];
   final Set<String> _shopLoacations = <String>{};
 
-  final List<History> _histories = [];
   final List<Map<String, dynamic>> _historylist = historyData;
-
+  String? _currentHistId;
   int _currentTab = 0;
 
   /// Getters
@@ -55,6 +42,7 @@ class ChecklistProvider extends ChangeNotifier {
   List<Product> get checklist => _checklist;
   List<Product> get selectedChecklists => _selectedChecklists;
   bool get isAllSelected => _isAllSelected;
+  String? get currentHistId => _currentHistId;
 
   Shop? get selectedShop => _selectedShop;
   List<Shop> get shops => _shops;
@@ -62,7 +50,6 @@ class ChecklistProvider extends ChangeNotifier {
   List<String> get selectedShopFilter => _selectedShopFilter;
   Set<String> get shopLoacations => _shopLoacations;
 
-  List<History> get histories => _histories;
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
@@ -71,11 +58,9 @@ class ChecklistProvider extends ChangeNotifier {
   File? imagefile;
   String imageurl = '';
   String? uploadedFilePath;
-  int _selectedValue = -1;
   bool _searchable = false;
 
   bool get searchable => _searchable;
-  int get selectedValueIndex => _selectedValue;
 
   void changeShopFilter(String newFilter) {
     if (_selectedShopFilter.contains(newFilter)) {
@@ -88,21 +73,11 @@ class ChecklistProvider extends ChangeNotifier {
 
   void clearShopFilter() {
     _selectedShopFilter.clear();
-    notifyListeners();
-  }
-
-  void toggleSearchable() {
-    _searchable = !_searchable;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
-    notifyListeners();
-  }
-
-  void changeSelectedValue(int newIndex) {
-    _selectedValue = newIndex;
     notifyListeners();
   }
 
@@ -116,14 +91,12 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteChecklistItem(String itemId) {
-    _checklist.removeWhere((element) => element.itemId == itemId);
-    notifyListeners();
+  void changeCutterntHistId(String? newId) {
+    _currentHistId = newId;
   }
 
-  void deleteHistory(String itemId) {
-    _histories.removeWhere((element) => element.histId == itemId);
-    notifyListeners();
+  void deleteChecklistItem(String itemId) {
+    _checklist.removeWhere((element) => element.itemId == itemId);
   }
 
   addToHistory(Map<String, dynamic> newData) {
@@ -310,7 +283,8 @@ class ChecklistProvider extends ChangeNotifier {
   }) async {
     try {
       setLoading(true);
-      final res = await service.putInventoryFromchecklist(itemIds: itemIds);
+      final res = await service.putInventoryFromchecklist(
+          itemIds: itemIds, shopName: selectedShop!.shopName);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);
@@ -318,6 +292,7 @@ class ChecklistProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
+        changeCutterntHistId(res.data['hist_id']);
         for (String itemId in itemIds) {
           _checklist.removeWhere((element) => element.itemId == itemId);
         }
@@ -336,13 +311,13 @@ class ChecklistProvider extends ChangeNotifier {
   }
 
   Future<void> deleteChecklistItems({
-    required List<String> data,
+    required List<String> itemIds,
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
     try {
       setLoading(true);
-      final res = await service.deletChecklistItems(itemIds: data);
+      final res = await service.deletChecklistItems(itemIds: itemIds);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);
@@ -350,8 +325,8 @@ class ChecklistProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
-        for (String itemId in data) {
-          _checklist.removeWhere((element) => element.itemId == itemId);
+        for (String itemId in itemIds) {
+          deleteChecklistItem(itemId);
         }
         notifyListeners();
         onSuccess?.call();
@@ -384,9 +359,8 @@ class ChecklistProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         _shops.clear();
-        _filteredShops.clear();
         _shops.addAll((res.data as List).map((e) => Shop.fromJson(e)));
-        _filteredShops.addAll(_shops);
+        filterShops();
         for (Shop shop in _shops) {
           _shopLoacations.add(shop.shopLocation ?? '');
         }
@@ -431,67 +405,6 @@ class ChecklistProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while putShops: $e");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /// History - APIs
-
-  Future<void> getHistoryItems({
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await service.getHistoryItems();
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        _histories.clear();
-        _histories.addAll((res.data as List).map((e) => History.fromJson(e)));
-        notifyListeners();
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e) {
-      debugPrint("Error while getHistoryItems: $e");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> puthistoryItems({
-    required List<Map<String, dynamic>> data,
-    required bool isEdit,
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await service.putHistoryItems(data: data, isEdit: isEdit);
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e) {
-      debugPrint("Error while puthistoryItems: $e");
     } finally {
       setLoading(false);
     }

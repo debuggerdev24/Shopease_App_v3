@@ -120,10 +120,12 @@ class _MultipleChecklistSelectionScreenState
                       itemIds: provider.selectedChecklists
                           .map((e) => e.itemId!)
                           .toList(),
-                      onSuccess: () {
+                      onSuccess: () async {
                         CustomToast.showSuccess(context,
                             '${provider.selectedChecklists.length} Products purchased.');
                         context.goNamed(AppRoute.uploadInvoice.name);
+
+                        // context.goNamed(AppRoute.checkList.name);
                       },
                     );
                     // provider.clearSelectedProducts();

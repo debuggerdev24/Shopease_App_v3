@@ -37,7 +37,7 @@ class History {
         itemCount: int.tryParse(json["item_count"]),
         updatedDate: json["updated_date"] == null
             ? null
-            : DateTime.parse(json["updated_date"]),
+            : DateTime.tryParse(json["updated_date"]),
         shopName: json["shop_name"],
         imageUrl: json["image_url"],
         totalPrice: json['total_price'],

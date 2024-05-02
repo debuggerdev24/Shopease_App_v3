@@ -12,9 +12,11 @@ import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
+import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
@@ -40,17 +42,19 @@ class _ChecklistScreenState extends State<ChecklistScreen>
   @override
   void initState() {
     super.initState();
-    _tabsController = TabController(length: 2, vsync: this);
+    _tabsController = TabController(length: 2, vsync: this)
+      ..addListener(
+        () {
+          context
+              .read<ChecklistProvider>()
+              .changeTab((_tabsController.animation?.value.round() ?? 0));
+        },
+      );
+    // _tabsController.animateTo(context.read<ChecklistProvider>().currentTab);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<ChecklistProvider>().getChecklistItems();
-      context.read<ChecklistProvider>().getHistoryItems();
+      context.read<HistoryProvider>().getHistoryItems();
     });
-  }
-
-  void _handleTabChange(int newIndex) {
-    final checklistProvider =
-        Provider.of<ChecklistProvider>(context, listen: false);
-    checklistProvider.changeTab(newIndex);
   }
 
   @override
@@ -83,13 +87,16 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 style: textStyle20SemiBold,
               )),
             ],
-            onTap: _handleTabChange,
+            onTap: provider.changeTab,
           ),
         ),
-        body: TabBarView(controller: _tabsController, children: [
-          _buildCurrentListView(provider),
-          _buildHistoryView(provider),
-        ]),
+        body: TabBarView(
+          controller: _tabsController,
+          children: [
+            _buildCurrentListView(provider),
+            _buildHistoryView(),
+          ],
+        ),
       );
     });
   }
@@ -105,7 +112,8 @@ class _ChecklistScreenState extends State<ChecklistScreen>
             } else {
               showSearch(
                 context: context,
-                delegate: HistorySearchDelegate(provider.histories),
+                delegate: HistorySearchDelegate(
+                    context.read<HistoryProvider>().filteredHistories),
               );
             }
           },
@@ -210,7 +218,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                                       AppRoute.multipleChecklistSelection.name);
                                 },
                                 onDelete: () async {
-                                  await provider.deleteChecklistItems(data: [
+                                  await provider.deleteChecklistItems(itemIds: [
                                     provider.checklist[index].itemId!
                                   ]);
                                 },
@@ -221,6 +229,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: AppButton(
+                      colorType: AppButtonColorType.secondary,
                       onPressed: () async {
                         if (provider.selectedChecklists.isEmpty) {
                           CustomToast.showWarning(
@@ -234,16 +243,16 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           return;
                         }
 
-                        await provider.putInventoryFromChecklist(
-                          itemIds: provider.selectedChecklists
-                              .map((e) => e.itemId!)
-                              .toList(),
-                          onSuccess: () {
-                            CustomToast.showSuccess(context,
-                                '${provider.selectedChecklists.length} Products purchased.');
-                            context.goNamed(AppRoute.uploadInvoice.name);
-                          },
-                        );
+                        // await provider.putInventoryFromChecklist(
+                        //   itemIds: provider.selectedChecklists
+                        //       .map((e) => e.itemId!)
+                        //       .toList(),
+                        //   onSuccess: () {
+                        //     CustomToast.showSuccess(context,
+                        //         '${provider.selectedChecklists.length} Products purchased.');
+                        //     context.goNamed(AppRoute.uploadInvoice.name);
+                        //   },
+                        // );
                       },
                       text:
                           'Buy products (${provider.selectedChecklists.length})'),
@@ -252,123 +261,120 @@ class _ChecklistScreenState extends State<ChecklistScreen>
           );
   }
 
-  Widget _buildHistoryView(ChecklistProvider provider) {
+  Widget _buildHistoryView() {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
-            child: Row(
-              children: [
-                10.horizontalSpace,
-                Text(
-                  '${provider.histories.length} Items',
-                ),
-                const Spacer(),
-                InkWell(
-                  onTap: () => _showFilterSheet(context, provider),
-                  child: SvgPicture.asset(AppAssets.filterIcon),
-                ),
-                8.w.horizontalSpace,
-              ],
-            ),
-          ),
-          ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => HistorylistTile(
-                    product: provider.histories[index],
-                    isFromInvoice: false,
-                    onDelete: () {
-                      provider.deleteHistory(provider.histories[index].histId);
-                    },
+      child: Consumer<HistoryProvider>(builder: (context, provider, _) {
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+              child: Row(
+                children: [
+                  10.horizontalSpace,
+                  Text(
+                    '${provider.histories.length} Items',
                   ),
-              separatorBuilder: (context, index) => 10.verticalSpace,
-              itemCount: provider.histories.length),
-        ],
-      ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () => _showHistoryFilterSheet(context),
+                    child: SvgPicture.asset(
+                      provider.selectedFilterMonth.isEmpty
+                          ? AppAssets.filterIcon
+                          : AppAssets.selectedFilterIcon,
+                    ),
+                  ),
+                  8.w.horizontalSpace,
+                ],
+              ),
+            ),
+            provider.filteredHistories.isEmpty
+                ? const Center(
+                    child: GlobalText('Not have any history.'),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => HistorylistTile(
+                          product: provider.filteredHistories[index],
+                          isFromInvoice: false,
+                        ),
+                    separatorBuilder: (context, index) => 10.verticalSpace,
+                    itemCount: provider.filteredHistories.length),
+          ],
+        );
+      }),
     );
   }
 }
 
-void _showFilterSheet(
-    BuildContext context, ChecklistProvider checklistProvider) {
+void _showHistoryFilterSheet(BuildContext context) {
   showModalBottomSheet(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
+      isDismissible: false,
       builder: (context) {
-        return Container(
-          width: double.infinity,
-          margin: EdgeInsets.symmetric(vertical: 10.sp),
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: SingleChildScrollView(
-            child: BounceInUp(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  GlobalText('Filter', textStyle: textStyle18SemiBold),
-                  20.h.verticalSpace,
-                  Column(
-                    children: checklistProvider.valueList
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      final int index = entry.key;
-                      final Map<String, String> filter = entry.value;
-
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            checklistProvider.changeSelectedValue(index);
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              checklistProvider.selectedValueIndex == index
-                                  ? Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 1.sp,
-                                        vertical: 1.sp,
-                                      ),
-                                      child: const SvgIcon(
-                                        AppAssets.check,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    )
-                                  : SizedBox(width: 20.sp),
-                              2.horizontalSpace, // Adjust the width as needed
-                              GlobalText(
-                                filter['name'].toString(),
-                                fontSize: 15.sp,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  30.h.verticalSpace,
-                  AppButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    text: 'Apply',
-                  ),
-                  10.h.verticalSpace,
-                  AppButton(
-                    colorType: AppButtonColorType.greyed,
-                    onPressed: () {
-                      context.pop();
-                    },
-                    text: 'Cancel',
-                  ),
-                ],
+        return Consumer<HistoryProvider>(builder: (context, provider, _) {
+          return Container(
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 10.sp),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: SingleChildScrollView(
+              child: BounceInUp(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    GlobalText('Filter', textStyle: textStyle18SemiBold),
+                    20.h.verticalSpace,
+                    Wrap(
+                      children: [
+                        'Jan',
+                        'Feb',
+                        'Mar',
+                        'Apr',
+                        'May',
+                        'Jun',
+                        'Jul',
+                        'Aug',
+                        'Sep',
+                        'Oct',
+                        'Nov',
+                        'Dec'
+                      ]
+                          .indexed
+                          .map(
+                            (e) => AppChip(
+                              text: e.$2,
+                              isSelected: provider.selectedFilterMonth
+                                  .contains(e.$1 + 1),
+                              onTap: () {
+                                provider.changeHistoryFilter(e.$1 + 1);
+                              },
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    30.h.verticalSpace,
+                    AppButton(
+                      onPressed: () {
+                        provider.filterHistories();
+                        context.pop();
+                      },
+                      text: 'Apply',
+                    ),
+                    10.h.verticalSpace,
+                    AppButton(
+                      colorType: AppButtonColorType.greyed,
+                      onPressed: () {
+                        context.pop();
+                      },
+                      text: 'Cancel',
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
+        });
       });
 }

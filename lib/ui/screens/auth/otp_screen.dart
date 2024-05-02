@@ -148,7 +148,7 @@ class _OtpScreenState extends State<OtpScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
+            children: [  
               Text(
                 'Time Remaining: ',
                 style: textStyle14,
@@ -167,7 +167,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   // Custom format
                 },
-                duration: const Duration(seconds: 15),
+                duration: const Duration(seconds: 60),
                 style: textStyle12,
                 onTimeOver: () {
                   context.read<AuthProvider>().setNeedToResendOTP(true);

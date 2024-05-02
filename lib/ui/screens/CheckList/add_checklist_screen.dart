@@ -14,10 +14,12 @@ class AddChecklistScreen extends StatefulWidget {
     super.key,
     this.isEdit = false,
     this.isFromScan = false,
+    this.isReplace = false,
     this.product,
   });
 
   final bool isEdit;
+  final bool isReplace;
   final Product? product;
   final bool isFromScan;
 
@@ -36,6 +38,11 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
       Consumer<ChecklistProvider>(builder: (context, provider, _) {
         return AddItemFormWidget(
           isEdit: widget.isEdit,
+          title: widget.isReplace
+              ? 'Replace Manually'
+              : widget.isEdit
+                  ? 'Edit'
+                  : 'Add manually',
           isFromScan: widget.isFromScan,
           product: widget.product,
           isLoading: provider.isLoading,

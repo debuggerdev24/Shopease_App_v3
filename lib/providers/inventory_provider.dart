@@ -163,9 +163,8 @@ class InventoryProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         _products.clear();
-        _filteredProducts.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
-        _filteredProducts.addAll(_products);
+        filterProducts();
         notifyListeners();
         onSuccess?.call();
       } else {

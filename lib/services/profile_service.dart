@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
+import 'package:shopease_app_flutter/utils/utilas.dart';
 
 import 'base_api_service.dart';
 
@@ -34,7 +35,7 @@ class ProfileService implements BaseProfileService {
 
     for (Map<String, dynamic> record in data) {
       if (!isEdit && record.containsKey('profile_image')) {
-        record['profile_image'] = getBse64String(record['profile_image']);
+        record['profile_image'] = Utils.getBse64String(record['profile_image']);
       }
       // recordMap['item_details'] = record;
       (formData['records'] as List).add({'profile_details': record});
@@ -53,10 +54,5 @@ class ProfileService implements BaseProfileService {
         data: formData,
       );
     }
-  }
-
-  String getBse64String(String filePath) {
-    final bytes = File(filePath).readAsBytesSync();
-    return base64Encode(bytes);
   }
 }

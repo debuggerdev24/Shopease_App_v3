@@ -20,7 +20,6 @@ class ChecklistTile extends StatefulWidget {
     super.key,
     required this.product,
     this.onDelete,
-    this.onChangeBrand,
     this.onLongPress,
     this.isSlideEnabled = true,
   });
@@ -28,7 +27,6 @@ class ChecklistTile extends StatefulWidget {
   final Product product;
   final VoidCallback? onDelete;
   final VoidCallback? onLongPress;
-  final VoidCallback? onChangeBrand;
   final bool isSlideEnabled;
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
@@ -183,17 +181,25 @@ class _ChecklistTileState extends State<ChecklistTile>
                   40.h.verticalSpace,
                   AppButton(
                       onPressed: () {
-                        widget.onChangeBrand?.call();
                         _slideController.close();
-                        context.pushNamed(AppRoute.scanAndAddScreen.name,
-                            extra: {'isReplace': true, 'isInvoice': false});
+                        context.pop();
+                        context
+                            .pushNamed(AppRoute.scanAndAddScreen.name, extra: {
+                          'isReplace': true,
+                          'isFromChecklist': true,
+                          // 'isInvoice': false,
+                        });
                       },
                       colorType: AppButtonColorType.primary,
                       text: 'Scan And Replace'),
                   10.verticalSpace,
                   AppButton(
                     onPressed: () {
-                      context.pushNamed(AppRoute.replaceManually.name);
+                      _slideController.close();
+                      context.pop();
+                      context.pushNamed(AppRoute.addChecklistForm.name, extra: {
+                        'isReplace': true,
+                      });
                     },
                     text: 'Replace Manually',
                     colorType: AppButtonColorType.secondary,

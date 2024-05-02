@@ -77,7 +77,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Container(
-                    height: 250.h,
+                    height:
+                    
+                    
+                    
+                    
+                     250.h,
                     // width:.
                     decoration: BoxDecoration(
                       border: Border.symmetric(
@@ -196,7 +201,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               onPressed: () async {
                 if (widget.product.isInChecklist == true ||
                     widget.isFromChecklist) {
-                  context.read<ChecklistProvider>().putInventoryFromChecklist(
+                  context.read<ChecklistProvider>().deleteChecklistItems(
                       itemIds: [widget.product.itemId!],
                       onSuccess: () {
                         provider.getInventoryItems();

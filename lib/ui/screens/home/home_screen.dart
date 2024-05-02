@@ -1,13 +1,9 @@
-import 'dart:async';
-import 'dart:developer';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shopease_app_flutter/models/product_model.dart';
-import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory_search_delegate.dart';
@@ -21,7 +17,6 @@ import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
-import '../../widgets/app_txt_field.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -163,7 +158,10 @@ class _HomeScreenState extends State<HomeScreen>
           InkWell(
             onTap: showFilterSheet,
             child: SvgPicture.asset(
-              AppAssets.selectedFilterIcon,
+              (provider.selectedCategoryFilters.isEmpty &&
+                      provider.selectedInventoryLevelFilter == null)
+                  ? AppAssets.filterIcon
+                  : AppAssets.selectedFilterIcon,
               width: 22.h,
               height: 22.h,
             ),
@@ -194,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen>
             },
             onAddToCart: () {
               if (provider.filteredProducts[index].isInChecklist == true) {
-                context.read<ChecklistProvider>().putInventoryFromChecklist(
+                context.read<ChecklistProvider>().deleteChecklistItems(
                     itemIds: [provider.filteredProducts[index].itemId!],
                     onSuccess: () {
                       provider.addToChecklist(

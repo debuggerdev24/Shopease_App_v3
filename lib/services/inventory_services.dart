@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
+import 'package:shopease_app_flutter/utils/utilas.dart';
 
 abstract class BaseInventoryService {
   Future<Response<dynamic>?> getInventoryItems();
@@ -38,7 +39,7 @@ class InventoryService implements BaseInventoryService {
 
     for (Map<String, dynamic> record in data) {
       if (!isEdit && record.containsKey('image_url')) {
-        record['image_url'] = getBse64String(record['image_url']);
+        record['image_url'] = Utils.getBse64String(record['image_url']);
       }
       // recordMap['item_details'] = record;
       (formData['records'] as List).add({'item_details': record});
@@ -70,10 +71,5 @@ class InventoryService implements BaseInventoryService {
   @override
   Future<Response<dynamic>?> getCategories() async {
     return await BaseRepository().post(ApiUrl.getCategories);
-  }
-
-  String getBse64String(String filePath) {
-    final bytes = File(filePath).readAsBytesSync();
-    return base64Encode(bytes);
   }
 }
