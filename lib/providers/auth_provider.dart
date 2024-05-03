@@ -102,7 +102,7 @@ class AuthProvider extends ChangeNotifier {
         onSuccess?.call();
       } else {
         setNeedToResendOTP(true);
-        onError?.call(res.data["error"] ?? Constants.commonAuthErrMsg);
+        onError?.call('Invalid OTP.');
       }
     } on DioException {
       rethrow;

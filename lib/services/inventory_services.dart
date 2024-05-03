@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
+import 'package:shopease_app_flutter/utils/utilas.dart';
 
 abstract class BaseInventoryService {
   Future<Response<dynamic>?> getInventoryItems();
@@ -14,8 +15,7 @@ abstract class BaseInventoryService {
   });
   Future<Response<dynamic>?> deleteInventoryItems(
       {required List<String> itemIds});
-  // Future<Response<dynamic>?> putToChecklist(
-  //     {required List<String> itemIds});
+  Future<Response<dynamic>?> getCategories();
 }
 
 class InventoryService implements BaseInventoryService {
@@ -38,8 +38,9 @@ class InventoryService implements BaseInventoryService {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
-      if (!isEdit && record.containsKey('image_url')) {
-        record['image_url'] = getBse64String(record['image_url']);
+      if ((record['item_image'] != null) &&
+          !record['item_image'].toString().startsWith('http')) {
+        record['item_image'] = Utils.getBse64String(record['item_image']);
       }
       // recordMap['item_details'] = record;
       (formData['records'] as List).add({'item_details': record});
@@ -68,16 +69,8 @@ class InventoryService implements BaseInventoryService {
     });
   }
 
-  // @override
-  // Future<Response<dynamic>?> putToChecklist(
-  //     {required List<String> itemIds}) async {
-  //   return await BaseRepository().post(ApiUrl.putToChecklist, data: {
-  //     'records': itemIds.map((e) => {"item_id": e}).toList()
-  //   });
-  // }
-
-  String getBse64String(String filePath) {
-    final bytes = File(filePath).readAsBytesSync();
-    return base64Encode(bytes);
+  @override
+  Future<Response<dynamic>?> getCategories() async {
+    return await BaseRepository().post(ApiUrl.getCategories);
   }
 }

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
+import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/styles.dart';
 
 class TabScreen extends StatefulWidget {
   const TabScreen({
@@ -42,6 +46,7 @@ class _TabScreenState extends State<TabScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<ChecklistProvider>().getChecklistItems();
   }
 
   @override
@@ -79,11 +84,13 @@ class _TabScreenState extends State<TabScreen> {
 
         if (index == 1) {
           context.read<ChecklistProvider>().getChecklistItems();
-          context.read<ChecklistProvider>().getHistoryItems();
+          context.read<HistoryProvider>().getHistoryItems();
         }
 
         if (index == 2) {
-          context.read<ProfileProvider>().getProfile();
+          context.read<ProfileProvider>().getProfile(onSuccess: () {
+            context.read<ProfileProvider>().getAllProfile();
+          });
         }
 
         goToBranch(index);
@@ -93,10 +100,13 @@ class _TabScreenState extends State<TabScreen> {
           svgIcon: AppAssets.menu,
           isSelected: widget.navigationShell.currentIndex == 0,
         ),
-        KBottomNavItem(
-          svgIcon: AppAssets.addtocart,
-          isSelected: widget.navigationShell.currentIndex == 1,
-        ),
+        Consumer<ChecklistProvider>(builder: (context, provider, _) {
+          return KBottomNavItem(
+            svgIcon: AppAssets.addtocart,
+            isSelected: widget.navigationShell.currentIndex == 1,
+            count: provider.checklist.length,
+          );
+        }),
         KBottomNavItem(
           isSelected: widget.navigationShell.currentIndex == 2,
           svgIcon: AppAssets.person,
@@ -118,7 +128,7 @@ class KBottomNavBar extends StatefulWidget {
     this.currentIndex = 0,
   });
 
-  final List<KBottomNavItem> items;
+  final List<Widget> items;
   final ValueChanged<int>? onTap;
   final int currentIndex;
 
@@ -155,10 +165,12 @@ class KBottomNavItem extends StatelessWidget {
     super.key,
     required this.svgIcon,
     this.isSelected = false,
+    this.count,
   });
 
   final String svgIcon;
   final bool isSelected;
+  final int? count;
 
   KBottomNavItem copyWith(TextStyle? labelStyle) => KBottomNavItem(
         svgIcon: svgIcon,
@@ -166,10 +178,34 @@ class KBottomNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgIcon(
-      svgIcon,
-      size: 23,
-      color: isSelected ? AppColors.orangeColor : AppColors.whiteColor,
+    return SizedBox(
+      height: 50.h,
+      width: 50.h,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SvgIcon(
+            svgIcon,
+            size: 23,
+            color: isSelected ? AppColors.orangeColor : AppColors.whiteColor,
+          ),
+          if (count != null)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: CircleAvatar(
+                radius: 10,
+                backgroundColor: AppColors.redColor,
+                child: GlobalText(
+                  count.toString(),
+                  textStyle: textStyle12.copyWith(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            )
+        ],
+      ),
     );
   }
 }

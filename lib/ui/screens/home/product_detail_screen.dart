@@ -19,9 +19,14 @@ import '../../widgets/app_icon_button.dart';
 import '../../widgets/global_text.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  const ProductDetailScreen({super.key, required this.product});
+  const ProductDetailScreen({
+    super.key,
+    required this.product,
+    this.isFromChecklist = false,
+  });
 
   final Product product;
+  final bool isFromChecklist;
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -45,7 +50,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: AppIconButton(
                 onTap: () {
                   context.pushNamed(
-                    AppRoute.addinventoryForm.name,
+                    AppRoute.addInventoryForm.name,
                     extra: {
                       'isEdit': true,
                       'details': widget.product,
@@ -72,7 +77,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Container(
-                    height: 250.h,
+                    height:
+                    
+                    
+                    
+                    
+                     250.h,
                     // width:.
                     decoration: BoxDecoration(
                       border: Border.symmetric(
@@ -171,11 +181,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
         child: Consumer<InventoryProvider>(builder: (context, provider, _) {
           return AppButton(
-              colorType: widget.product.isInChecklist == true
-                  ? AppButtonColorType.secondary
-                  : AppButtonColorType.primary,
+              colorType:
+                  widget.product.isInChecklist == true || widget.isFromChecklist
+                      ? AppButtonColorType.secondary
+                      : AppButtonColorType.primary,
               isLoading: provider.isLoading,
-              icon: widget.product.isInChecklist == true
+              icon: widget.product.isInChecklist == true ||
+                      widget.isFromChecklist
                   ? const SizedBox()
                   : Padding(
                       padding:
@@ -186,19 +198,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         size: 20,
                       ),
                     ),
-              onPressed: () {
-                if (widget.product.isInChecklist == true) {
-                  context.read<ChecklistProvider>().putInventoryFromChecklist(
-                      data: [widget.product.itemId!]);
+              onPressed: () async {
+                if (widget.product.isInChecklist == true ||
+                    widget.isFromChecklist) {
+                  context.read<ChecklistProvider>().deleteChecklistItems(
+                      itemIds: [widget.product.itemId!],
+                      onSuccess: () {
+                        provider.getInventoryItems();
+                        if (widget.isFromChecklist) {
+                          context.read<ChecklistProvider>().getChecklistItems();
+                        }
+                        context.pop();
+                      });
                 } else {
                   context.read<ChecklistProvider>().putChecklistFromInventory(
-                      data: [widget.product.itemId!]);
+                      data: [widget.product.itemId!],
+                      onSuccess: () {
+                        provider.getInventoryItems();
+                        context.goNamed(AppRoute.home.name);
+                      });
                 }
-                context.goNamed(AppRoute.home.name);
               },
-              text: widget.product.isInChecklist == true
-                  ? 'Remove from Checklist'
-                  : 'Add to Checklist');
+              text:
+                  widget.product.isInChecklist == true || widget.isFromChecklist
+                      ? 'Remove from Checklist'
+                      : 'Add to Checklist');
         }),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

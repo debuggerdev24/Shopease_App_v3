@@ -40,7 +40,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void startResendOTPTimer() {
     _resendOTPTimer =
-        Timer.periodic(const Duration(seconds: 15), (Timer timer) {});
+        Timer.periodic(const Duration(seconds: 60), (Timer timer) {});
   }
 
   void resendOTP() {
@@ -167,7 +167,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   // Custom format
                 },
-                duration: const Duration(seconds: 15),
+                duration: const Duration(seconds: 60),
                 style: textStyle12,
                 onTimeOver: () {
                   context.read<AuthProvider>().setNeedToResendOTP(true);
@@ -197,25 +197,6 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildRetryLine(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-          children: [
-            TextSpan(
-                text: 'Didn\'t recieve it? ',
-                style: textStyle14.copyWith(color: AppColors.blackGreyColor)),
-            TextSpan(
-              text: 'Retry',
-              style: textStyle16.copyWith(color: AppColors.blackGreyColor),
-              recognizer: TapGestureRecognizer()..onTap = () {},
-            ),
-          ],
-          style: textStyle16.copyWith(
-            color: AppColors.orangeColor,
-          )),
     );
   }
 }

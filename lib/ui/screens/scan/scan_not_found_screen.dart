@@ -7,7 +7,11 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class ScanNotFoundScreen extends StatelessWidget {
-  const ScanNotFoundScreen({super.key});
+  const ScanNotFoundScreen(
+      {super.key, this.isFromChecklist = false, this.isReplace = false});
+
+  final bool isFromChecklist;
+  final bool isReplace;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +44,17 @@ class ScanNotFoundScreen extends StatelessWidget {
               ),
               AppButton(
                 onPressed: () {
-                  context.goNamed(
-                    AppRoute.addinventoryForm.name,
-                    extra: {'isEdit': false},
-                  );
+                  if (isFromChecklist) {
+                    context.goNamed(AppRoute.addChecklistForm.name, extra: {
+                      'isReplace': isReplace,
+                    });
+                  } else {
+                    context.goNamed(
+                      AppRoute.addInventoryForm.name,
+                    );
+                  }
                 },
-                text: 'Add Manually',
+                text: '${isReplace ? 'Replace' : 'Add'} Manually',
                 colorType: AppButtonColorType.primary,
               )
             ],

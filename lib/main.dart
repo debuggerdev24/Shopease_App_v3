@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/providers/scan_provider.dart';
@@ -8,6 +9,7 @@ import 'package:shopease_app_flutter/providers/theme_provider.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 import 'package:shopease_app_flutter/services/checklist_service.dart';
+import 'package:shopease_app_flutter/services/history_service.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/services/profile_service.dart';
 import 'package:shopease_app_flutter/services/scan_service.dart';
@@ -51,6 +53,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ProfileProvider>(
           create: (_) => ProfileProvider(ProfileService()),
+        ),
+        ChangeNotifierProvider<HistoryProvider>(
+          create: (_) => HistoryProvider(Historyservice()),
         ),
       ],
       child: buildMyapp(),

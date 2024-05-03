@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,22 +16,21 @@ import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
+import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class HistorylistTile extends StatefulWidget {
   const HistorylistTile({
     super.key,
+    required this.onAddToChecklistTap,
     required this.product,
-    this.onDelete,
-    this.onChangeBrand,
     this.isFromInvoice = true,
   });
 
   final History product;
   final bool isFromInvoice;
-  final VoidCallback? onDelete;
-  final VoidCallback? onChangeBrand;
+  final VoidCallback onAddToChecklistTap;
   @override
   State<HistorylistTile> createState() => _HistorylistTileState();
 }
@@ -48,21 +50,14 @@ class _HistorylistTileState extends State<HistorylistTile>
     return Slidable(
       controller: _slideController,
       endActionPane: _buildRightSwipeActions(widget.product),
-      child: ListTile(
+      child: GestureDetector(
           onTap: () {
-            widget.isFromInvoice == false
-                ? context.pushNamed(
-                    AppRoute.historyDetail.name,
-                    extra: widget.product,
-                  )
-                : context.pushNamed(AppRoute.saveInvoice.name, extra: {
-                    'shop': widget.product.shopName,
-                    'total': widget.product.totalPrice
-                  });
-            ;
+            context.pushNamed(
+              AppRoute.historyDetail.name,
+              extra: widget.product,
+            );
           },
-          contentPadding: EdgeInsets.zero,
-          title: Container(
+          child: Container(
             color: Colors.grey[800]!.withOpacity(0.05),
             width: double.infinity,
             child: Row(
@@ -71,67 +66,95 @@ class _HistorylistTileState extends State<HistorylistTile>
                 const SizedBox(width: 10),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 70.h,
-                    width: 70.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.whiteColor,
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          widget.product.imageUrl ?? Constants.placeholdeImg,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (widget.product.imageUrl == null ||
+                          widget.product.imageUrl?.isEmpty == true) {
+                        /// Implement add/update invoice here
+                        context.pushNamed(
+                          AppRoute.saveInvoice.name,
+                          extra: {
+                            'shop': widget.product.shopName,
+                          },
+                        );
+                      } else {
+                        _showImgSheet();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 70.h,
+                      width: 70.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        image: (widget.product.imageUrl == null ||
+                                widget.product.imageUrl?.isEmpty == true)
+                            ? null
+                            : DecorationImage(
+                                image: NetworkImage(
+                                  widget.product.imageUrl!,
+                                ),
+                                fit: BoxFit.fill,
+                              ),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
+                          (widget.product.imageUrl == null ||
+                                  widget.product.imageUrl?.isEmpty == true)
+                              ? AppAssets.addInvoice
+                              : AppAssets.zoomIcon,
                         ),
-                        fit: BoxFit.fill,
                       ),
                     ),
                   ),
                 ),
-
-                const SizedBox(
-                    width: 8), // Assuming 8.horizontalSpace is a SizedBox
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.isFromInvoice) {
-                          context.pushNamed(AppRoute.saveInvoice.name, extra: {
-                            'shop': widget.product.shopName,
-                            'total': widget.product.totalPrice
-                          });
-                        }
-                      },
-                      child: Text(
-                        '${widget.product.itemCount ?? 0} products',
-                        style: textStyle16.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {
+                          if (widget.isFromInvoice) {
+                            context.pushNamed(AppRoute.saveInvoice.name,
+                                extra: {
+                                  'shop': widget.product.shopName,
+                                  'total': widget.product.totalPrice
+                                });
+                          }
+                        },
+                        child: Text(
+                          '${widget.product.itemCount ?? 0} products',
+                          style: textStyle16.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10.h),
-                    if (widget.isFromInvoice)
-                      Text(
-                        '\$ ${widget.product.totalPrice}',
-                        style: textStyle16.copyWith(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            overflow: TextOverflow.ellipsis),
-                      ),
-                    const SizedBox(),
-                  ],
-                ),
-                const Spacer(), // Assuming 8.horizontalSpace is a SizedBox
+                      SizedBox(height: 10.h),
+                      if (widget.isFromInvoice)
+                        Text(
+                          '\$ ${widget.product.totalPrice}',
+                          style: textStyle16.copyWith(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                      const SizedBox(),
+                    ],
+                  ),
+                ), // Assuming 8.horizontalSpace is a SizedBox
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     const SizedBox(height: 10),
                     GlobalText(
-                      'today',
+                      widget.product.updatedDate?.toMonthDD ?? '',
                       textStyle: textStyle16.copyWith(
                           fontSize: 12, overflow: TextOverflow.ellipsis),
                     ),
@@ -140,7 +163,9 @@ class _HistorylistTileState extends State<HistorylistTile>
                       maxLine: 3,
                       textStyle: textStyle16.copyWith(
                           decoration: TextDecoration.underline,
+                          decorationColor: AppColors.orangeColor,
                           fontSize: 15,
+                          height: 1,
                           overflow: TextOverflow.ellipsis,
                           color: AppColors.orangeColor,
                           fontWeight: FontWeight.w600),
@@ -163,12 +188,38 @@ class _HistorylistTileState extends State<HistorylistTile>
             icon: AppAssets.addToCheck,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
-              context.pushNamed(AppRoute.historyDetail.name, extra: {
-                'invoice': widget.product,
-                'count': widget.product.itemCount
-              });
+              widget.onAddToChecklistTap();
+              _slideController.close();
             },
           ),
         ],
       );
+
+  Future<void> _showImgSheet() async {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.all(10.h),
+            alignment: Alignment.topRight,
+            decoration: BoxDecoration(
+              color: AppColors.blackColor,
+              image: DecorationImage(
+                image: NetworkImage(
+                  widget.product.imageUrl ?? Constants.placeholdeImg,
+                ),
+              ),
+            ),
+            child: IconButton.filled(
+              onPressed: context.pop,
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.lightGreyColor,
+              ),
+              icon: const Icon(Icons.clear),
+            ),
+          );
+        });
+  }
 }

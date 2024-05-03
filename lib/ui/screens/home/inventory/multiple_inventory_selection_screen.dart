@@ -20,15 +20,16 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class MultipleSelectionScreen extends StatefulWidget {
-  const MultipleSelectionScreen({super.key});
+class MultipleInventorySelectionScreen extends StatefulWidget {
+  const MultipleInventorySelectionScreen({super.key});
 
   @override
-  State<MultipleSelectionScreen> createState() =>
-      _MultipleSelectionScreenState();
+  State<MultipleInventorySelectionScreen> createState() =>
+      _MultipleInventorySelectionScreenState();
 }
 
-class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
+class _MultipleInventorySelectionScreenState
+    extends State<MultipleInventorySelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<InventoryProvider>(builder: (context, provider, _) {
@@ -84,7 +85,7 @@ class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
                   children: [
                     10.horizontalSpace,
                     Text(
-                      '${provider.products.length} Products',
+                      '${provider.filteredProducts.length} Products',
                       style: textStyle16.copyWith(fontSize: 18),
                     ),
                     const Spacer(),
@@ -103,14 +104,16 @@ class _MultipleSelectionScreenState extends State<MultipleSelectionScreen> {
               ListView.separated(
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: provider.products.length,
+                  itemCount: provider.filteredProducts.length,
                   separatorBuilder: (context, index) => 10.h.verticalSpace,
                   itemBuilder: (BuildContext context, int index) {
                     return MultipleProductTile(
-                      product: provider.products[index],
+                      product: provider.filteredProducts[index],
+                      isSelected: provider.selectedProducts
+                          .contains(provider.filteredProducts[index]),
                       onSelectionChanges: (value) {
                         provider.addProductToSelected(
-                            value, provider.products[index]);
+                            value, provider.filteredProducts[index]);
                       },
                     );
                   }),

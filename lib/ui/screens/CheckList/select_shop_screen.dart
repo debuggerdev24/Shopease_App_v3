@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,7 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/shop_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/add_shop_form/add_shop_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
+import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_icon_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -34,7 +36,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ChecklistProvider>().shopFilter = null;
+    // context.read<ChecklistProvider>().clearShopFilter();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await context.read<ChecklistProvider>().getShops();
     });
@@ -77,57 +79,56 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
             )
           ],
         ),
-        body: Consumer<ChecklistProvider>(builder: (context, provider, _) {
-          return Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-                child: Row(
-                  children: [
-                    Text('${provider.filteredShops.length} Products'),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: _showFilterSheet,
-                      icon: SvgIcon(
-                        provider.selectedShopFilter == null
-                            ? AppAssets.filterIcon
-                            : AppAssets.selectedFilterIcon,
-                        size: 20.r,
-                        // color: AppColors.blackColor,
-                      ),
-                    )
-                  ],
-                ),
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+              child: Row(
+                children: [
+                  Text('${provider.filteredShops.length} Products'),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: _showFilterSheet,
+                    icon: SvgIcon(
+                      provider.selectedShopFilter.isEmpty
+                          ? AppAssets.filterIcon
+                          : AppAssets.selectedFilterIcon,
+                      size: 20.r,
+                      // color: AppColors.blackColor,
+                    ),
+                  )
+                ],
               ),
-              Expanded(
-                child: provider.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : provider.filteredShops.isEmpty
-                        ? Center(
-                            child: GlobalText(
-                              'You haven\'y added any shop yet.',
-                              textStyle: textStyle16,
-                            ),
-                          )
-                        : ListView.separated(
-                            itemCount: provider.filteredShops.length,
-                            separatorBuilder: (context, index) =>
-                                10.verticalSpace,
-                            itemBuilder: (context, index) {
-                              return ShopTile(
-                                shop: provider.filteredShops[index],
-                                isSelected: provider.selectedShop?.shopId ==
-                                    provider.filteredShops[index].shopId,
-                                onTap: () {
-                                  provider.changeSelectedShop(
-                                      provider.filteredShops[index].shopId);
-                                },
-                              );
-                            }),
-              )
-            ],
-          );
-        }),
+            ),
+            Expanded(
+              child: provider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : provider.filteredShops.isEmpty
+                      ? Center(
+                          child: GlobalText(
+                            'You haven\'t added any shop yet.',
+                            textStyle: textStyle16,
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: provider.filteredShops.length,
+                          separatorBuilder: (context, index) =>
+                              10.verticalSpace,
+                          itemBuilder: (context, index) {
+                            return ShopTile(
+                              shop: provider.filteredShops[index],
+                              isSelected: provider.selectedShop?.shopId ==
+                                  provider.filteredShops[index].shopId,
+                              onTap: () {
+                                provider.changeSelectedShop(
+                                    provider.filteredShops[index].shopId);
+                              },
+                            );
+                          },
+                        ),
+            )
+          ],
+        ),
       );
     });
   }
@@ -137,6 +138,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       showDragHandle: true,
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
       builder: (context) => Consumer<ChecklistProvider>(
         builder: (context, provider, _) {
           return AddShopFormWidget(onSubmit: submit);
@@ -151,13 +153,12 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       isEdit: false,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
-        CustomToast.showSuccess(
-            context, '${data['shop_name']} has been added.');
+        CustomToast.showSuccess(context, 'Shop has been added.');
         context.read<ChecklistProvider>().getShops();
         context.pop();
       },
     );
-  }
+  }   
 
   void _showFilterSheet() {
     showModalBottomSheet(
@@ -176,50 +177,22 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 children: [
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
                   20.h.verticalSpace,
-                  Column(
+                  Wrap(
+                    alignment: WrapAlignment.start,
                     children: provider.shopLoacations.indexed.map((e) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (provider.selectedShopFilter == e.$2) {
-                              provider.shopFilter = null;
-                              return;
-                            }
-                            provider.shopFilter = e.$2;
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              if (provider.selectedShopFilter == e.$2) ...[
-                                const SvgIcon(
-                                  AppAssets.check,
-                                  color: AppColors.primaryColor,
-                                ),
-                                20.w.horizontalSpace,
-                              ],
-                              GlobalText(
-                                e.$2,
-                                fontSize: 15.sp,
-                              ),
-                            ],
-                          ),
-                        ),
+                      return AppChip(
+                        text: e.$2,
+                        isSelected: provider.selectedShopFilter.contains(e.$2),
+                        onTap: () {
+                          provider.changeShopFilter(e.$2);
+                        },
                       );
                     }).toList(),
                   ),
                   30.h.verticalSpace,
                   AppButton(
-                      colorType: provider.selectedShopFilter == null
-                          ? AppButtonColorType.secondary
-                          : AppButtonColorType.primary,
+                      colorType: AppButtonColorType.primary,
                       onPressed: () {
-                        if (provider.selectedShopFilter == null) {
-                          CustomToast.showSuccess(
-                              context, 'Please select valid filter.');
-                          return;
-                        }
                         provider.filterShops();
                         context.pop();
                       },

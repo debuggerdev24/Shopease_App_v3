@@ -17,8 +17,8 @@ class KBackButton extends StatelessWidget {
     }
     return IconButton(
       onPressed: () {
-        onBackClick?.call();
         context.pop();
+        onBackClick?.call();
       },
       icon: SvgIcon(AppAssets.arrowLeft, color: color ?? AppColors.blackColor),
     );

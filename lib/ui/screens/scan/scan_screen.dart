@@ -14,11 +14,11 @@ class ScanScreen extends StatefulWidget {
   const ScanScreen({
     super.key,
     this.isReplace = false,
-    this.isInvoice = false,
+    // this.isInvoice = false,
     this.isFromChecklist = false,
   });
   final bool isReplace;
-  final bool isInvoice;
+  // final bool isInvoice;
   final bool isFromChecklist;
 
   @override
@@ -37,21 +37,13 @@ class _ScanScreenState extends State<ScanScreen> {
               )
             : AiBarcodeScanner(
                 appBar: AppBar(
-                  title: widget.isInvoice
-                      ? Text(
-                          "Scan & Add Invoice",
-                          style: textStyle20SemiBold.copyWith(fontSize: 24),
-                        )
-                      : widget.isReplace
-                          ? Text(
-                              "Scan & Replace",
-                              style: textStyle20SemiBold.copyWith(fontSize: 24),
-                            )
-                          : Text(
-                              "Scan & Add",
-                              style: textStyle20SemiBold.copyWith(fontSize: 24),
-                            ),
-                ),
+                    title: Text(
+                  /*widget.isInvoice
+                      ? "Scan & Add Invoice"
+                      :*/
+                  widget.isReplace ? "Scan & Replace" : "Scan & Add",
+                  style: textStyle20SemiBold.copyWith(fontSize: 24),
+                )),
                 controller: provider.mobileScanController,
                 onScan: (String value) {
                   log('scanned data : $value');
@@ -77,28 +69,34 @@ class _ScanScreenState extends State<ScanScreen> {
                     captureData,
                     onSuccess: () {
                       log('Capture barcode successfully');
-                      widget.isInvoice
+                      /*widget.isInvoice
                           ? context.goNamed(AppRoute.saveInvoice.name)
-                          : widget.isReplace
-                              ? context.goNamed(AppRoute.checkList.name)
-                              : widget.isFromChecklist
-                                  ? context.goNamed(
-                                      AppRoute.addChecklistForm.name,
-                                      extra: {
-                                          'isEdit': true,
-                                          'details': provider.scannedProduct,
-                                        })
-                                  : context.goNamed(
-                                      AppRoute.addinventoryForm.name,
-                                      extra: {
-                                          'isEdit': true,
-                                          'details': provider.scannedProduct,
-                                        });
+                          :*/
+                      /*widget.isReplace
+                          ? context.goNamed(AppRoute.checkList.name)
+                          :*/
+                      widget.isFromChecklist
+                          ? context
+                              .goNamed(AppRoute.addChecklistForm.name, extra: {
+                              'isEdit': true,
+                              'isFromScan': true,
+                              'isReplace': widget.isReplace,
+                              'details': provider.scannedProduct,
+                            })
+                          : context
+                              .goNamed(AppRoute.addInventoryForm.name, extra: {
+                              'isEdit': true,
+                              'isFromScan': true,
+                              'details': provider.scannedProduct,
+                            });
                     },
                     onError: (msg) {
                       context.pushReplacementNamed(
-                        AppRoute.scanNotFoundScreen.name,
-                      );
+                          AppRoute.scanNotFoundScreen.name,
+                          extra: {
+                            'isReplace': widget.isReplace,
+                            'isFromChecklist': widget.isFromChecklist,
+                          });
                     },
                   );
                 },

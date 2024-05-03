@@ -9,9 +9,13 @@ class ApiUrl {
 
   static const String refreshAuth = '/refreshauth';
 
+  static const String getCategories = '/getcategory';
+
   static const String getProfile = '/getprofile';
 
   static const String getAllProfile = '/getallprofile';
+
+  static const String putProfile = '/putprofile';
 
   static const String scanItem = '/scanitem';
 
@@ -32,6 +36,10 @@ class ApiUrl {
   static const String deleteChecklistItems = '/deletechecklistitems';
 
   static const String getHistoryItems = '/getpurchasehistory';
+
+  static const String getPurchaseHistoryDetails = '/getpurchasehistorydetails';
+
+  static const String putChecklistFromHistory = '/putchecklistfromhistory';
 
   static const String putHistoryItems = '/putpurchasehistory';
 

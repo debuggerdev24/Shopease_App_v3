@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -13,9 +14,12 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddInvoiceScreen extends StatefulWidget {
-  const AddInvoiceScreen({super.key, required this.shop, required this.total});
-  final String shop;
-  final int total;
+  const AddInvoiceScreen({
+    super.key,
+    /*required this.shop, required this.total*/
+  });
+  // final String shop;
+  // final int total;
   @override
   State<AddInvoiceScreen> createState() => _AddInvoiceScreenState();
 }
@@ -23,8 +27,8 @@ class AddInvoiceScreen extends StatefulWidget {
 class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
-    log("shop:${widget.shop}:::::total${widget.total}");
-    return Consumer<ChecklistProvider>(builder: (context, provider, _) {
+    // log("shop:${widget.shop}:::::total${widget.total}");
+    return Consumer<HistoryProvider>(builder: (context, provider, _) {
       return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -43,18 +47,22 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                 'Lorem Ipsum available, but the majority have suffered alteration in some form',
                 textStyle: textStyle14.copyWith(fontSize: 16),
               ),
-              Spacer(),
+              const Spacer(),
               AppButton(
-                  onPressed: () {
-                    context.pushNamed(AppRoute.scanAndAddScreen.name,
-                        extra: {'isReplace': false, 'isInvoice': true});
+                  onPressed: () async {
+                    await provider.selectFileFromCamera(onSuccess: () {
+                      context.pushNamed(AppRoute.saveInvoice.name,
+                          extra: {'total': 100});
+                    });
                   },
                   text: 'Add Invoice'),
               20.h.verticalSpace,
               AppButton(
-                onPressed: () {
-                  context.pushNamed(AppRoute.saveInvoice.name,
-                      extra: {'shop': widget.shop, 'total': widget.total});
+                onPressed: () async {
+                  await provider.selectFileFromGallery(onSuccess: () {
+                    context.pushNamed(AppRoute.saveInvoice.name,
+                        extra: {'total': 100});
+                  });
                 },
                 text: 'Upload from Gallery',
                 colorType: AppButtonColorType.secondary,

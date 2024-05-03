@@ -53,48 +53,44 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                 ),
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: provider.checklist
-                        .map(
-                          (e) => ChecklistTile(
-                            product: e,
-                            onDelete: () {
-                              provider.deleteChecklistItem(e.itemId!);
-                            },
-                            isSlideEnabled: true,
-                          ),
-                        )
-                        .toList(),
+                child: ListView.separated(
+                  itemBuilder: (context, index) => ChecklistTile(
+                    product: provider.selectedChecklists[index],
+                    onDelete: () {
+                      // provider.deleteChecklistItem(
+                      //     provider.checklist[index].itemId!);
+                    },
+                    isSlideEnabled: false,
                   ),
+                  separatorBuilder: (context, index) => 10.verticalSpace,
+                  itemCount: provider.selectedChecklists.length,
                 ),
               ),
               AppButton(
-                  onPressed: () {
-                    context.pushReplacementNamed(AppRoute.addInvoice.name,
-                        extra: {
-                          'shop': provider.selectedShop?.shopName.toString(),
-                          'total': 300
-                        });
+                  onPressed: () async {
+                    /// Add History
+                    // Map<String, dynamic> newData = {
+                    //   'shop': provider.selectedShop?.shopName.toString(),
+                    //   'total': 0,
+                    //   'img': AppAssets.addInvoice,
+                    //   'products': 2,
+                    //   'isInvoice': false
+                    // };
+
+                    // log("history $newData");
+                    // await provider.puthistoryItems(
+                    //     data: [newData], isEdit: false, onSuccess: () {});
+
+                    context.pushReplacementNamed(
+                      AppRoute.addInvoice.name,
+                    );
                   },
                   text: 'Upload Invoice'),
               20.h.verticalSpace,
               AppButton(
                 onPressed: () {
+                  provider.clearSelectedProducts();
                   context.pop();
-
-                  Map<String, dynamic> newData = {
-                    'shop': provider.selectedShop?.shopName.toString(),
-                    'total': 0,
-                    'img': AppAssets.addInvoice,
-                    'products': 2,
-                    'isInvoice': false
-                  };
-
-                  log("history $newData");
-                  provider.addToHistory(newData);
-
-                  context.goNamed(AppRoute.checkList.name);
                 },
                 text: 'Do it Later',
                 colorType: AppButtonColorType.secondary,

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/services/profile_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
@@ -18,15 +19,11 @@ class ProfileProvider extends ChangeNotifier {
   final TextEditingController _mobileController = TextEditingController();
   SharedPrefs sharedPrefs = SharedPrefs();
 
-  String? imagekey;
-  File? imagefile;
-  String imageurl = '';
-  String? uploadedFilePath;
   bool _set = false;
-  String username = '';
-  String phone = '';
   bool _isLoading = false;
+  bool _editProfileLoading = false;
   ProfileData? _profileData;
+  XFile? _selectedFile;
   List<ProfileData> _groupProfiles = [];
 
   bool get set => _set;
@@ -34,8 +31,10 @@ class ProfileProvider extends ChangeNotifier {
 
   int get selectedUserIndex => _selectedUser;
   bool get isLoading => _isLoading;
+  bool get editProfileLoading => _editProfileLoading;
   ProfileData? get profileData => _profileData;
   List<ProfileData> get groupProfiles => _groupProfiles;
+  XFile? get selectedFile => _selectedFile;
 
   void toggleSet(bool value) {
     _set = !set;
@@ -44,6 +43,11 @@ class ProfileProvider extends ChangeNotifier {
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
+    notifyListeners();
+  }
+
+  void setEditProfileLoading(bool newValue) {
+    _editProfileLoading = newValue;
     notifyListeners();
   }
 
@@ -67,6 +71,19 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String?> selectFile() async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null) return null;
+    _selectedFile = file;
+    notifyListeners();
+    return file.name;
+  }
+
+  void clearFile() {
+    _selectedFile = null;
+    notifyListeners();
+  }
+
   List<Map<String, dynamic>> _uninvitedUsers = [];
 
   List<Map<String, dynamic>> get uninvitedUsers => _uninvitedUsers;
@@ -74,48 +91,6 @@ class ProfileProvider extends ChangeNotifier {
   void updateUninvitedUsers() {
     _uninvitedUsers =
         userList.where((user) => user['invite'] == false).toList();
-    notifyListeners();
-  }
-
-  Future<void> openFilePicker(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-    if (result != null) {
-      final platformFile = result.files.single;
-      final fileSize = platformFile.size ?? 0; // File size in bytes
-
-      if (fileSize <= 5 * 1024 * 1024) {
-        // File size is less than or equal to 5MB
-        String? filePath = platformFile.path;
-        String fileName = File(filePath ?? '').path.split('/').last;
-        uploadedFilePath = fileName;
-        notifyListeners(); // Notify listeners that the state has changed
-      } else {
-        CustomToast.showWarning(
-            context, 'Please select a file smaller than 5MB.');
-      }
-    } else {
-      // User canceled the file picker
-    }
-  }
-
-  Future<void> uploadFile() async {
-    final result = await FilePicker.platform.pickFiles();
-
-    if (result == null) {
-      print('No file selected');
-      return;
-    }
-
-    // Upload file with its filename as the key
-    final platformFile = result.files.single;
-    final path = platformFile.path!;
-    final key = DateTime.now().toString() + platformFile.name;
-    final file = File(path);
-
-    imagekey = key;
-    imagefile = File(path);
-    uploadedFilePath = key;
     notifyListeners();
   }
 
@@ -166,6 +141,7 @@ class ProfileProvider extends ChangeNotifier {
         _groupProfiles.addAll(
           (res.data as List).map((e) => ProfileData.fromJson(e)),
         );
+        _groupProfiles.removeWhere((e) => e.userId == profileData?.userId);
         SharedPrefs().setUserId(_profileData?.userId ?? '');
         onSuccess?.call();
       } else {
@@ -175,6 +151,66 @@ class ProfileProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while getAllProfile: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> editProfile({
+    required List<Map<String, dynamic>> data,
+    required bool isEdit,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setEditProfileLoading(true);
+      final res = await services.editMyProfile(data: data, isEdit: isEdit);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while editProfile: $e");
+      debugPrint("Error while editProfile: $s");
+    } finally {
+      setEditProfileLoading(false);
+    }
+  }
+
+  Future<void> addProfileToGroup({
+    required List<Map<String, dynamic>> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.addProfile(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        getAllProfile();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while addProfile: $e");
+      debugPrint("Error while addProfile: $s");
     } finally {
       setLoading(false);
     }

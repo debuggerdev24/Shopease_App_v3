@@ -11,7 +11,6 @@ class NoSearchFound extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
       children: [
         Image.asset(AppAssets.noSearch),
         GlobalText(

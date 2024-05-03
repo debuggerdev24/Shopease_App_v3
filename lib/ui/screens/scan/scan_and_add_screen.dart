@@ -14,11 +14,11 @@ class ScanAndAddScreen extends StatefulWidget {
   const ScanAndAddScreen({
     super.key,
     this.isReplace = false,
-    this.isInvoice = false,
+    // this.isInvoice = false,
     this.isFromChecklist = false,
   });
   final bool isReplace;
-  final bool isInvoice;
+  // final bool isInvoice;
   final bool isFromChecklist;
   @override
   State<ScanAndAddScreen> createState() => _ScanAndAddScreenState();
@@ -30,11 +30,10 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.isInvoice
+          /*widget.isInvoice
               ? 'Scan & Add Invoice'
-              : widget.isReplace
-                  ? "Scan & Replace"
-                  : "Scan & Add",
+              :*/
+          widget.isReplace ? "Scan & Replace" : "Scan & Add",
           style: textStyle20SemiBold.copyWith(fontSize: 24),
         ),
       ),
@@ -55,7 +54,7 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
             context.pushNamed(
               AppRoute.scanScreen.name,
               extra: {
-                'isInvoice': widget.isInvoice,
+                // 'isInvoice': widget.isInvoice,
                 'isReplace': widget.isReplace,
                 'isFromChecklist': widget.isFromChecklist,
               },
@@ -68,8 +67,8 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
           AppButton(
             type: AppButtonWidthType.full,
             onPressed: () {
-              context.read<ScannerProvider>().initMobileController();
-              context.pushNamed(AppRoute.replaceManually.name);
+              context.goNamed(AppRoute.addChecklistForm.name,
+                  extra: {'isReplace': true});
             },
             text: "Replace Manually",
             colorType: AppButtonColorType.secondary,

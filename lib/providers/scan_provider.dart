@@ -150,6 +150,7 @@ class ScannerProvider extends ChangeNotifier {
       onError?.call(e.message ?? Constants.commonErrMsg);
     } catch (e) {
       debugPrint('Error while scanning code: $e');
+      onError?.call(Constants.commonErrMsg);
     } finally {
       setLoading(false);
     }
