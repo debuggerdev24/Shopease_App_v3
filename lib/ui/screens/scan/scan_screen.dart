@@ -72,22 +72,23 @@ class _ScanScreenState extends State<ScanScreen> {
                       /*widget.isInvoice
                           ? context.goNamed(AppRoute.saveInvoice.name)
                           :*/
-                      widget.isReplace
+                      /*widget.isReplace
                           ? context.goNamed(AppRoute.checkList.name)
-                          : widget.isFromChecklist
-                              ? context.goNamed(AppRoute.addChecklistForm.name,
-                                  extra: {
-                                      'isEdit': true,
-                                      'isFromScan': true,
-                                      'isReplace': widget.isReplace,
-                                      'details': provider.scannedProduct,
-                                    })
-                              : context.goNamed(AppRoute.addInventoryForm.name,
-                                  extra: {
-                                      'isEdit': true,
-                                      'isFromScan': true,
-                                      'details': provider.scannedProduct,
-                                    });
+                          :*/
+                      widget.isFromChecklist
+                          ? context
+                              .goNamed(AppRoute.addChecklistForm.name, extra: {
+                              'isEdit': true,
+                              'isFromScan': true,
+                              'isReplace': widget.isReplace,
+                              'details': provider.scannedProduct,
+                            })
+                          : context
+                              .goNamed(AppRoute.addInventoryForm.name, extra: {
+                              'isEdit': true,
+                              'isFromScan': true,
+                              'details': provider.scannedProduct,
+                            });
                     },
                     onError: (msg) {
                       context.pushReplacementNamed(

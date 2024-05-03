@@ -88,7 +88,9 @@ class _TabScreenState extends State<TabScreen> {
         }
 
         if (index == 2) {
-          context.read<ProfileProvider>().getProfile();
+          context.read<ProfileProvider>().getProfile(onSuccess: () {
+            context.read<ProfileProvider>().getAllProfile();
+          });
         }
 
         goToBranch(index);

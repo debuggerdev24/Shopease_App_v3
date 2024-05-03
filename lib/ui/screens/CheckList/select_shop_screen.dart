@@ -158,7 +158,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
         context.pop();
       },
     );
-  }
+  }   
 
   void _showFilterSheet() {
     showModalBottomSheet(
@@ -178,6 +178,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
                   20.h.verticalSpace,
                   Wrap(
+                    alignment: WrapAlignment.start,
                     children: provider.shopLoacations.indexed.map((e) {
                       return AppChip(
                         text: e.$2,

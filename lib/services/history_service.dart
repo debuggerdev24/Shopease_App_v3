@@ -11,6 +11,12 @@ abstract class BaseHistoryService {
     required List<Map<String, dynamic>> data,
     required bool isEdit,
   });
+  Future<Response<dynamic>?> putChecklistFromHistory({
+    required List<Map<String, dynamic>> histDetails,
+  });
+  Future<Response<dynamic>?> getHistoryItemDetails({
+    required List<String> histIds,
+  });
 }
 
 class Historyservice implements BaseHistoryService {
@@ -45,5 +51,21 @@ class Historyservice implements BaseHistoryService {
         data: formData,
       );
     }
+  }
+
+  @override
+  Future<Response?> putChecklistFromHistory({
+    required List<Map<String, dynamic>> histDetails,
+  }) async {
+    return await BaseRepository()
+        .post(ApiUrl.putChecklistFromHistory, data: {'records': histDetails});
+  }
+
+  @override
+  Future<Response?> getHistoryItemDetails(
+      {required List<String> histIds}) async {
+    return await BaseRepository().post(ApiUrl.getPurchaseHistoryDetails, data: {
+      'records': histIds.map((e) => {"hist_id": e}).toList()
+    });
   }
 }

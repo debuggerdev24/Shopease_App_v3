@@ -46,8 +46,9 @@ class ChecklistService implements BaseChecklistService {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
-      if (!isEdit && record.containsKey('image_url')) {
-        record['image_url'] = Utils.getBse64String(record['image_url']);
+      if ((record['item_image'] != null) &&
+          !record['item_image'].toString().startsWith('http')) {
+        record['item_image'] = Utils.getBse64String(record['item_image']);
       }
       // recordMap['item_details'] = record;
       (formData['records'] as List).add({'item_details': record});

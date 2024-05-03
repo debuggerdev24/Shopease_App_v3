@@ -141,6 +141,7 @@ class ProfileProvider extends ChangeNotifier {
         _groupProfiles.addAll(
           (res.data as List).map((e) => ProfileData.fromJson(e)),
         );
+        _groupProfiles.removeWhere((e) => e.userId == profileData?.userId);
         SharedPrefs().setUserId(_profileData?.userId ?? '');
         onSuccess?.call();
       } else {
@@ -163,7 +164,7 @@ class ProfileProvider extends ChangeNotifier {
   }) async {
     try {
       setEditProfileLoading(true);
-      final res = await services.editProfile(data: data, isEdit: isEdit);
+      final res = await services.editMyProfile(data: data, isEdit: isEdit);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);
@@ -182,6 +183,36 @@ class ProfileProvider extends ChangeNotifier {
       debugPrint("Error while editProfile: $s");
     } finally {
       setEditProfileLoading(false);
+    }
+  }
+
+  Future<void> addProfileToGroup({
+    required List<Map<String, dynamic>> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.addProfile(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        getAllProfile();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while addProfile: $e");
+      debugPrint("Error while addProfile: $s");
+    } finally {
+      setLoading(false);
     }
   }
 

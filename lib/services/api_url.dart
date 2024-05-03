@@ -37,6 +37,10 @@ class ApiUrl {
 
   static const String getHistoryItems = '/getpurchasehistory';
 
+  static const String getPurchaseHistoryDetails = '/getpurchasehistorydetails';
+
+  static const String putChecklistFromHistory = '/putchecklistfromhistory';
+
   static const String putHistoryItems = '/putpurchasehistory';
 
   static const String getShops = '/getshops';

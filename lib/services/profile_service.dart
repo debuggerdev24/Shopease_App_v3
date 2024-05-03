@@ -11,9 +11,13 @@ import 'base_api_service.dart';
 abstract class BaseProfileService {
   Future<Response<dynamic>?> getProfile();
   Future<Response<dynamic>?> getAllProfile();
-  Future<Response<dynamic>?> editProfile({
+  Future<Response<dynamic>?> editMyProfile({
     required List<Map<String, dynamic>> data,
     required bool isEdit,
+  });
+
+  Future<Response<dynamic>?> addProfile({
+    required List<Map<String, dynamic>> data,
   });
 }
 
@@ -29,7 +33,7 @@ class ProfileService implements BaseProfileService {
   }
 
   @override
-  Future<Response?> editProfile(
+  Future<Response?> editMyProfile(
       {required List<Map<String, dynamic>> data, required bool isEdit}) async {
     final Map<String, dynamic> formData = {'records': []};
 
@@ -54,5 +58,23 @@ class ProfileService implements BaseProfileService {
         data: formData,
       );
     }
+  }
+
+  @override
+  Future<Response?> addProfile({
+    required List<Map<String, dynamic>> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    for (Map<String, dynamic> record in data) {
+      (formData['records'] as List).add({'profile_details': record});
+    }
+
+    log('form data: ${formData.toString()}', name: 'editProfile');
+
+    return await BaseRepository().post(
+      ApiUrl.putProfile,
+      data: formData,
+    );
   }
 }

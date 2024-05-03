@@ -41,6 +41,7 @@ class AddItemFormWidget extends StatelessWidget {
       child: AddItemForm(
         onSubmit: onSubmit,
         isLoading: isLoading,
+        isFromScan: isFromScan,
         isEdit: isEdit,
         product: product,
         title: title,
@@ -257,7 +258,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             if (!widget.isEdit &&
                                 _fileFieldController.text.isNotEmpty) {
                               data.addAll({
-                                'image_url': provider.selectedFile?.path ??
+                                'item_image': provider.selectedFile?.path ??
                                     widget.product?.itemImage
                               });
                             }
@@ -275,8 +276,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                             element.categoryId ==
                                             provider.selectedCategoryId)
                                         .categoryName,
-                                    itemImage: provider.selectedFile?.path ??
-                                        widget.product?.itemImage,
+                                    itemImage: provider.selectedFile?.path,
                                     itemStorage: _storageController.text,
                                   )
                                   .toJson());
@@ -289,7 +289,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         },
                         text: 'Save',
                       ),
-                      //   // ),
                     ],
                   ),
                 ),
@@ -307,6 +306,8 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     context
         .read<AddItemFormProvider>()
         .changeSelectedInvType(widget.product!.itemLevel);
+    _fileFieldController.text = widget.product!.itemImage ?? '';
+    _storageController.text = widget.product!.itemStorage ?? '';
     context.read<AddItemFormProvider>().changeSelectedCategory(
           context
               .read<AddItemFormProvider>()
@@ -317,8 +318,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
               )
               .categoryId,
         );
-    _fileFieldController.text = widget.product!.itemImage ?? '';
-    _storageController.text = widget.product!.itemStorage ?? '';
   }
 
   onSelectFileTap() async {

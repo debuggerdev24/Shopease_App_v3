@@ -40,7 +40,7 @@ class History {
             : DateTime.tryParse(json["updated_date"]),
         shopName: json["shop_name"],
         imageUrl: json["image_url"],
-        totalPrice: json['total_price'],
+        totalPrice: json['total_amount'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,6 +49,6 @@ class History {
         "updated_date": updatedDate?.toIso8601String(),
         "shop_name": shopName,
         "image_url": imageUrl,
-        'total_price': totalPrice,
+        'total_amount': totalPrice,
       };
 }

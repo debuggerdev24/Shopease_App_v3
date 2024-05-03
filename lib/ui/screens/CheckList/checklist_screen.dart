@@ -1,15 +1,9 @@
 import 'dart:developer';
-
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
@@ -77,15 +71,17 @@ class _ChecklistScreenState extends State<ChecklistScreen>
             indicatorSize: TabBarIndicatorSize.tab,
             tabs: [
               Tab(
-                  child: Text(
-                'Current List',
-                style: textStyle20SemiBold,
-              )),
+                child: Text(
+                  'Current List',
+                  style: textStyle20SemiBold,
+                ),
+              ),
               Tab(
-                  child: Text(
-                'History',
-                style: textStyle20SemiBold,
-              )),
+                child: Text(
+                  'History',
+                  style: textStyle20SemiBold,
+                ),
+              ),
             ],
             onTap: provider.changeTab,
           ),
@@ -297,6 +293,20 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     itemBuilder: (context, index) => HistorylistTile(
                           product: provider.filteredHistories[index],
                           isFromInvoice: false,
+                          onAddToChecklistTap: () {
+                            provider.putChecklistFromHistory(
+                              histIds: [
+                                {
+                                  'hist_id':
+                                      provider.filteredHistories[index].histId,
+                                }
+                              ],
+                              onSuccess: () {
+                                CustomToast.showSuccess(
+                                    context, 'Items added to checklist!');
+                              },
+                            );
+                          },
                         ),
                     separatorBuilder: (context, index) => 10.verticalSpace,
                     itemCount: provider.filteredHistories.length),

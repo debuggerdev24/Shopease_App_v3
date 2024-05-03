@@ -7,7 +7,7 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/tabs/tabs.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/multiple_checklist_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/add_invoice_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_invoice.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/upload_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/add_checklist_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_detail_screen.dart';
@@ -289,10 +289,11 @@ class AppNavigator {
                     path: AppRoute.saveInvoice.name,
                     name: AppRoute.saveInvoice.name,
                     builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>;
+                      final extra = (state.extra ?? <String, dynamic>{})
+                          as Map<String, dynamic>;
                       return SaveInvoiceScreen(
                         // shop: extra['shop'] as String,
-                        total: extra['total'] as int,
+                        total: extra['total'] ?? 0,
                       );
                     },
                   ),

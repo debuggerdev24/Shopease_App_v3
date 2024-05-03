@@ -50,7 +50,7 @@ class Product {
         itemLevel: itemLevel ?? this.itemLevel,
         itemCount: itemCount ?? this.itemCount,
         locationId: locationId ?? this.locationId,
-        itemImage: itemImage ?? this.itemImage,
+        itemImage: itemImage,
         itemStorage: itemStorage ?? this.itemStorage,
       );
 
@@ -67,7 +67,7 @@ class Product {
       itemImage: (json["image_url"] is List)
           ? json['image_url'][0]
           : json['image_url'],
-         itemStorage: json['item_storage'],
+      itemStorage: json['item_storage'],
       barcode: json['barcode']);
 
   Map<String, dynamic> toJson() => {
@@ -80,7 +80,7 @@ class Product {
         "item_level": itemLevel,
         "item_count": itemCount,
         "location_id": locationId,
-        "image_url": itemImage,
+        "item_image": itemImage,
         'item_storage': itemStorage,
         'barcode': barcode,
       };

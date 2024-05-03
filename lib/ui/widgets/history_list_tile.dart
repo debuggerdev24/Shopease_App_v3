@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -21,12 +23,14 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 class HistorylistTile extends StatefulWidget {
   const HistorylistTile({
     super.key,
+    required this.onAddToChecklistTap,
     required this.product,
     this.isFromInvoice = true,
   });
 
   final History product;
   final bool isFromInvoice;
+  final VoidCallback onAddToChecklistTap;
   @override
   State<HistorylistTile> createState() => _HistorylistTileState();
 }
@@ -48,15 +52,10 @@ class _HistorylistTileState extends State<HistorylistTile>
       endActionPane: _buildRightSwipeActions(widget.product),
       child: GestureDetector(
           onTap: () {
-            widget.isFromInvoice == false
-                ? context.pushNamed(
-                    AppRoute.historyDetail.name,
-                    extra: widget.product,
-                  )
-                : context.pushNamed(AppRoute.saveInvoice.name, extra: {
-                    'shop': widget.product.shopName,
-                    'total': widget.product.totalPrice
-                  });
+            context.pushNamed(
+              AppRoute.historyDetail.name,
+              extra: widget.product,
+            );
           },
           child: Container(
             color: Colors.grey[800]!.withOpacity(0.05),
@@ -67,28 +66,50 @@ class _HistorylistTileState extends State<HistorylistTile>
                 const SizedBox(width: 10),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 70.h,
-                    width: 70.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.whiteColor,
-                      image: DecorationImage(
-                        image: NetworkImage(
+                  child: GestureDetector(
+                    onTap: () {
+                      if (widget.product.imageUrl == null ||
+                          widget.product.imageUrl?.isEmpty == true) {
+                        /// Implement add/update invoice here
+                        context.pushNamed(
+                          AppRoute.saveInvoice.name,
+                          extra: {
+                            'shop': widget.product.shopName,
+                          },
+                        );
+                      } else {
+                        _showImgSheet();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 70.h,
+                      width: 70.h,
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        image: (widget.product.imageUrl == null ||
+                                widget.product.imageUrl?.isEmpty == true)
+                            ? null
+                            : DecorationImage(
+                                image: NetworkImage(
+                                  widget.product.imageUrl!,
+                                ),
+                                fit: BoxFit.fill,
+                              ),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
                           (widget.product.imageUrl == null ||
                                   widget.product.imageUrl?.isEmpty == true)
-                              ? Constants.placeholdeImg
-                              : widget.product.imageUrl ??
-                                  Constants.placeholdeImg,
+                              ? AppAssets.addInvoice
+                              : AppAssets.zoomIcon,
                         ),
-                        fit: BoxFit.fill,
                       ),
                     ),
                   ),
                 ),
-
-                const SizedBox(
-                    width: 8), // Assuming 8.horizontalSpace is a SizedBox
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,12 +188,38 @@ class _HistorylistTileState extends State<HistorylistTile>
             icon: AppAssets.addToCheck,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
-              context.pushNamed(AppRoute.historyDetail.name, extra: {
-                'invoice': widget.product,
-                'count': widget.product.itemCount
-              });
+              widget.onAddToChecklistTap();
+              _slideController.close();
             },
           ),
         ],
       );
+
+  Future<void> _showImgSheet() async {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.all(10.h),
+            alignment: Alignment.topRight,
+            decoration: BoxDecoration(
+              color: AppColors.blackColor,
+              image: DecorationImage(
+                image: NetworkImage(
+                  widget.product.imageUrl ?? Constants.placeholdeImg,
+                ),
+              ),
+            ),
+            child: IconButton.filled(
+              onPressed: context.pop,
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.lightGreyColor,
+              ),
+              icon: const Icon(Icons.clear),
+            ),
+          );
+        });
+  }
 }

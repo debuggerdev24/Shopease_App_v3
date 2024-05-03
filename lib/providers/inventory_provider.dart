@@ -76,14 +76,16 @@ class InventoryProvider extends ChangeNotifier {
         ),
       );
       notifyListeners();
-
       return;
     }
 
     if (_selectedInventoryLevelFilter == null) {
       _filteredProducts.addAll(
         _products.where(
-          (element) => _selectedCategoryFilters.contains(element.itemCategory),
+          (product) => _selectedCategoryFilters.contains(categories
+              .firstWhere(
+                  (category) => category.categoryName == product.itemCategory)
+              .categoryId),
         ),
       );
       notifyListeners();
@@ -93,9 +95,12 @@ class InventoryProvider extends ChangeNotifier {
 
     _filteredProducts.addAll(
       _products.where(
-        (element) =>
-            element.itemLevel == _selectedInventoryLevelFilter &&
-            _selectedCategoryFilters.contains(element.itemCategory),
+        (product) =>
+            product.itemLevel == _selectedInventoryLevelFilter &&
+            _selectedCategoryFilters.contains(categories
+                .firstWhere(
+                    (category) => category.categoryName == product.itemCategory)
+                .categoryId),
       ),
     );
     notifyListeners();

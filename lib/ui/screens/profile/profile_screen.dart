@@ -32,7 +32,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await context.read<ProfileProvider>().getProfile();
+      await context.read<ProfileProvider>().getProfile(onSuccess: () {
+        context.read<ProfileProvider>().getAllProfile();
+      });
     });
   }
 
@@ -75,14 +77,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 decoration: TextDecoration.underline),
                           ),
                           onTap: () {
-                            _showLeavePopUp(context, provider);
+                            _showLeavePopUp(provider);
                           },
                         ),
                       25.w.horizontalSpace,
                       GestureDetector(
-                        onTap: () {
-                          _showAddMember(context, provider);
-                        },
+                        onTap: _showAddMemberSheet,
                         child: SvgIcon(
                           AppAssets.add,
                           color: AppColors.primaryColor,
@@ -99,52 +99,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     itemBuilder: (BuildContext context, int index) {
                       ProfileData user = provider.groupProfiles[index];
 
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5.sp),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 40,
-                            backgroundImage: NetworkImage(
-                              (user.imageUrl == null ||
-                                      user.imageUrl?.isEmpty == true)
-                                  ? Constants.placeholdeImg
-                                  : user.imageUrl ?? '',
+                      return ListTile(
+                        contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
+                        leading: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(
+                                (user.imageUrl.isEmpty == true)
+                                    ? Constants.placeholdeImg
+                                    : user.imageUrl,
+                              ),
                             ),
-                          ),
-                          title: GlobalText(user.preferredUsername),
-                          trailing: user.isInvited == true
-                              ? GlobalText(
-                                  'Invited',
-                                  textStyle: textStyle14,
-                                )
-                              : SizedBox(
-                                  width: 70.sp,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      provider.selectedUserIndex == index
-                                          ? SvgIcon(
-                                              AppAssets.userEdit,
-                                              size: 18.sp,
-                                              color: AppColors.blackGreyColor,
-                                            )
-                                          : const SizedBox(),
-                                      GestureDetector(
-                                        onTap: () {
-                                          provider.deleteUser(user.userId);
-                                        },
-                                        child: SvgIcon(
-                                          AppAssets.delete,
-                                          size: 16.sp,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                            Positioned(
+                              bottom: 0,
+                              right: 5,
+                              child: SvgPicture.asset(
+                                AppAssets.update,
+                                width: 20.sp,
+                              ),
+                            ),
+                          ],
                         ),
+                        title: GlobalText(user.preferredUsername),
+                        trailing: user.isInvited == true
+                            ? GlobalText(
+                                'Invited',
+                                textStyle: textStyle14,
+                              )
+                            : SizedBox(
+                                width: 70.sp,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    provider.selectedUserIndex == index
+                                        ? SvgIcon(
+                                            AppAssets.userEdit,
+                                            size: 18.sp,
+                                            color: AppColors.blackGreyColor,
+                                          )
+                                        : const SizedBox(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        provider.deleteUser(user.userId);
+                                      },
+                                      child: SvgIcon(
+                                        AppAssets.delete,
+                                        size: 16.sp,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
                       );
                     },
                   ),
@@ -179,9 +187,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void _showAddMember(BuildContext context, ProfileProvider profileProvider) {
-    late final TextEditingController mobileController = TextEditingController();
+  void _showAddMemberSheet() {
     late final TextEditingController nameController = TextEditingController();
+    late final TextEditingController mobileController = TextEditingController();
     showModalBottomSheet(
         enableDrag: true,
         showDragHandle: true,
@@ -189,13 +197,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context: context,
         builder: (context) {
           return Container(
-            height: 450.sp,
-            alignment: Alignment.center,
             padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.sp),
             width: double.infinity,
             child: SingleChildScrollView(
-              child: BounceInUp(
-                child: Column(
+              child: Consumer<ProfileProvider>(builder: (context, provider, _) {
+                return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     GlobalText('Add  New Member',
@@ -243,21 +249,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 mobileController.text.isNotEmpty)
                             ? AppButtonColorType.primary
                             : AppButtonColorType.secondary,
-                        onPressed: () {
+                        onPressed: () async {
                           if (nameController.text.isNotEmpty &&
                               mobileController.text.isNotEmpty) {
-                            profileProvider.saveUser(
-                              ProfileData(
-                                preferredUsername: nameController.text,
-                                userId: 'userId',
-                                phoneNumber: mobileController.text,
-                                imageUrl: Constants.placeholdeImg,
-                                isInvited: false,
-                              ),
+                            await provider.addProfileToGroup(
+                              data: [
+                                {
+                                  'preferred_username': nameController.text,
+                                  'phone_number': mobileController.text,
+                                }
+                              ],
+                              onSuccess: () {
+                                _mobileController.clear();
+                                _nameController.clear();
+                                context.pop();
+                              },
+                              onError: (msg) {
+                                CustomToast.showError(context, msg);
+                              },
                             );
-                            _mobileController.clear();
-                            _nameController.clear();
-                            context.pop();
                           }
                         },
                         text: 'Invite'),
@@ -271,8 +281,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                         text: 'Cancel'),
                   ],
-                ),
-              ),
+                );
+              }),
             ),
           );
         });
@@ -283,9 +293,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final TextEditingController nameController = TextEditingController()
       ..text = context.read<ProfileProvider>().profileData!.preferredUsername;
     final TextEditingController mobileController = TextEditingController();
-    log('image url: ${context.read<ProfileProvider>().profileData!.imageUrl ?? ''}');
+    log('image url: ${context.read<ProfileProvider>().profileData!.imageUrl}');
     final TextEditingController fileFieldController = TextEditingController()
-      ..text = context.read<ProfileProvider>().profileData!.imageUrl ?? '';
+      ..text = context.read<ProfileProvider>().profileData!.imageUrl;
 
     onSelectFileTap() async {
       final name = await context.read<ProfileProvider>().selectFile();
@@ -428,7 +438,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLeavePopUp(BuildContext context, ProfileProvider profileProvider) {
+  void _showLeavePopUp(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");
     log("uninvitedUsers length: ${profileProvider.uninvitedUsers.length}");
@@ -568,7 +578,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             radius: 40,
             backgroundImage: NetworkImage(
                 (provider.profileData?.imageUrl == null ||
-                        provider.profileData?.imageUrl?.isEmpty == true)
+                        provider.profileData?.imageUrl.isEmpty == true)
                     ? Constants.placeholdeImg
                     : provider.profileData?.imageUrl ?? ''),
           ),
