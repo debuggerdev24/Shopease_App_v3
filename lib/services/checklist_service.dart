@@ -80,8 +80,14 @@ class ChecklistService implements BaseChecklistService {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
-      if (!isEdit && record.containsKey('item_image')) {
+      // if (!isEdit && record.containsKey('item_image')) {
+      //   record['item_image'] = Utils.getBse64String(record['item_image']);
+      // }
+      if ((record['item_image'] != null) &&
+          !record['item_image'].toString().startsWith('http')) {
         record['item_image'] = Utils.getBse64String(record['item_image']);
+      } else {
+        record.remove('item_image');
       }
       // recordMap['item_details'] = record;
       (formData['records'] as List).add({'shop_details': record});
@@ -113,14 +119,17 @@ class ChecklistService implements BaseChecklistService {
   @override
   Future<Response?> putInventoryFromchecklist(
       {required List<String> itemIds, required String shopName}) async {
-    return await BaseRepository().post(ApiUrl.putInventoryFromChecklist, data: {
-      'records': itemIds
-          .map((e) => {
-                "item_id": e,
-                'shop_name': shopName,
-              })
-          .toList()
-    });
+    return await BaseRepository().post(
+      ApiUrl.putInventoryFromChecklist,
+      data: {
+        'records': itemIds
+            .map((e) => {
+                  "item_id": e,
+                  'shop_name': shopName,
+                })
+            .toList()
+      },
+    );
   }
 
   @override

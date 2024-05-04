@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,7 +18,7 @@ class HistoryProvider extends ChangeNotifier {
   final List<History> _filteredHistories = [];
   final List<int> _selectedFilterMonth = [];
   List<HistoryItemDetail> _historyItemDetails = [];
-  List<HistoryItemDetail> _selectedHistoryItemDetails = [];
+  final List<HistoryItemDetail> _selectedHistoryItemDetails = [];
   int _selectedValue = -1;
   XFile? _selectedFile;
 
@@ -64,12 +66,18 @@ class HistoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeSelectedHistoryItemDetails(HistoryItemDetail itemDetail) {
-    if (_selectedHistoryItemDetails.contains(itemDetail)) {
-      _selectedHistoryItemDetails.remove(itemDetail);
-    } else {
+  void changeSelectedHistoryItemDetails(
+      bool? value, HistoryItemDetail itemDetail) {
+    if (value == true) {
       _selectedHistoryItemDetails.add(itemDetail);
+    } else {
+      _selectedHistoryItemDetails.remove(itemDetail);
     }
+    notifyListeners();
+  }
+
+  void clearSelectedHistoryItemDetails() {
+    _selectedHistoryItemDetails.clear();
     notifyListeners();
   }
 
@@ -197,13 +205,13 @@ class HistoryProvider extends ChangeNotifier {
   }
 
   Future<void> putChecklistFromHistory({
-    required List<Map<String, dynamic>> histIds,
+    required List<Map<String, dynamic>> data,
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
     try {
       setLoading(true);
-      final res = await service.putChecklistFromHistory(histDetails: histIds);
+      final res = await service.putChecklistFromHistory(histDetails: data);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);

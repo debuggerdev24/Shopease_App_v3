@@ -1,9 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/notification_model.dart';
+import 'package:shopease_app_flutter/providers/notifications_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
+import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -16,68 +19,89 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.whiteColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          50.h.verticalSpace,
-          GlobalText(
-            '    Notifications',
-            textStyle: appBarTitleStyle.copyWith(
-                fontWeight: FontWeight.w600, fontSize: 25.sp),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.sp),
-              child: GlobalText(
-                  color: AppColors.orangeColor,
-                  'Mark as all read',
-                  textStyle: textStyle14.copyWith(
-                    decoration: TextDecoration.underline,
-                    decorationColor: AppColors.orangeColor,
-                    color: AppColors.orangeColor,
-                  )),
-            ),
-          ),
-          10.h.verticalSpace,
-          buildMessageTile('Invitation Notificaiton'),
-          buildMessageTile('A new product has been added to the checklist.'),
-          buildMessageTile('Upload invoice remainder (action based)'),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: GlobalText(
+          'Notifications',
+          textStyle: appBarTitleStyle.copyWith(
+              fontWeight: FontWeight.w600, fontSize: 25.sp),
+        ),
       ),
+      body: Consumer<NotificationProvider>(builder: (context, provider, _) {
+        return provider.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : provider.notifications.isEmpty
+                ? Center(
+                    child: GlobalText(
+                      'Not have any notifications!',
+                      textStyle: textStyle16,
+                    ),
+                  )
+                : SingleChildScrollView(
+                    padding: EdgeInsets.all(20.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: TextButton(
+                            onPressed: () {},
+                            child: GlobalText(
+                              color: AppColors.orangeColor,
+                              'Mark as all read',
+                              textStyle: textStyle14.copyWith(
+                                decoration: TextDecoration.underline,
+                                decorationColor: AppColors.orangeColor,
+                                color: AppColors.orangeColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                        10.h.verticalSpace,
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: provider.notifications.length,
+                          separatorBuilder: (context, index) =>
+                              10.verticalSpace,
+                          itemBuilder: (context, index) =>
+                              buildMessageTile(provider.notifications[index]),
+                        ),
+                      ],
+                    ),
+                  );
+      }),
     );
   }
 
-  Widget buildMessageTile(String msg) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 2.sp, vertical: 4.sp),
-      padding: EdgeInsets.symmetric(horizontal: 2.sp, vertical: 10.sp),
-      color: Colors.grey.withOpacity(0.1), // Set the desired color here
-      child: ListTile(
-        leading: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.orangeColor, // Border color
-              width: 1.5, // Border width
-            ),
-          ),
-          child: CircleAvatar(
-            radius: 38.0,
-            child: ClipOval(
-              child: Image.asset(AppAssets.user),
-            ),
-            backgroundColor: AppColors.primaryColor,
+  Widget buildMessageTile(NotificationModel notification) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: 2.sp, vertical: 10.sp),
+      tileColor: Colors.grey.withOpacity(0.1),
+      leading: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.orangeColor, // Border color
+            width: 1.5, // Border width
           ),
         ),
-        title: GlobalText(msg),
-        trailing: GlobalText(
-          'Today',
-          textStyle: textStyle12.copyWith(color: AppColors.darkGreyColor),
+        child: CircleAvatar(
+          radius: 38.0,
+          backgroundColor: AppColors.primaryColor,
+          child: ClipOval(
+            child:
+                Image.network(notification.imageUrl ?? Constants.placeholdeImg),
+          ),
         ),
+      ),
+      title: GlobalText(notification.message),
+      trailing: GlobalText(
+        notification.recievedDate?.toMonthDD ?? '',
+        textStyle: textStyle12.copyWith(color: AppColors.darkGreyColor),
       ),
     );
   }

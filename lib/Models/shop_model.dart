@@ -35,7 +35,7 @@ class Shop {
         updatedDate: json["updated_date"] == null
             ? null
             : DateTime.parse(json["updated_date"]),
-        itemImage: json["item_image"],
+        itemImage: json["image_url"],
       );
 
   Map<String, dynamic> toJson() => {

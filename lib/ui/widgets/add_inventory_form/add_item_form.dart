@@ -91,8 +91,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<AddItemFormProvider>().getCategories();
-      setFromFields();
+      context.read<AddItemFormProvider>().getCategories(
+            onSuccess: setFromFields,
+            onError: (msg) {
+              setFromFields();
+            },
+          );
       if (widget.product == null || !widget.isEdit) {
         context.read<AddItemFormProvider>().changeSelectedCategory(null);
         context.read<AddItemFormProvider>().changeSelectedInvType(null);
