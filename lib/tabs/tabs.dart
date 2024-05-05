@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/providers/notifications_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
@@ -104,17 +105,35 @@ class _TabScreenState extends State<TabScreen> {
           return KBottomNavItem(
             svgIcon: AppAssets.addtocart,
             isSelected: widget.navigationShell.currentIndex == 1,
-            count: provider.checklist.length,
+            counterWidget: CircleAvatar(
+              radius: 10,
+              backgroundColor: AppColors.redColor,
+              child: GlobalText(
+                provider.checklist.length.toString(),
+                textStyle: textStyle12.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+            ),
           );
         }),
         KBottomNavItem(
           isSelected: widget.navigationShell.currentIndex == 2,
           svgIcon: AppAssets.person,
         ),
-        KBottomNavItem(
-          isSelected: widget.navigationShell.currentIndex == 3,
-          svgIcon: AppAssets.notification,
-        )
+        Consumer<NotificationProvider>(builder: (context, provider, _) {
+          return KBottomNavItem(
+            isSelected: widget.navigationShell.currentIndex == 3,
+            svgIcon: AppAssets.notification,
+            counterWidget:
+                provider.notifications.any((element) => !element.isMessageRead)
+                    ? const CircleAvatar(
+                        radius: 2,
+                        backgroundColor: AppColors.redColor,
+                      )
+                    : null,
+          );
+        })
       ],
     );
   }
@@ -165,12 +184,12 @@ class KBottomNavItem extends StatelessWidget {
     super.key,
     required this.svgIcon,
     this.isSelected = false,
-    this.count,
+    this.counterWidget,
   });
 
   final String svgIcon;
   final bool isSelected;
-  final int? count;
+  final Widget? counterWidget;
 
   KBottomNavItem copyWith(TextStyle? labelStyle) => KBottomNavItem(
         svgIcon: svgIcon,
@@ -179,8 +198,8 @@ class KBottomNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50.h,
-      width: 50.h,
+      height: 40.h,
+      width: 40.h,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -189,20 +208,11 @@ class KBottomNavItem extends StatelessWidget {
             size: 23,
             color: isSelected ? AppColors.orangeColor : AppColors.whiteColor,
           ),
-          if (count != null)
+          if (counterWidget != null)
             Positioned(
               top: 0,
               right: 0,
-              child: CircleAvatar(
-                radius: 10,
-                backgroundColor: AppColors.redColor,
-                child: GlobalText(
-                  count.toString(),
-                  textStyle: textStyle12.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              child: counterWidget!,
             )
         ],
       ),

@@ -23,12 +23,14 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 class SaveInvoiceScreen extends StatefulWidget {
   const SaveInvoiceScreen({
     super.key,
-    // required this.shop,
-    required this.total,
+    this.shop,
+    this.total,
+    this.histId,
   });
 
-  // final String shop;
-  final int total;
+  final String? shop;
+  final String? histId;
+  final int? total;
 
   @override
   State<SaveInvoiceScreen> createState() => _SaveInvoiceScreenState();
@@ -42,8 +44,9 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
   void initState() {
     super.initState();
     _priceController.text = widget.total.toString();
-    _nameController.text =
-        context.read<ChecklistProvider>().selectedShop?.shopName ?? '';
+    _nameController.text = widget.shop ??
+        context.read<ChecklistProvider>().selectedShop?.shopName ??
+        '';
   }
 
   @override
@@ -76,23 +79,31 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          provider.selectFileFromGallery();
+                          if (provider.selectedFile != null) {
+                            _showImgSheet();
+                          } else {
+                            provider.selectFileFromGallery();
+                          }
                         },
                         child: Container(
-                          height: 80.sp,
-                          width: 80.sp,
-                          decoration: provider.selectedFile != null
-                              ? BoxDecoration(
-                                  image: DecorationImage(
+                          height: 80,
+                          width: 80,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.blackColor),
+                            image: provider.selectedFile != null
+                                ? DecorationImage(
                                     image: FileImage(
                                       File(provider.selectedFile!.path),
                                     ),
-                                  ),
-                                )
-                              : null,
-                          child: provider.selectedFile == null
-                              ? SvgPicture.asset(AppAssets.addInvoice)
-                              : null,
+                                  )
+                                : null,
+                          ),
+                          child: SvgPicture.asset(
+                            provider.selectedFile == null
+                                ? AppAssets.addInvoice
+                                : AppAssets.zoomIcon,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -107,14 +118,13 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                   AppTextField(
                     name: "invoicePrice",
                     labelText: 'Enter Amount',
-                    // enabled: false,
+                    keyboardType: TextInputType.number,
                     controller: _priceController,
                     prefixText: '\$',
                     hintText: 'Enter invoice price',
                     hintStyle: textStyle16.copyWith(
                         color: AppColors.blackColor,
                         fontWeight: FontWeight.w400),
-                    // labelText: "  Product name",
                     labelStyle: textStyle16.copyWith(
                         color: AppColors.blackColor,
                         fontWeight: FontWeight.w400),
@@ -147,37 +157,65 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                 onPressed: () async {
                   /// Add History
                   Map<String, dynamic> newData = {
-                    'hist_id': context.read<ChecklistProvider>().currentHistId,
+                    'hist_id': widget.histId ??
+                        context.read<ChecklistProvider>().currentHistId,
                     'shop_name': _nameController.text,
                     'total_price': _priceController.text,
                     'updated_date': DateTime.now().toIso8601String(),
-                    'image_url': provider.selectedFile?.path,
-                    'item_count': context
-                        .read<ChecklistProvider>()
-                        .selectedChecklists
-                        .length,
+                    'item_image': provider.selectedFile?.path,
+                    // 'item_count': context
+                    //     .read<ChecklistProvider>()
+                    //     .selectedChecklists
+                    //     .length,
                   };
-
                   log("history $newData");
                   await provider.puthistoryItems(
-                      data: [newData],
-                      isEdit: false,
-                      onSuccess: () {
-                        CustomToast.showSuccess(context, 'Invoice added.');
-                        context.goNamed(AppRoute.checkList.name);
-                        // context.read<ChecklistProvider>().changeTab(1);
-                        context
-                            .read<ChecklistProvider>()
-                            .clearSelectedProducts();
-                        provider.getHistoryItems();
-                      },
-                      onError: (msg) {
-                        CustomToast.showError(context, msg);
-                      });
+                    data: [newData],
+                    isEdit: false,
+                    onSuccess: () {
+                      CustomToast.showSuccess(context, 'Invoice added.');
+                      context.goNamed(AppRoute.checkList.name);
+                      context.read<ChecklistProvider>().clearSelectedProducts();
+                      provider.getHistoryItems();
+                    },
+                    onError: (msg) {
+                      CustomToast.showError(context, msg);
+                    },
+                  );
                 },
               )),
         );
       },
     );
+  }
+
+  Future<void> _showImgSheet() async {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.all(10.h),
+            alignment: Alignment.topRight,
+            decoration: BoxDecoration(
+              color: AppColors.blackColor,
+              image: DecorationImage(
+                image: FileImage(
+                  File(
+                    context.read<HistoryProvider>().selectedFile!.path,
+                  ),
+                ),
+              ),
+            ),
+            child: IconButton.filled(
+              onPressed: context.pop,
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.lightGreyColor,
+              ),
+              icon: const Icon(Icons.clear),
+            ),
+          );
+        });
   }
 }

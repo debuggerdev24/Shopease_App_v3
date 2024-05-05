@@ -46,4 +46,8 @@ class ApiUrl {
   static const String getShops = '/getshops';
 
   static const String putShops = '/putshops';
+
+  static const String getUserNotification = '/getusernotification';
+
+  static const String updateUserNotification = '/updateusernotification';
 }

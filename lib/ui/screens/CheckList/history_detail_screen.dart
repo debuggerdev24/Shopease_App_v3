@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +14,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -73,31 +76,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                               fontSize: 14, overflow: TextOverflow.ellipsis),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GlobalText(
-                              widget.history.shopName,
-                              maxLine: 3,
-                              textStyle: textStyle16.copyWith(
-                                  decoration: TextDecoration.underline,
-                                  fontSize: 15,
-                                  decorationColor: AppColors.orangeColor,
-                                  overflow: TextOverflow.ellipsis,
-                                  color: AppColors.orangeColor,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            GlobalText(
-                              '\$${widget.history.totalPrice}',
-                              textStyle: textStyle16.copyWith(
-                                  fontSize: 20,
-                                  overflow: TextOverflow.ellipsis),
-                            ),
-                          ],
-                        ),
-                      ),
+                      _buildAmountAndShopNameview(),
                       Expanded(
                         child: _buildCurrentListView(provider),
                       ),
@@ -106,20 +85,34 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
         floatingActionButton: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 5),
           child: AppButton(
-              icon: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
-                child: const SvgIcon(
-                  AppAssets.checkList,
-                  color: Colors.white,
-                  size: 20,
-                ),
+            text: 'Add to Checklist',
+            colorType: provider.isLoading
+                ? AppButtonColorType.secondary
+                : AppButtonColorType.primary,
+            icon: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 15.sp),
+              child: const SvgIcon(
+                AppAssets.checkList,
+                color: Colors.white,
+                size: 20,
               ),
-              onPressed: () {
-                context.goNamed(AppRoute.checkList.name);
-
-                provider.deleteHistory(widget.history.histId);
-              },
-              text: 'Add to Checklist'),
+            ),
+            onPressed: () async {
+              log('calling put checklist from history');
+              await provider.putChecklistFromHistory(
+                  data: [
+                    {
+                      'hist_id': widget.history.histId,
+                    }
+                  ],
+                  onSuccess: () {
+                    CustomToast.showSuccess(
+                        context, 'Items added to checklist!');
+                    context.read<ChecklistProvider>().getChecklistItems();
+                    context.goNamed(AppRoute.checkList.name);
+                  });
+            },
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       );
@@ -131,10 +124,42 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
       shrinkWrap: true,
       itemBuilder: (context, index) => HistoryItemDetailTile(
         historyItem: provider.historyItemDetails[index],
-        onLongPress: () {},
+        onLongPress: () {
+          context.goNamed(
+            AppRoute.multipleHistoryItemSelection.name,
+            extra: widget.history,
+          );
+        },
       ),
       separatorBuilder: (context, index) => 10.verticalSpace,
       itemCount: provider.historyItemDetails.length,
+    );
+  }
+
+  Widget _buildAmountAndShopNameview() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GlobalText(
+            widget.history.shopName,
+            maxLine: 3,
+            textStyle: textStyle16.copyWith(
+                decoration: TextDecoration.underline,
+                fontSize: 15,
+                decorationColor: AppColors.orangeColor,
+                overflow: TextOverflow.ellipsis,
+                color: AppColors.orangeColor,
+                fontWeight: FontWeight.w600),
+          ),
+          GlobalText(
+            '\$${widget.history.totalPrice}',
+            textStyle: textStyle16.copyWith(
+                fontSize: 20, overflow: TextOverflow.ellipsis),
+          ),
+        ],
+      ),
     );
   }
 }

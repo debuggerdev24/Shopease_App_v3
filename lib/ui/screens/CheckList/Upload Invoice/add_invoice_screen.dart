@@ -16,9 +16,12 @@ import 'package:shopease_app_flutter/utils/styles.dart';
 class AddInvoiceScreen extends StatefulWidget {
   const AddInvoiceScreen({
     super.key,
-    /*required this.shop, required this.total*/
+    this.shop,
+    this.histId,
+    /*required this.total*/
   });
-  // final String shop;
+  final String? shop;
+  final String? histId;
   // final int total;
   @override
   State<AddInvoiceScreen> createState() => _AddInvoiceScreenState();
@@ -51,8 +54,11 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               AppButton(
                   onPressed: () async {
                     await provider.selectFileFromCamera(onSuccess: () {
-                      context.pushNamed(AppRoute.saveInvoice.name,
-                          extra: {'total': 100});
+                      context.pushNamed(AppRoute.saveInvoice.name, extra: {
+                        'shop': widget.shop,
+                        'histId': widget.histId,
+                        // 'total': 100,
+                      });
                     });
                   },
                   text: 'Add Invoice'),
@@ -60,8 +66,11 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               AppButton(
                 onPressed: () async {
                   await provider.selectFileFromGallery(onSuccess: () {
-                    context.pushNamed(AppRoute.saveInvoice.name,
-                        extra: {'total': 100});
+                    context.pushNamed(AppRoute.saveInvoice.name, extra: {
+                      'shop': widget.shop,
+                      'histId': widget.histId,
+                      // 'total': 100,
+                    });
                   });
                 },
                 text: 'Upload from Gallery',

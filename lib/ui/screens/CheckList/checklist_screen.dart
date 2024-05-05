@@ -295,7 +295,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           isFromInvoice: false,
                           onAddToChecklistTap: () {
                             provider.putChecklistFromHistory(
-                              histIds: [
+                              data: [
                                 {
                                   'hist_id':
                                       provider.filteredHistories[index].histId,
@@ -304,6 +304,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                               onSuccess: () {
                                 CustomToast.showSuccess(
                                     context, 'Items added to checklist!');
+                                context
+                                    .read<ChecklistProvider>()
+                                    .getChecklistItems();
                               },
                             );
                           },

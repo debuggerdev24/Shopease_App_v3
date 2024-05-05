@@ -7,7 +7,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
+import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
@@ -57,6 +60,7 @@ class _HistorylistTileState extends State<HistorylistTile>
               extra: widget.product,
             );
           },
+          // 815fc512-1673-43cf-ba6c-a3e3508b402f
           child: Container(
             color: Colors.grey[800]!.withOpacity(0.05),
             width: double.infinity,
@@ -70,11 +74,11 @@ class _HistorylistTileState extends State<HistorylistTile>
                     onTap: () {
                       if (widget.product.imageUrl == null ||
                           widget.product.imageUrl?.isEmpty == true) {
-                        /// Implement add/update invoice here
                         context.pushNamed(
-                          AppRoute.saveInvoice.name,
+                          AppRoute.addInvoice.name,
                           extra: {
                             'shop': widget.product.shopName,
+                            'histId': widget.product.histId,
                           },
                         );
                       } else {
@@ -116,23 +120,12 @@ class _HistorylistTileState extends State<HistorylistTile>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          if (widget.isFromInvoice) {
-                            context.pushNamed(AppRoute.saveInvoice.name,
-                                extra: {
-                                  'shop': widget.product.shopName,
-                                  'total': widget.product.totalPrice
-                                });
-                          }
-                        },
-                        child: Text(
-                          '${widget.product.itemCount ?? 0} products',
-                          style: textStyle16.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      Text(
+                        '${widget.product.itemCount ?? 0} products',
+                        style: textStyle16.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       SizedBox(height: 10.h),

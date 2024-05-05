@@ -6,6 +6,7 @@ import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/tabs/tabs.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/multiple_checklist_selection_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/checkList/multiple_history_item_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/add_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/upload_invoice_screen.dart';
@@ -59,6 +60,7 @@ enum AppRoute {
   saveInvoice,
   historyDetail,
   multipleChecklistSelection,
+  multipleHistoryItemSelection,
 
   ////////// BRANCH 3 //////////
   profile,
@@ -278,11 +280,13 @@ class AppNavigator {
                     path: AppRoute.addInvoice.name,
                     name: AppRoute.addInvoice.name,
                     builder: (context, state) {
-                      // final extra = state.extra as Map<String, dynamic>;
-                      return const AddInvoiceScreen(
-                          // shop: extra['shop'] as String,
-                          // total: extra['total'] as int,
-                          );
+                      final extra = (state.extra ?? <String, dynamic>{})
+                          as Map<String, dynamic>;
+                      return AddInvoiceScreen(
+                        shop: extra['shop'],
+                        histId: extra['histId'],
+                        // total: extra['total'] as int,
+                      );
                     },
                   ),
                   GoRoute(
@@ -292,8 +296,9 @@ class AppNavigator {
                       final extra = (state.extra ?? <String, dynamic>{})
                           as Map<String, dynamic>;
                       return SaveInvoiceScreen(
-                        // shop: extra['shop'] as String,
+                        shop: extra['shop'],
                         total: extra['total'] ?? 0,
+                        histId: extra['histId'],
                       );
                     },
                   ),
@@ -311,6 +316,14 @@ class AppNavigator {
                     name: AppRoute.multipleChecklistSelection.name,
                     builder: (context, state) =>
                         const MultipleChecklistSelectionScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoute.multipleHistoryItemSelection.name,
+                    name: AppRoute.multipleHistoryItemSelection.name,
+                    builder: (context, state) =>
+                        MultipleHistoryItemSelectionScreen(
+                      history: state.extra as History,
+                    ),
                   ),
                 ],
               ),
