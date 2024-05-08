@@ -21,6 +21,8 @@ class HistoryProvider extends ChangeNotifier {
   final List<HistoryItemDetail> _selectedHistoryItemDetails = [];
   int _selectedValue = -1;
   XFile? _selectedFile;
+  DateTime? _fromDate;
+  DateTime _toDate = DateTime.now();
 
   bool get isLoading => _isLoading;
   List<History> get histories => _histories;
@@ -31,6 +33,8 @@ class HistoryProvider extends ChangeNotifier {
       _selectedHistoryItemDetails;
   int get selectedValueIndex => _selectedValue;
   XFile? get selectedFile => _selectedFile;
+  DateTime? get fromDate => _fromDate;
+  DateTime? get toDate => _toDate;
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -83,17 +87,42 @@ class HistoryProvider extends ChangeNotifier {
 
   void filterHistories() {
     _filteredHistories.clear();
-    if (_selectedFilterMonth.isEmpty) {
+    if (_fromDate == null || _toDate == DateTime.now()) {
       _filteredHistories.addAll(_histories);
     } else {
       _filteredHistories.addAll(
         _histories.where(
           (element) =>
-              _selectedFilterMonth.contains(element.updatedDate?.month),
+              (element.updatedDate?.isAfter(_fromDate!) ?? false) &&
+              ((element.updatedDate?.isBefore(_toDate) ?? false) ||
+                  (element.updatedDate?.day ?? 0) <= _toDate.day),
         ),
       );
     }
     notifyListeners();
+  }
+
+  void setFromDate(DateTime? newDate) {
+    if (newDate == null) return;
+    _fromDate = newDate;
+    notifyListeners();
+  }
+
+  void resetToData() {
+    _toDate = DateTime.now();
+    notifyListeners();
+  }
+
+  void setToDate(DateTime? newDate, {Function(String)? onError}) {
+    if (newDate == null) return;
+    bool isAcceptable = (_fromDate?.isBefore(newDate) ?? false) ||
+        (_fromDate?.day ?? 0) <= newDate.day;
+    if (isAcceptable) {
+      _toDate = newDate;
+      notifyListeners();
+    } else {
+      onError?.call('Make sure To date is not before the From date');
+    }
   }
 
   Future<void> selectFileFromGallery({VoidCallback? onSuccess}) async {

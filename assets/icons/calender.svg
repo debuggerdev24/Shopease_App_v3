@@ -1,0 +1,13 @@
+<svg id="calendar" xmlns="http://www.w3.org/2000/svg" width="17.459" height="17.459" viewBox="0 0 17.459 17.459">
+  <path id="Vector" d="M0,0V2.182" transform="translate(5.82 1.455)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-2" data-name="Vector" d="M0,0V2.182" transform="translate(11.639 1.455)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-3" data-name="Vector" d="M0,0H12.367" transform="translate(2.546 6.613)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-4" data-name="Vector" d="M13.094,3.637V9.821c0,2.182-1.091,3.637-3.637,3.637H3.637C1.091,13.458,0,12,0,9.821V3.637C0,1.455,1.091,0,3.637,0h5.82C12,0,13.094,1.455,13.094,3.637Z" transform="translate(2.182 2.546)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-5" data-name="Vector" d="M0,0H17.459V17.459H0Z" fill="none" opacity="0"/>
+  <path id="Vector-6" data-name="Vector" d="M.495.5H.5" transform="translate(10.923 9.466)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-7" data-name="Vector" d="M.495.5H.5" transform="translate(10.923 11.649)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-8" data-name="Vector" d="M.495.5H.5" transform="translate(8.232 9.466)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-9" data-name="Vector" d="M.495.5H.5" transform="translate(8.232 11.649)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-10" data-name="Vector" d="M.495.5H.5" transform="translate(5.539 9.466)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+  <path id="Vector-11" data-name="Vector" d="M.495.5H.5" transform="translate(5.539 11.649)" fill="none" stroke="#bfbfbf" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+</svg>

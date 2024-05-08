@@ -18,6 +18,14 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<NotificationProvider>().getNotifications();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -40,26 +48,37 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                   )
                 : SingleChildScrollView(
-                    padding: EdgeInsets.all(20.w),
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: TextButton(
-                            onPressed: () {},
-                            child: GlobalText(
-                              color: AppColors.orangeColor,
-                              'Mark as all read',
-                              textStyle: textStyle14.copyWith(
-                                decoration: TextDecoration.underline,
-                                decorationColor: AppColors.orangeColor,
+                        if (provider.notifications
+                            .any((element) => !element.isMessageRead))
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: TextButton(
+                              onPressed: () {
+                                provider.updateNotifications(
+                                    data: provider.notifications
+                                        .map((e) => {
+                                              'is_message_read': true,
+                                              'notification_id':
+                                                  e.notificationId
+                                            })
+                                        .toList());
+                              },
+                              child: GlobalText(
                                 color: AppColors.orangeColor,
+                                'Mark as all read',
+                                textStyle: textStyle14.copyWith(
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: AppColors.orangeColor,
+                                  color: AppColors.orangeColor,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                         10.h.verticalSpace,
                         ListView.separated(
                           shrinkWrap: true,
@@ -79,8 +98,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Widget buildMessageTile(NotificationModel notification) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 2.sp, vertical: 10.sp),
-      tileColor: Colors.grey.withOpacity(0.1),
+      onTap: () {
+        context.read<NotificationProvider>().updateNotifications(data: [
+          {
+            'is_message_read': true,
+            'notification_id': notification.notificationId,
+          }
+        ]);
+      },
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.sp),
+      tileColor: notification.isMessageRead
+          ? Colors.grey.withOpacity(0.1)
+          : AppColors.orangeColor.withAlpha(50),
       leading: Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -101,7 +130,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       title: GlobalText(notification.message),
       trailing: GlobalText(
         notification.recievedDate?.toMonthDD ?? '',
-        textStyle: textStyle12.copyWith(color: AppColors.darkGreyColor),
+        textStyle: textStyle12.copyWith(color: AppColors.blackColor),
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/back_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/card_drop_down.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -325,7 +326,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
   }
 
   onSelectFileTap() async {
-    final name = await context.read<AddItemFormProvider>().selectFile();
+    final name = await context.read<AddItemFormProvider>().setFile(
+          await ImagePickerhelper().openPicker(context),
+        );
+    log('file name => $name', name: 'onSelectFileTap');
     if (name != null) {
       _fileFieldController.text = name;
     }

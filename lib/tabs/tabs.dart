@@ -94,6 +94,10 @@ class _TabScreenState extends State<TabScreen> {
           });
         }
 
+        if (index == 3) {
+          context.read<NotificationProvider>().getNotifications();
+        }
+
         goToBranch(index);
       },
       items: [

@@ -62,6 +62,7 @@ class AppAssets {
   static const String errorToast = "assets/icons/errorToast.svg";
   static const String addToCheck = "assets/icons/addToCheck.svg";
   static const String rmCart = "assets/icons/rmCart.svg";
+  static const String calender = "assets/icons/calender.svg";
 
   static const String scanner = "assets/icons/scanner.svg";
   static const String search = "assets/icons/search.svg";
