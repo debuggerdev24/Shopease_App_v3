@@ -7,6 +7,7 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -142,7 +143,9 @@ class _AddShopFormState extends State<AddShopForm> {
   }
 
   onSelectFileTap() async {
-    final name = await context.read<AddShopFormProvider>().selectFile();
+    final name = await context.read<AddShopFormProvider>().setFile(
+          await ImagePickerhelper().openPicker(context),
+        );
     if (name != null) {
       _fileFieldController.text = name;
     }
@@ -154,12 +157,11 @@ class AddShopFormProvider extends ChangeNotifier {
 
   XFile? get selectedFile => _selectedFile;
 
-  Future<String?> selectFile() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return null;
-    _selectedFile = file;
+  Future<String?> setFile(XFile? newFile) async {
+    if (newFile == null) return null;
+    _selectedFile = newFile;
     notifyListeners();
-    return file.name;
+    return newFile.name;
   }
 
   void clearFile() {

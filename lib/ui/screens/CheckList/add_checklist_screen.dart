@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/providers/notifications_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/add_inventory_form/add_item_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
@@ -57,6 +58,7 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
         context.read<ChecklistProvider>().getChecklistItems();
+        context.read<NotificationProvider>().getNotifications();
         context.goNamed(AppRoute.checkList.name);
       },
     );

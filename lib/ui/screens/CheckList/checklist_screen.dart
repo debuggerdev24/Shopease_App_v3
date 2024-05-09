@@ -12,9 +12,11 @@ import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegat
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/date_picker.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
+import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/routes/routes.dart';
@@ -274,7 +276,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                   InkWell(
                     onTap: () => _showHistoryFilterSheet(context),
                     child: SvgPicture.asset(
-                      provider.selectedFilterMonth.isEmpty
+                      provider.fromDate == null
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                     ),
@@ -330,64 +332,127 @@ void _showHistoryFilterSheet(BuildContext context) {
         return Consumer<HistoryProvider>(builder: (context, provider, _) {
           return Container(
             width: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 10.sp),
+            // margin: EdgeInsets.symmetric(vertical: 10.sp),
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: SingleChildScrollView(
-              child: BounceInUp(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    GlobalText('Filter', textStyle: textStyle18SemiBold),
-                    20.h.verticalSpace,
-                    Wrap(
-                      children: [
-                        'Jan',
-                        'Feb',
-                        'Mar',
-                        'Apr',
-                        'May',
-                        'Jun',
-                        'Jul',
-                        'Aug',
-                        'Sep',
-                        'Oct',
-                        'Nov',
-                        'Dec'
-                      ]
-                          .indexed
-                          .map(
-                            (e) => AppChip(
-                              text: e.$2,
-                              isSelected: provider.selectedFilterMonth
-                                  .contains(e.$1 + 1),
-                              onTap: () {
-                                provider.changeHistoryFilter(e.$1 + 1);
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
-                    30.h.verticalSpace,
-                    AppButton(
-                      onPressed: () {
-                        provider.filterHistories();
-                        context.pop();
-                      },
-                      text: 'Apply',
-                    ),
-                    10.h.verticalSpace,
-                    AppButton(
-                      colorType: AppButtonColorType.greyed,
-                      onPressed: () {
-                        context.pop();
-                      },
-                      text: 'Cancel',
-                    ),
-                  ],
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  GlobalText('Filter', textStyle: textStyle18SemiBold),
+                  20.h.verticalSpace,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            provider.resetToData();
+                            provider.setFromDate(
+                                await showDefultDatePicker(context));
+                          },
+                          child: _dateContainer(
+                            title: 'From',
+                            value: provider.fromDate != null
+                                ? provider.fromDate!.toDDMonthYYYY
+                                : "Select a date",
+                          ),
+                        ),
+                      ),
+                      15.w.horizontalSpace,
+                      Expanded(
+                        child: InkWell(
+                          onTap: () async {
+                            provider
+                                .setToDate(await showDefultDatePicker(context),
+                                    onError: (msg) {
+                              CustomToast.showWarning(context, msg);
+                            });
+                          },
+                          child: _dateContainer(
+                            title: 'To',
+                            value: provider.toDate != null
+                                ? provider.toDate!.toDDMonthYYYY
+                                : "",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  30.h.verticalSpace,
+                  AppButton(
+                    onPressed: () {
+                      if (provider.fromDate == null) {
+                        CustomToast.showWarning(
+                          context,
+                          'Please select a valid dates.',
+                        );
+                        return;
+                      }
+                      provider.filterHistories();
+                      context.pop();
+                    },
+                    text: 'Apply',
+                  ),
+                  10.h.verticalSpace,
+                  AppButton(
+                    colorType: AppButtonColorType.greyed,
+                    onPressed: () {
+                      context.pop();
+                    },
+                    text: 'Cancel',
+                  ),
+                  20.h.verticalSpace,
+                ],
               ),
             ),
           );
         });
       });
+}
+
+Widget _dateContainer({required String title, required String value}) {
+  return Container(
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: AppColors.primaryColor.withAlpha(50),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SvgIcon(
+          AppAssets.calender,
+          color: AppColors.blackColor,
+          size: 30,
+        ),
+        10.w.horizontalSpace,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GlobalText(
+                title,
+                textStyle: textStyle12.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Row(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: GlobalText(
+                      value,
+                      maxLine: 1,
+                      textStyle: textStyle12,
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 15.w,
+                  ),
+                ],
+              )
+            ],
+          ),
+        )
+      ],
+    ),
+  );
 }

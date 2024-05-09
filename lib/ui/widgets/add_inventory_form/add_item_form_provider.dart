@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/category_model.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 
 class AddItemFormProvider extends ChangeNotifier {
@@ -38,12 +41,12 @@ class AddItemFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> selectFile() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return null;
-    _selectedFile = file;
+  Future<String?> setFile(XFile? newFile) async {
+    log('newFile => ${newFile?.path}', name: 'setFile - form provider');
+    if (newFile == null) return null;
+    _selectedFile = newFile;
     notifyListeners();
-    return file.name;
+    return newFile.name;
   }
 
   void clearFile() {
