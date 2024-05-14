@@ -29,25 +29,11 @@ class TabScreen extends StatefulWidget {
 }
 
 class _TabScreenState extends State<TabScreen> {
-  // late TabController _controller;
-
-  // final TextEditingController _textController = TextEditingController();
-
-  // List<Widget> pages = [
-  //   const HomeScreen(),
-  //   const ListingsScreen(),
-  //   Material(),
-  //   Material(),
-  //   Material(),
-  //   // const MarketScreen(),
-  //   // const MessageScreen(),
-  //   // const ProfileScreen(),
-  // ];
-
   @override
   void initState() {
     super.initState();
     context.read<ChecklistProvider>().getChecklistItems();
+    context.read<NotificationProvider>().getNotifications();
   }
 
   @override
@@ -131,9 +117,14 @@ class _TabScreenState extends State<TabScreen> {
             svgIcon: AppAssets.notification,
             counterWidget:
                 provider.notifications.any((element) => !element.isMessageRead)
-                    ? const CircleAvatar(
-                        radius: 2,
-                        backgroundColor: AppColors.redColor,
+                    ? Container(
+                        height: 18.h,
+                        width: 19.h,
+                        alignment: Alignment.bottomLeft,
+                        child: CircleAvatar(
+                          radius: 5.r,
+                          backgroundColor: AppColors.redColor,
+                        ),
                       )
                     : null,
           );

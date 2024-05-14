@@ -34,7 +34,7 @@ class Historyservice implements BaseHistoryService {
       if (!isEdit && record.containsKey('item_image')) {
         record['item_image'] = Utils.getBse64String(record['item_image']);
       }
-      // recordMap['item_details'] = record;
+      if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add(record);
     }
 
