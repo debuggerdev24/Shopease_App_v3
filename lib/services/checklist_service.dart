@@ -50,7 +50,7 @@ class ChecklistService implements BaseChecklistService {
           !record['item_image'].toString().startsWith('http')) {
         record['item_image'] = Utils.getBse64String(record['item_image']);
       }
-      // recordMap['item_details'] = record;
+      if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'item_details': record});
     }
 
@@ -89,7 +89,7 @@ class ChecklistService implements BaseChecklistService {
       } else {
         record.remove('item_image');
       }
-      // recordMap['item_details'] = record;
+      if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'shop_details': record});
     }
 

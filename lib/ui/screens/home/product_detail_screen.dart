@@ -50,7 +50,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: AppIconButton(
                 onTap: () {
                   context.pushNamed(
-                    AppRoute.addInventoryForm.name,
+                    widget.isFromChecklist
+                        ? AppRoute.addChecklistForm.name
+                        : AppRoute.addInventoryForm.name,
                     extra: {
                       'isEdit': true,
                       'details': widget.product,
@@ -77,12 +79,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: Container(
-                    height:
-                    
-                    
-                    
-                    
-                     250.h,
+                    height: 250.h,
                     // width:.
                     decoration: BoxDecoration(
                       border: Border.symmetric(

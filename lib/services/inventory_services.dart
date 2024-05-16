@@ -44,7 +44,7 @@ class InventoryService implements BaseInventoryService {
       } else {
         record.remove('item_image');
       }
-      // recordMap['item_details'] = record;
+      if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'item_details': record});
     }
 
