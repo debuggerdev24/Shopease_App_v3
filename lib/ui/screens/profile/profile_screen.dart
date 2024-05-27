@@ -252,13 +252,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: () async {
                           if (nameController.text.isNotEmpty &&
                               mobileController.text.isNotEmpty) {
-                            await provider.addProfileToGroup(
-                              data: [
-                                {
-                                  'preferred_username': nameController.text,
-                                  'phone_number': mobileController.text,
-                                }
-                              ],
+                            await provider.inviteUserToGroup(
+                              data: {
+                                // 'preferred_username': nameController.text,
+                                'phone_number': mobileController.text,
+                              },
                               onSuccess: () {
                                 _mobileController.clear();
                                 _nameController.clear();
@@ -268,6 +266,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 CustomToast.showError(context, msg);
                               },
                             );
+
+                            // await provider.addProfileToGroup(
+                            //   data: [
+                            //     {
+                            //       'preferred_username': nameController.text,
+                            //       'phone_number': mobileController.text,
+                            //     }
+                            //   ],
+                            //   onSuccess: () {
+                            //     _mobileController.clear();
+                            //     _nameController.clear();
+                            //     context.pop();
+                            //   },
+                            //   onError: (msg) {
+                            //     CustomToast.showError(context, msg);
+                            //   },
+                            // );
                           }
                         },
                         text: 'Invite'),

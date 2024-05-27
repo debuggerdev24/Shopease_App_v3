@@ -17,6 +17,8 @@ class ApiUrl {
 
   static const String putProfile = '/putprofile';
 
+  static const String inviteUser = '/inviteuser';
+
   static const String scanItem = '/scanitem';
 
   static const String getInventoryItems = '/getinventoryitems';

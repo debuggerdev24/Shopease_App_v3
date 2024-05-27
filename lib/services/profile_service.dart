@@ -19,6 +19,9 @@ abstract class BaseProfileService {
   Future<Response<dynamic>?> addProfile({
     required List<Map<String, dynamic>> data,
   });
+  Future<Response<dynamic>?> inviteUser({
+    required Map<String, dynamic> data,
+  });
 }
 
 class ProfileService implements BaseProfileService {
@@ -74,6 +77,22 @@ class ProfileService implements BaseProfileService {
 
     return await BaseRepository().post(
       ApiUrl.putProfile,
+      data: formData,
+    );
+  }
+
+  @override
+  Future<Response?> inviteUser({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'inviteUser');
+
+    return await BaseRepository().post(
+      ApiUrl.inviteUser,
       data: formData,
     );
   }
