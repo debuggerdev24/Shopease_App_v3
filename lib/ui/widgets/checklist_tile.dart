@@ -112,7 +112,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                       const SizedBox(height: 10),
                       Text(
                         widget.product.productName!,
-                      maxLines: 10,
+                        maxLines: 10,
                         style: textStyle16.copyWith(
                           fontSize: 18,
                           overflow: TextOverflow.ellipsis,

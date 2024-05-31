@@ -14,6 +14,7 @@ class ShopTile extends StatelessWidget {
     required this.shop,
     this.onTap,
     this.isSelected = false,
+    
   });
 
   final Shop shop;
