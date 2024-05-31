@@ -108,7 +108,6 @@ class _MultipleInventorySelectionScreenState
                   separatorBuilder: (context, index) => 10.h.verticalSpace,
                   itemBuilder: (BuildContext context, int index) {
                     return MultipleProductTile(
-                      ischecklist: false,
                       product: provider.filteredProducts[index],
                       isSelected: provider.selectedProducts
                           .contains(provider.filteredProducts[index]),

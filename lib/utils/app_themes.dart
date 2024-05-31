@@ -8,7 +8,7 @@ class AppThemes {
   static final lightTheme = ThemeData(
       fontFamily: 'Figtree',
       primaryColor: AppColors.orangeColor,
-      backgroundColor: AppColors.whiteColor,
+      // backgroundColor: AppColors.whiteColor,
       dialogBackgroundColor: AppColors.whiteColor,
       appBarTheme: AppBarTheme(color: AppColors.whiteColor),
       dialogTheme: DialogTheme(

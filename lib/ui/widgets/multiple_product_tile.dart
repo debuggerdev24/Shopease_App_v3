@@ -17,7 +17,6 @@ class MultipleProductTile extends StatefulWidget {
     this.onInventoryChange,
     this.onLongPress,
     this.onSelectionChanges,
-    required this.ischecklist,
   });
 
   final Product product;
@@ -25,7 +24,6 @@ class MultipleProductTile extends StatefulWidget {
   final Function(bool?)? onSelectionChanges;
   final Function(InventoryType type)? onInventoryChange;
   final bool isSelected;
-  final bool ischecklist;
 
   @override
   State<MultipleProductTile> createState() => _MultipleProductTileState();
@@ -42,11 +40,9 @@ class _MultipleProductTileState extends State<MultipleProductTile>
   Widget build(BuildContext context) {
     return CheckboxListTile(
       controlAffinity: ListTileControlAffinity.leading,
-      tileColor: widget.ischecklist
-          ? widget.isSelected
-              ? Colors.grey[700]!.withOpacity(0.05)
-              : Colors.grey.withOpacity(0.2)
-          : Colors.white,
+      tileColor: widget.isSelected
+          ? Colors.grey[700]!.withOpacity(0.05)
+          : Colors.grey.withOpacity(0.2),
       activeColor: AppColors.primaryColor,
       checkColor: AppColors.lightGreenColor,
       contentPadding: const EdgeInsets.only(
@@ -79,11 +75,6 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                   Text(
                     widget.product.productName!,
                     style: textStyle16.copyWith(
-                      decoration: widget.ischecklist
-                          ? widget.isSelected
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none
-                          : TextDecoration.none,
                       fontSize: 18,
                       overflow: TextOverflow.ellipsis,
                     ),

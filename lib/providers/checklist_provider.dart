@@ -23,9 +23,12 @@ class ChecklistProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   final List<Product> _checklist = [];
+  final List<Product> _filteredChecklist = [];
+  final List<String> _selectedCategoryFilters = [];
+  String? _selectedItemFilter;
+
   final List<Product> _selectedChecklists = [];
   bool _isAllSelected = false;
-  bool _checklistit = false;
 
   Shop? _selectedShop;
   final List<Shop> _shops = [];
@@ -42,6 +45,12 @@ class ChecklistProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   List<Product> get checklist => _checklist;
+  List<Product> get filteredChecklist => _filteredChecklist;
+  int get selectedItemsCount =>
+      _filteredChecklist.where((e) => e.isSelectedForComplete).length;
+  List<String> get selectedCategoryFilters => _selectedCategoryFilters;
+  String? get selectedItemFilter => _selectedItemFilter;
+
   List<Product> get selectedChecklists => _selectedChecklists;
   bool get isAllSelected => _isAllSelected;
   String? get currentHistId => _currentHistId;
@@ -55,7 +64,6 @@ class ChecklistProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
-  bool get checklistit => _checklistit;
 
   String? imagekey;
   File? imagefile;
@@ -66,6 +74,24 @@ class ChecklistProvider extends ChangeNotifier {
   bool get searchable => _searchable;
 
   get fromDate => null;
+
+  void changeFilterCategoty(String categoryId) {
+    if (_selectedCategoryFilters.contains(categoryId)) {
+      _selectedCategoryFilters.remove(categoryId);
+    } else {
+      _selectedCategoryFilters.add(categoryId);
+    }
+    notifyListeners();
+  }
+
+  void changeFilterItem(String? level) {
+    if (_selectedItemFilter == level) {
+      _selectedItemFilter = null;
+    } else {
+      _selectedItemFilter = level;
+    }
+    notifyListeners();
+  }
 
   void changeShopFilter(String newFilter) {
     if (_selectedShopFilter.contains(newFilter)) {
@@ -83,11 +109,6 @@ class ChecklistProvider extends ChangeNotifier {
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
-    notifyListeners();
-  }
-
-  void checklistrefersh({bool? value}) {
-    _checklistit = value ?? !_checklistit;
     notifyListeners();
   }
 
@@ -127,11 +148,73 @@ class ChecklistProvider extends ChangeNotifier {
   }
 
   void addProductToSelected(bool? value, Product product) {
+    log('product value: ${product.isSelectedForComplete}');
+    log('tapped value: $value');
+    log('product value - after change: ${product.isSelectedForComplete}');
+    product.changeSelectedState(value ?? false);
     if (value == true) {
+      _filteredChecklist.remove(product);
+      _filteredChecklist.add(product);
       _selectedChecklists.add(product);
     } else {
       _selectedChecklists.remove(product);
+      _filteredChecklist.remove(product);
+      _filteredChecklist.insert(0, product);
     }
+    notifyListeners();
+  }
+
+  void filterChecklist() {
+    _filteredChecklist.clear();
+    if (_selectedCategoryFilters.isEmpty && _selectedItemFilter == null) {
+      _filteredChecklist.addAll(_checklist);
+      notifyListeners();
+      return;
+    }
+
+    if (_selectedCategoryFilters.isEmpty) {
+      if (_selectedItemFilter == 'selected') {
+        _filteredChecklist.addAll(
+          _checklist.where(
+            (element) => element.isSelectedForComplete,
+          ),
+        );
+      } else {
+        _filteredChecklist.addAll(
+          _checklist.where(
+            (element) => !element.isSelectedForComplete,
+          ),
+        );
+      }
+      notifyListeners();
+      return;
+    }
+
+    if (_selectedItemFilter == null) {
+      _filteredChecklist.addAll(
+        _checklist.where(
+          (product) => _selectedCategoryFilters.contains(Constants.categories
+              .firstWhere(
+                  (category) => category.categoryName == product.itemCategory)
+              .categoryId),
+        ),
+      );
+      notifyListeners();
+
+      return;
+    }
+    _filteredChecklist.addAll(
+      _checklist.where(
+        (product) =>
+            (_selectedItemFilter == 'selected'
+                ? product.isSelectedForComplete
+                : !product.isSelectedForComplete) &&
+            _selectedCategoryFilters.contains(Constants.categories
+                .firstWhere(
+                    (category) => category.categoryName == product.itemCategory)
+                .categoryId),
+      ),
+    );
     notifyListeners();
   }
 
@@ -153,49 +236,6 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> openFilePicker(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-    if (result != null) {
-      final platformFile = result.files.single;
-      final fileSize = platformFile.size ?? 0; // File size in bytes
-
-      if (fileSize <= 5 * 1024 * 1024) {
-        // File size is less than or equal to 5MB
-        String? filePath = platformFile.path;
-        String fileName = File(filePath ?? '').path.split('/').last;
-        uploadedFilePath = fileName;
-        notifyListeners(); // Notify listeners that the state has changed
-      } else {
-        CustomToast.showWarning(
-            context, 'Please select a file smaller than 5MB.');
-      }
-    } else {
-      context.pop();
-      // User canceled the file picker
-    }
-  }
-
-  Future<void> uploadFile() async {
-    final result = await FilePicker.platform.pickFiles();
-
-    if (result == null) {
-      print('No file selected');
-      return;
-    }
-
-    // Upload file with its filename as the key
-    final platformFile = result.files.single;
-    final path = platformFile.path!;
-    final key = DateTime.now().toString() + platformFile.name;
-    final file = File(path);
-
-    imagekey = key;
-    imagefile = File(path);
-    uploadedFilePath = key;
-    notifyListeners();
-  }
-
   /// Checklist - APIs
 
   Future<void> getChecklistItems({
@@ -214,7 +254,7 @@ class ChecklistProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _checklist.clear();
         _checklist.addAll((res.data as List).map((e) => Product.fromJson(e)));
-        notifyListeners();
+        filterChecklist();
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);

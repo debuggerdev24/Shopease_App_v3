@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
@@ -19,6 +20,7 @@ import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
@@ -38,6 +40,8 @@ class _ChecklistScreenState extends State<ChecklistScreen>
   late final TabController _tabsController;
   TextEditingController searchController = TextEditingController();
   bool checklist = false;
+
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -166,12 +170,17 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () => showFilterSheet(context),
+                      onTap: () => _showChecklistFilterSheet(context),
                       child: SvgPicture.asset(
-                        AppAssets.selectedFilterIcon,
+                        (provider.selectedCategoryFilters.isEmpty &&
+                                provider.selectedItemFilter == null)
+                            ? AppAssets.filterIcon
+                            : AppAssets.selectedFilterIcon,
+                        width: 22.h,
+                        height: 22.h,
                       ),
                     ),
-                    Text('${provider.checklist.length} Products'),
+                    Text('${provider.filteredChecklist.length} Products'),
                     const Spacer(),
                     TextButton(
                       onPressed: () {
@@ -189,7 +198,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 ),
               ),
               // Checklist List view
-              provider.checklist.isEmpty
+              provider.filteredChecklist.isEmpty
                   ? Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -215,54 +224,24 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                       ),
                     )
                   : Expanded(
-                      child:
-                          //  ListView.separated(
-                          //     itemCount: provider.checklist.length,
-                          //     separatorBuilder: (context, index) =>
-                          //         10.verticalSpace,
-                          //     itemBuilder: (context, index) => ChecklistTile(
-                          //           product: provider.checklist[index],
-                          //           onLongPress: () {
-                          //             log("checklist======?${checklist}");
-                          //             provider.checklistrefersh();
-                          //           },
-                          //           onDelete: () async {
-                          //             await provider.deleteChecklistItems(
-                          //                 itemIds: [
-                          //                   provider.checklist[index].itemId!
-                          //                 ]);
-                          //           },
-                          //         ))
-
-                          ListView.separated(
+                      child: ListView.separated(
                         shrinkWrap: true,
                         primary: false,
-                        itemCount: provider.checklist.length,
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 10.0),
-                        itemBuilder: (BuildContext context, int index) {
-                          List sortedChecklist = provider.checklist.toList();
-                          sortedChecklist.sort((a, b) {
-                            bool aSelected =
-                                provider.selectedChecklists.contains(a);
-                            bool bSelected =
-                                provider.selectedChecklists.contains(b);
-                            return aSelected == bSelected
-                                ? 0
-                                : (bSelected ? -1 : 1);
-                          });
-
-                          return MultipleProductTile(
-                            ischecklist: true,
-                            product: sortedChecklist[index],
-                            onLongPress: () {
-                              provider.checklistrefersh();
+                        itemCount: provider.filteredChecklist.length,
+                        separatorBuilder: (context, index) => 10.verticalSpace,
+                        itemBuilder: (context, index) {
+                          final product = provider.filteredChecklist[index];
+                          return ChecklistTile(
+                            product: product,
+                            showCheckbox: true,
+                            isSelected: product.isSelectedForComplete,
+                            onDelete: () async {
+                              await provider.deleteChecklistItems(
+                                itemIds: [product.itemId!],
+                              );
                             },
-                            isSelected: provider.selectedChecklists
-                                .contains(sortedChecklist[index]),
                             onSelectionChanges: (value) {
-                              provider.addProductToSelected(
-                                  value, sortedChecklist[index]);
+                              provider.addProductToSelected(value, product);
                             },
                           );
                         },
@@ -270,13 +249,15 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     ),
 
               // Buy button
-              if (provider.selectedChecklists.isNotEmpty)
+              if (provider.filteredChecklist
+                  .any((e) => e.isSelectedForComplete))
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: AppButton(
                       isLoading: provider.isLoading,
                       onPressed: () async {
-                        if (provider.selectedChecklists.isEmpty) {
+                        if (!provider.filteredChecklist
+                            .any((e) => e.isSelectedForComplete)) {
                           CustomToast.showWarning(
                               context, 'Please select product first.');
                           return;
@@ -289,12 +270,13 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                         }
 
                         await provider.putInventoryFromChecklist(
-                          itemIds: provider.selectedChecklists
+                          itemIds: provider.filteredChecklist
+                              .where((e) => e.isSelectedForComplete)
                               .map((e) => e.itemId!)
                               .toList(),
                           onSuccess: () async {
                             CustomToast.showSuccess(context,
-                                '${provider.selectedChecklists.length} Products purchased.');
+                                '${provider.selectedItemsCount} Products purchased.');
                             context.goNamed(AppRoute.uploadInvoice.name);
 
                             // context.goNamed(AppRoute.checkList.name);
@@ -302,7 +284,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                         );
                         // provider.clearSelectedProducts();
                       },
-                      text: 'Complete (${provider.selectedChecklists.length})'),
+                      text: 'Complete (${provider.selectedItemsCount})'),
                 )
             ],
           );
@@ -458,7 +440,7 @@ void _showHistoryFilterSheet(BuildContext context) {
       });
 }
 
-showFilterSheet(BuildContext context) async {
+_showChecklistFilterSheet(BuildContext context) async {
   return showModalBottomSheet(
       showDragHandle: true,
       enableDrag: true,
@@ -470,7 +452,7 @@ showFilterSheet(BuildContext context) async {
           height: 480.h,
           padding: EdgeInsets.symmetric(horizontal: 13.sp, vertical: 5.sp),
           child: SingleChildScrollView(
-            child: Consumer<InventoryProvider>(builder: (context, provider, _) {
+            child: Consumer<ChecklistProvider>(builder: (context, provider, _) {
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -487,7 +469,7 @@ showFilterSheet(BuildContext context) async {
                   ),
                   Wrap(
                     direction: Axis.horizontal,
-                    children: provider.categories
+                    children: Constants.categories
                         .map(
                           (e) => AppChip(
                             text: e.categoryName,
@@ -507,23 +489,25 @@ showFilterSheet(BuildContext context) async {
                   ),
                   10.h.verticalSpace,
                   Row(
-                    children: [
-                      AppChip(
-                        text: "Selected",
-                        isSelected: true,
-                      ),
-                      AppChip(
-                        text: "Non Selected",
-                        isSelected: false,
-                      ),
-                    ],
+                    children: ['Selected', 'Non Selected']
+                        .map(
+                          (e) => AppChip(
+                            text: e,
+                            isSelected:
+                                provider.selectedItemFilter == e.toLowerCase(),
+                            onTap: () {
+                              provider.changeFilterItem(e.toLowerCase());
+                            },
+                          ),
+                        )
+                        .toList(),
                   ),
                   50.h.verticalSpace,
                   Center(
                     child: AppButton(
                         colorType: AppButtonColorType.primary,
                         onPressed: () {
-                          provider.filterProducts();
+                          provider.filterChecklist();
                           context.pop();
                         },
                         text: 'Apply'),
