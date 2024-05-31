@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shopease_app_flutter/main.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:go_router/go_router.dart';
@@ -51,14 +54,14 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
         ),
-        floatingActionButton: const Text(
+        floatingActionButton: Text(
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,
               fontFamily: 'OpenSansRegular',
             ),
-            "Ver 1.0"),
+            'Version ${packageInfo.version}'),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
@@ -66,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   startTimer() {
     var duration = const Duration(milliseconds: 2000);
-
+    log("Version ${packageInfo.version}");
     return Future.delayed(
       duration,
       () {

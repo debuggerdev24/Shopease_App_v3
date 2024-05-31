@@ -47,7 +47,14 @@ class _MultipleProductTileState extends State<MultipleProductTile>
               ? Colors.grey[700]!.withOpacity(0.05)
               : Colors.grey.withOpacity(0.2)
           : Colors.white,
-      activeColor: AppColors.primaryColor,
+      side: BorderSide(
+        color: widget.ischecklist
+            ? widget.isSelected
+                ? Colors.grey[700]!.withOpacity(0.05)
+                : Colors.grey
+            : Colors.green,
+      ),
+      activeColor: AppColors.greenColor,
       checkColor: AppColors.lightGreenColor,
       contentPadding: const EdgeInsets.only(
         left: 10,
@@ -78,6 +85,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                   const SizedBox(height: 10),
                   Text(
                     widget.product.productName!,
+                    maxLines: 5,
                     style: textStyle16.copyWith(
                       decoration: widget.ischecklist
                           ? widget.isSelected

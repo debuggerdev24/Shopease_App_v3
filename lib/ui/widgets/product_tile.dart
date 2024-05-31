@@ -107,10 +107,13 @@ class _ProductTileState extends State<ProductTile>
                   children: [
                     const SizedBox(height: 10),
                     Text(
+                      maxLines: 10,
                       widget.product.productName!,
                       overflow: TextOverflow.ellipsis,
                       style: textStyle16.copyWith(
-                          fontSize: 18, overflow: TextOverflow.ellipsis),
+                        fontSize: 18,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     SizedBox(height: 10.h),
                     AppChip(text: widget.product.brand ?? '')

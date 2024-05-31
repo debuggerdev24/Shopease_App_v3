@@ -28,7 +28,7 @@ class ChecklistTile extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onLongPress;
   final bool isSlideEnabled;
- 
+
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
 }
@@ -95,6 +95,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                   children: [
                     const SizedBox(height: 10),
                     Text(
+                      maxLines: 10,
                       widget.product.productName!,
                       style: textStyle16.copyWith(
                         fontSize: 18,

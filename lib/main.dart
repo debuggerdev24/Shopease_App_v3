@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
@@ -20,15 +21,23 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
+ late PackageInfo packageInfo;
 Future<void> main() async {
+ 
   WidgetsFlutterBinding.ensureInitialized();
+  await _initializeCoreApp();
   await SharedPrefs().init();
   await BaseRepository().intialize();
   if (SharedPrefs().idToken != null) {
     BaseRepository().addToken(SharedPrefs().idToken!);
   }
+   
   runApp(const MyApp());
+}
+
+_initializeCoreApp() async {
+  packageInfo = await PackageInfo.fromPlatform();
+ 
 }
 
 class MyApp extends StatelessWidget {
