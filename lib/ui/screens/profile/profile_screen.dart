@@ -1,11 +1,15 @@
 import 'dart:developer';
 import 'package:animate_do/animate_do.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/invitation_model.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
+import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
@@ -98,6 +102,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     itemCount: provider.groupProfiles.length,
                     itemBuilder: (BuildContext context, int index) {
                       ProfileData user = provider.groupProfiles[index];
+                      log("usdert =====>${user.userId}");
 
                       return ListTile(
                         contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
@@ -111,21 +116,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     : user.imageUrl,
                               ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 5,
-                              child: SvgPicture.asset(
-                                AppAssets.update,
-                                width: 20.sp,
-                              ),
-                            ),
+                            // Positioned(
+                            //   bottom: 0,
+                            //   right: 5,
+                            //   child: SvgPicture.asset(
+                            //     AppAssets.update,
+                            //     width: 20.sp,
+                            //   ),
+                            // ),
                           ],
                         ),
-                        title: GlobalText(user.preferredUsername),
+                        title: GlobalText(user.phoneNumber),
                         trailing: user.isInvited == true
-                            ? GlobalText(
-                                'Invited',
-                                textStyle: textStyle14,
+                            ? InkWell(
+                                onTap: () async {
+                                  provider.deleteUser(user.userId);
+                                  // await provider.cancelinvite(
+                                  //   data: {
+                                  //     'user_id': user.userId,
+                                  //   },
+                                  //   onSuccess: () {
+
+                                  //     context.pop();
+                                  //   },
+                                  //   onError: (msg) {
+                                  //     CustomToast.showError(context, msg);
+                                  //   },
+                                  // );
+                                },
+                                child: GlobalText(
+                                  'Invited',
+                                  textStyle: textStyle14,
+                                ),
                               )
                             : SizedBox(
                                 width: 70.sp,
@@ -142,8 +164,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           )
                                         : const SizedBox(),
                                     GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
                                         provider.deleteUser(user.userId);
+                                        // await provider.cancelinvite(
+                                        //   data: {
+                                        //     'user_id': user.userId,
+                                        //   },
+                                        //   onSuccess: () {
+                                        //     provider.deleteUser(user.userId);
+
+                                        //     context.pop();
+                                        //   },
+                                        //   onError: (msg) {
+                                        //     CustomToast.showError(context, msg);
+                                        //   },
+                                        // );
                                       },
                                       child: SvgIcon(
                                         AppAssets.delete,
@@ -157,29 +192,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                   ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: GlobalText(
-                      'Support',
-                      textStyle:
-                          textStyle16.copyWith(fontWeight: FontWeight.w500),
-                    ),
-                    subtitle: RichText(
-                      text: TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'If you have any queries, write to ',
-                            ),
-                            TextSpan(
-                              text: 'support@ShopEaseApp.com',
-                              style: textStyle12.copyWith(
-                                  decoration: TextDecoration.underline),
-                            ),
-                          ],
-                          style: textStyle12.copyWith(
-                            color: AppColors.blackColor,
-                          )),
-                    ),
-                  ),
+                      contentPadding: EdgeInsets.zero,
+                      title: GlobalText(
+                        'Support',
+                        textStyle:
+                            textStyle16.copyWith(fontWeight: FontWeight.w500),
+                      ),
+                      trailing: GestureDetector(
+                        onTap: () {},
+                        child: SvgPicture.asset(
+                          AppAssets.support,
+                        ),
+                      )
+
+                      // subtitle: RichText(
+                      //   text: TextSpan(
+                      //       children: [
+                      //         const TextSpan(
+                      //           text: 'If you have any queries, write to ',
+                      //         ),
+                      //         TextSpan(
+                      //           text: 'support@ShopEaseApp.com',
+                      //           style: textStyle12.copyWith(
+                      //               decoration: TextDecoration.underline),
+                      //         ),
+                      //       ],
+                      //       style: textStyle12.copyWith(
+                      //         color: AppColors.blackColor,
+                      //       )),
+                      // ),
+                      ),
                   20.h.verticalSpace,
                 ],
               ),
@@ -189,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showAddMemberSheet() {
     late final TextEditingController nameController = TextEditingController();
-    late final TextEditingController mobileController = TextEditingController();
+    
     showModalBottomSheet(
         enableDrag: true,
         showDragHandle: true,
@@ -200,66 +242,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.sp),
             width: double.infinity,
             child: SingleChildScrollView(
-              child: Consumer<ProfileProvider>(builder: (context, provider, _) {
+              child: Consumer2<ProfileProvider, AuthProvider>(
+                  builder: (context, provider, auth, _) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    GlobalText('Add  New Member',
-                        textStyle: textStyle18SemiBold),
+                    GlobalText('Add  New User', textStyle: textStyle16),
                     20.h.verticalSpace,
                     9.verticalSpace,
-                    AppTextField(
-                      controller: nameController,
-                      name: "Enter User name",
-                      labelText: 'Name',
-                      isRequired: true,
-                      hintText: "Enter User name",
-                      labelStyle: textStyle16.copyWith(
-                        color: AppColors.blackColor,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      validator: (value) {
-                        if (value != null || value.toString().isNotEmpty) {
-                          return '';
-                        }
-                        return 'Enter valid name';
-                      },
-                    ),
+                    // AppTextField(
+                    //   controller: nameController,
+                    //   name: "Enter User name",
+                    //   labelText: 'Name',
+                    //   isRequired: true,
+                    //   hintText: "Enter User name",
+                    //   labelStyle: textStyle16.copyWith(
+                    //     color: AppColors.blackColor,
+                    //     fontWeight: FontWeight.w400,
+                    //   ),
+                    //   validator: (value) {
+                    //     if (value != null || value.toString().isNotEmpty) {
+                    //       return '';
+                    //     }
+                    //     return 'Enter valid name';
+                    //   },
+                    // ),
+
                     10.h.verticalSpace,
                     9.verticalSpace,
-                    AppTextField(
-                        controller: mobileController,
-                        name: "Enter Mobile NUmber",
-                        labelText: 'Mobile Number',
-                        isRequired: true,
-                        hintText: "enter mobile number with country code",
-                        labelStyle: textStyle16.copyWith(
-                            color: AppColors.blackColor,
-                            fontWeight: FontWeight.w400),
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value != null || value.toString().isNotEmpty) {
-                            return '';
-                          }
-                          return 'Enter valid mobile number';
-                        }),
-                    80.h.verticalSpace,
+
+                    // AppTextField(
+                    //     controller: mobileController,
+                    //     name: "Enter Mobile NUmber",
+                    //     labelText: 'Mobile Number',
+                    //     isRequired: true,
+                    //     hintText: "enter mobile number with country code",
+                    //     labelStyle: textStyle16.copyWith(
+                    //         color: AppColors.blackColor,
+                    //         fontWeight: FontWeight.w400),
+                    //     keyboardType: TextInputType.phone,
+                    //     validator: (value) {
+                    //       if (value != null || value.toString().isNotEmpty) {
+                    //         return '';
+                    //       }
+                    //       return 'Enter valid mobile number';
+                    //     }),
+                    _buildMobileField(auth),
+                    70.h.verticalSpace,
                     AppButton(
-                        colorType: (nameController.text.isNotEmpty &&
-                                mobileController.text.isNotEmpty)
+                        colorType: (_mobileController.text.isNotEmpty)
                             ? AppButtonColorType.primary
                             : AppButtonColorType.secondary,
                         onPressed: () async {
-                          if (nameController.text.isNotEmpty &&
-                              mobileController.text.isNotEmpty) {
+                          if (_mobileController.text.isNotEmpty) {
                             await provider.inviteUserToGroup(
                               data: {
-                                // 'preferred_username': nameController.text,
-                                'phone_number': mobileController.text,
+                                'phone_number': _mobileController.text,
                               },
                               onSuccess: () {
                                 _mobileController.clear();
-                                _nameController.clear();
                                 context.pop();
                               },
                               onError: (msg) {
@@ -308,9 +349,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final TextEditingController nameController = TextEditingController()
       ..text = context.read<ProfileProvider>().profileData!.preferredUsername;
     final TextEditingController mobileController = TextEditingController();
-    log('image url: ${context.read<ProfileProvider>().profileData!.imageUrl}');
-    final TextEditingController fileFieldController = TextEditingController()
-      ..text = context.read<ProfileProvider>().profileData!.imageUrl;
+    // log('image url: ${context.read<ProfileProvider>().profileData!.imageUrl}');
+    final TextEditingController fileFieldController = TextEditingController();
+    // ..text = context.read<ProfileProvider>().profileData!.imageUrl;
 
     onSelectFileTap() async {
       final name = await context.read<ProfileProvider>().selectFile();
@@ -344,7 +385,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     isRequired: true,
                     labelStyle: textStyle16.copyWith(
                       color: AppColors.blackColor,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   // 10.h.verticalSpace,
@@ -453,6 +494,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  _buildMobileField(AuthProvider provider) => AppTextField(
+        name: "Enter Mobile NUmber",
+        labelText: 'Mobile Number',
+        isRequired: true,
+        hintText: "Enter mobile number",
+        labelStyle: textStyle16.copyWith(
+            color: AppColors.blackColor, fontWeight: FontWeight.w400),
+        keyboardType: TextInputType.phone,
+        onChanged: (value) {
+          setState(() {});
+        },
+        controller: _mobileController,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'please enter phone number';
+          }
+          if (provider.selectedCountry.example.length != value.length) {
+            return "please enter correct phone number";
+          }
+          return null;
+        },
+        maxLength: provider.selectedCountry.example.length,
+        prefixIcon: InkWell(
+          onTap: () {
+            showCountryPicker(
+              context: context,
+              countryListTheme: const CountryListThemeData(
+                bottomSheetHeight: 500,
+              ),
+              onSelect: provider.setSelectedCountry,
+            );
+          },
+          child: _buildTextFieldPrefix(provider),
+        ),
+      );
+
+  _buildTextFieldPrefix(AuthProvider provider) => Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '+${provider.selectedCountry.phoneCode}',
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      );
   void _showLeavePopUp(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");

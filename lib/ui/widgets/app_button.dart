@@ -82,7 +82,7 @@ class AppButton extends StatelessWidget {
                             : AppColors.orangeColor),
               ),
             )
-          : Text(text, style: textStyle16),
+          : Text(text, style: textStyle16,),
     );
   }
 }

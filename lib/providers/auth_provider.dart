@@ -13,6 +13,7 @@ class AuthProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   bool _needToResendOTP = false;
+  bool _showResendOTPText = false;
 
   Country _selectedCountry = Country.from(
     json: {
@@ -31,11 +32,17 @@ class AuthProvider extends ChangeNotifier {
   );
 
   bool get isLoading => _isLoading;
+  bool get showResendOTPText => _showResendOTPText;
   bool get needToResendOTP => _needToResendOTP;
   Country get selectedCountry => _selectedCountry;
 
   setLoading(bool isLoading) {
     _isLoading = isLoading;
+    notifyListeners();
+  }
+
+  setResendOtp(bool? value) {
+    _needToResendOTP = value ?? _needToResendOTP;
     notifyListeners();
   }
 

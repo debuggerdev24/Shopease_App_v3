@@ -25,6 +25,7 @@ class ChecklistProvider extends ChangeNotifier {
   final List<Product> _checklist = [];
   final List<Product> _selectedChecklists = [];
   bool _isAllSelected = false;
+  bool _checklistit = false;
 
   Shop? _selectedShop;
   final List<Shop> _shops = [];
@@ -39,6 +40,7 @@ class ChecklistProvider extends ChangeNotifier {
   /// Getters
 
   bool get isLoading => _isLoading;
+
   List<Product> get checklist => _checklist;
   List<Product> get selectedChecklists => _selectedChecklists;
   bool get isAllSelected => _isAllSelected;
@@ -53,6 +55,7 @@ class ChecklistProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
+  bool get checklistit => _checklistit;
 
   String? imagekey;
   File? imagefile;
@@ -61,6 +64,8 @@ class ChecklistProvider extends ChangeNotifier {
   bool _searchable = false;
 
   bool get searchable => _searchable;
+
+  get fromDate => null;
 
   void changeShopFilter(String newFilter) {
     if (_selectedShopFilter.contains(newFilter)) {
@@ -78,6 +83,11 @@ class ChecklistProvider extends ChangeNotifier {
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
+    notifyListeners();
+  }
+
+  void checklistrefersh({bool? value}) {
+    _checklistit = value ?? !_checklistit;
     notifyListeners();
   }
 

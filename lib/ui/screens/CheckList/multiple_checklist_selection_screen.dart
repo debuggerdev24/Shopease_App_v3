@@ -88,6 +88,8 @@ class _MultipleChecklistSelectionScreenState
                     itemBuilder: (BuildContext context, int index) {
                       return MultipleProductTile(
                         product: provider.checklist[index],
+                        ischecklist: false,
+                        onLongPress: () {},
                         isSelected: provider.selectedChecklists
                             .contains(provider.checklist[index]),
                         onSelectionChanges: (value) {

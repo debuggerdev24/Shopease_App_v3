@@ -108,6 +108,14 @@ flutter:
          weight: 700
        - asset: assets/fonts/Figtree-Regular.ttf
        - asset: assets/fonts/Figtree-Semibold.ttf
+       
+   - family: 'AbhayaLibre'
+     fonts:
+       - asset: assets/fonts/AbhayaLibre/AbhayaLibre-Bold.ttf
+         weight: 700
+       - asset: assets/fonts/AbhayaLibre/AbhayaLibre-Regular.ttf
+       - asset: assets/fonts/AbhayaLibre/AbhayaLibre-ExtraBold.ttf
+       - asset: assets/fonts/AbhayaLibre/AbhayaLibre-Semibold.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

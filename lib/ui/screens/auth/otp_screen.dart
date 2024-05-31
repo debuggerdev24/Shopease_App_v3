@@ -29,7 +29,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final TextEditingController _otpController = TextEditingController();
-  late Timer _resendOTPTimer;
+  Timer? _resendOTPTimer;
   bool _showResendOTPText = false;
 
   @override
@@ -39,17 +39,24 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void startResendOTPTimer() {
-    _resendOTPTimer =
-        Timer.periodic(const Duration(seconds: 60), (Timer timer) {});
+    _resendOTPTimer?.cancel();
+    _resendOTPTimer = Timer(const Duration(seconds: 60), () {
+      setState(() {
+        _showResendOTPText = true;
+      });
+    });
   }
 
   void resendOTP() {
     startResendOTPTimer();
+    setState(() {
+      _showResendOTPText = false;
+    });
   }
 
   @override
   void dispose() {
-    _resendOTPTimer.cancel(); // Cancel the timer when the widget is disposed
+    _resendOTPTimer?.cancel();
     super.dispose();
   }
 
@@ -68,7 +75,7 @@ class _OtpScreenState extends State<OtpScreen> {
             children: [
               Text(
                 'Enter the OTP sent to ${widget.mobile} ',
-                style: textStyle20SemiBold.copyWith(fontSize: 24),
+                style: textStyle20SemiBold.copyWith(fontSize: 20),
               ),
               25.verticalSpace,
               _buildOtpInput(),
@@ -88,7 +95,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             context,
                             widget.isEdit
                                 ? 'Phone number changed'
-                                : 'Loggeed in successfully.',
+                                : 'Logged in successfully.',
                           );
                         },
                         onError: (msg) {
@@ -144,7 +151,7 @@ class _OtpScreenState extends State<OtpScreen> {
         ),
         5.h.verticalSpace,
         // if (_otpController.text.isEmpty)
-        if (!context.read<AuthProvider>().needToResendOTP)
+        if (!_showResendOTPText)
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -170,13 +177,15 @@ class _OtpScreenState extends State<OtpScreen> {
                 duration: const Duration(seconds: 60),
                 style: textStyle12,
                 onTimeOver: () {
-                  context.read<AuthProvider>().setNeedToResendOTP(true);
+                  setState(() {
+                    _showResendOTPText = true;
+                  });
                 },
               )
             ],
           ),
 
-        if (context.read<AuthProvider>().needToResendOTP)
+        if (_showResendOTPText)
           GestureDetector(
             onTap: () {
               resendOTP();

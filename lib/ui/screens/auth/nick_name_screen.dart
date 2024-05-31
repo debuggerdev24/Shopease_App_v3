@@ -41,7 +41,7 @@ class _NickNameScreenState extends State<NickNameScreen> {
               children: [
                 20.h.verticalSpace,
                 Text(
-                  'What is your nick name?',
+                  'What is your Nick name?',
                   style: textStyle20SemiBold.copyWith(fontSize: 24),
                 ),
                 20.verticalSpace,

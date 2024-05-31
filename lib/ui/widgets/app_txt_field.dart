@@ -105,11 +105,12 @@ class AppTextField extends StatelessWidget {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           controller: controller,
+
           // autovalidateMode:
           //     autoValidateMode ?? AutovalidateMode.onUserInteraction,
           obscureText: obSecureText ?? false,
           cursorColor: AppColors.blackColor,
-          style: style,
+          style: textStyle16.copyWith(color: AppColors.blackColor),
           onTap: onTap,
           onTapOutside: (event) {
             FocusScope.of(context).unfocus();

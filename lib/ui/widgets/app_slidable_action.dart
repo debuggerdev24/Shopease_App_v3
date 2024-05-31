@@ -13,7 +13,8 @@ class AppSlidableaction extends StatelessWidget {
       this.backgroundColor,
       this.forgroundColor,
       this.isRight = false,
-      this.height});
+      this.height,
+      this.isAsset});
 
   final String icon;
   final String? labelText;
@@ -22,6 +23,7 @@ class AppSlidableaction extends StatelessWidget {
   final Color? forgroundColor;
   final bool isRight;
   final double? height;
+  final bool? isAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +41,14 @@ class AppSlidableaction extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                icon,
-                height: height,
-                theme: SvgTheme(
-                    currentColor: forgroundColor ?? AppColors.blackColor),
-              ),
+              (isAsset == true)
+                  ? Image.asset(icon, height: height)
+                  : SvgPicture.asset(
+                      icon,
+                      height: height,
+                      theme: SvgTheme(
+                          currentColor: forgroundColor ?? AppColors.blackColor),
+                    ),
               if (labelText != null) ...[
                 10.verticalSpace,
                 Text(labelText!, style: textStyle16)

@@ -28,6 +28,7 @@ class ChecklistTile extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onLongPress;
   final bool isSlideEnabled;
+ 
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
 }

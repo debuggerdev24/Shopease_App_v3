@@ -43,9 +43,8 @@ class _SplashScreenState extends State<SplashScreen> {
           color: AppColors.whiteColor,
           child: Center(
             child: Container(
-              height: 60.h,
-
-              width: 400.h,
+              height: 50.h,
+              width: 250.h,
               decoration: const BoxDecoration(
                   image: DecorationImage(image: AssetImage(AppAssets.appLogo))),
               // child: Image.asset(AppAssets.appLogo)
@@ -67,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   startTimer() {
     var duration = const Duration(milliseconds: 2000);
-    
+
     return Future.delayed(
       duration,
       () {

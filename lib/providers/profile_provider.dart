@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shopease_app_flutter/Models/invitation_model.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/services/profile_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
@@ -25,6 +26,7 @@ class ProfileProvider extends ChangeNotifier {
   ProfileData? _profileData;
   XFile? _selectedFile;
   List<ProfileData> _groupProfiles = [];
+  List<Inviteduser> _userInvitation = [];
 
   bool get set => _set;
   int _selectedUser = -1;
@@ -35,6 +37,7 @@ class ProfileProvider extends ChangeNotifier {
   ProfileData? get profileData => _profileData;
   List<ProfileData> get groupProfiles => _groupProfiles;
   XFile? get selectedFile => _selectedFile;
+  List<Inviteduser> get inviteduser => _userInvitation;
 
   void toggleSet(bool value) {
     _set = !set;
@@ -68,6 +71,11 @@ class ProfileProvider extends ChangeNotifier {
 
   void saveUser(ProfileData user) {
     groupProfiles.add(user);
+    notifyListeners();
+  }
+
+  void settingInviteduser(List<Inviteduser> value) {
+    _userInvitation = value;
     notifyListeners();
   }
 
@@ -232,6 +240,123 @@ class ProfileProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         getAllProfile();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while inviteUserToGroup: $e");
+      debugPrint("Error while inviteUserToGroup: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getinvitesbyuser({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.getinvitesbyuser();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        print("0res.data ========== ${res}");
+        settingInviteduser(inviteduserFromJson(res.data));
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while inviteUserToGroup: $e");
+      debugPrint("Error while inviteUserToGroup: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> acceptinvite({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.acceptinvite(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while inviteUserToGroup: $e");
+      debugPrint("Error while inviteUserToGroup: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> cancelinvite({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.cancelinvite(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while inviteUserToGroup: $e");
+      debugPrint("Error while inviteUserToGroup: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> rejectinvite({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.rejectinvite(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);

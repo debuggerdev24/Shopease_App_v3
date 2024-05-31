@@ -22,6 +22,19 @@ abstract class BaseProfileService {
   Future<Response<dynamic>?> inviteUser({
     required Map<String, dynamic> data,
   });
+  Future<Response<dynamic>?> getinvitesbyuser();
+
+  Future<Response<dynamic>?> acceptinvite({
+    required Map<String, dynamic> data,
+  });
+
+  Future<Response<dynamic>?> cancelinvite({
+    required Map<String, dynamic> data,
+  });
+Future<Response<dynamic>?> rejectinvite({
+    required Map<String, dynamic> data,
+  });
+
 }
 
 class ProfileService implements BaseProfileService {
@@ -93,6 +106,68 @@ class ProfileService implements BaseProfileService {
 
     return await BaseRepository().post(
       ApiUrl.inviteUser,
+      data: formData,
+    );
+  }
+
+  @override
+  Future<Response?> getinvitesbyuser() async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    // (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'getinvitesbyuser');
+
+    return await BaseRepository().post(
+      ApiUrl.getinvitesbyuser,
+      data: formData,
+    );
+  }
+
+
+  @override
+  Future<Response?> acceptinvite({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'acceptinvite');
+
+    return await BaseRepository().post(
+      ApiUrl.acceptinvite,
+      data: formData,
+    );
+  }
+   @override
+  Future<Response?> cancelinvite({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'cancelinvite');
+
+    return await BaseRepository().post(
+      ApiUrl.cancelinvite,
+      data: formData,
+    );
+  }
+
+   @override
+  Future<Response?> rejectinvite({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'rejectinvite');
+
+    return await BaseRepository().post(
+      ApiUrl.rejectinvite,
       data: formData,
     );
   }
