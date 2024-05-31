@@ -60,6 +60,7 @@ dependencies:
   time_remaining: ^2.0.0+1
   image_picker: ^1.1.0
   workmanager: ^0.5.2
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:

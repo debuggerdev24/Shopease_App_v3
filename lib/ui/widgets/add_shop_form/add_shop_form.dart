@@ -121,6 +121,7 @@ class _AddShopFormState extends State<AddShopForm> {
                             {'item_image': provider.selectedFile!.path});
                       }
                       widget.onSubmit(data);
+                      
                     }
                   },
                   text: 'Create',

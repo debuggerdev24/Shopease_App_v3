@@ -40,6 +40,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
   Widget build(BuildContext context) {
     return CheckboxListTile(
       controlAffinity: ListTileControlAffinity.leading,
+
       tileColor: widget.isSelected
           ? Colors.grey[700]!.withOpacity(0.05)
           : Colors.grey.withOpacity(0.2),
@@ -74,6 +75,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                   const SizedBox(height: 10),
                   Text(
                     widget.product.productName!,
+                    maxLines: 5,
                     style: textStyle16.copyWith(
                       fontSize: 18,
                       overflow: TextOverflow.ellipsis,
