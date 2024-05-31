@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/notification_model.dart';
 import 'package:shopease_app_flutter/providers/notifications_provider.dart';
-import 'package:shopease_app_flutter/ui/screens/notification/base_notification.dart';
+import 'package:shopease_app_flutter/ui/screens/notification/invitations_view.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -67,14 +67,14 @@ class _NotificationScreenState extends State<NotificationScreen>
       body: TabBarView(
         controller: _tabsController,
         children: [
-          _buildCurrentListView(),
-           BaseNotification(),
+          _buildNotificationsList(),
+          const InvitationsView(),
         ],
       ),
     );
   }
 
-  Widget _buildCurrentListView() {
+  Widget _buildNotificationsList() {
     return Consumer<NotificationProvider>(builder: (context, provider, _) {
       return provider.isLoading
           ? const Center(
@@ -171,5 +171,4 @@ class _NotificationScreenState extends State<NotificationScreen>
       ),
     );
   }
-  
 }

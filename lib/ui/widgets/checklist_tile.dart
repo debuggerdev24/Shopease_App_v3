@@ -25,16 +25,17 @@ class ChecklistTile extends StatefulWidget {
     required this.isSelected,
     this.onSelectionChanges,
     this.showCheckbox = false,
+    this.onTap,
   });
 
   final Product product;
   final VoidCallback? onDelete;
+  final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final bool isSlideEnabled;
   final bool isSelected;
   final Function(bool?)? onSelectionChanges;
   final bool showCheckbox;
-
 
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
@@ -64,12 +65,7 @@ class _ChecklistTileState extends State<ChecklistTile>
           ? _buildRightSwipeActions(widget.product)
           : null,
       child: GestureDetector(
-        onTap: () {
-          context.pushNamed(AppRoute.productDetail.name, extra: {
-            'product': widget.product,
-            'isFromChecklist': true,
-          });
-        },
+        onTap: widget.onTap,
         onLongPress: widget.onLongPress,
         child: Opacity(
           opacity: widget.isSelected ? .75 : 1,
@@ -84,9 +80,13 @@ class _ChecklistTileState extends State<ChecklistTile>
               children: [
                 const SizedBox(width: 8),
                 if (widget.showCheckbox)
-                  Checkbox(
-                    value: widget.isSelected,
-                    onChanged: widget.onSelectionChanges,
+                  Transform.scale(
+                    scale: 1.25,
+                    child: Checkbox(
+                      value: widget.isSelected,
+                      onChanged: widget.onSelectionChanges,
+                      activeColor: AppColors.greenColor,
+                    ),
                   ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -112,7 +112,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                       const SizedBox(height: 10),
                       Text(
                         widget.product.productName!,
-                      maxLines: 10,
+                        maxLines: 10,
                         style: textStyle16.copyWith(
                           fontSize: 18,
                           overflow: TextOverflow.ellipsis,

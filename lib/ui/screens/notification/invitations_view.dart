@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/Models/invitation_model.dart';
-import 'package:shopease_app_flutter/Models/notification_model.dart';
-import 'package:shopease_app_flutter/Models/product_model.dart';
-import 'package:shopease_app_flutter/providers/notifications_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -18,16 +14,16 @@ import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 
 import '../../../utils/styles.dart';
 
-class BaseNotification extends StatefulWidget {
-  const BaseNotification({
+class InvitationsView extends StatefulWidget {
+  const InvitationsView({
     super.key,
   });
 
   @override
-  State<BaseNotification> createState() => _BaseNotificationState();
+  State<InvitationsView> createState() => _InvitationsViewState();
 }
 
-class _BaseNotificationState extends State<BaseNotification>
+class _InvitationsViewState extends State<InvitationsView>
     with SingleTickerProviderStateMixin {
   late SlidableController _slideController;
 
@@ -76,7 +72,7 @@ class _BaseNotificationState extends State<BaseNotification>
                       child: Row(
                         children: [
                           10.horizontalSpace,
-                          SvgIcon(
+                          const SvgIcon(
                             AppAssets.warning,
                             size: 23,
                           ),
@@ -94,7 +90,7 @@ class _BaseNotificationState extends State<BaseNotification>
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: provider.inviteduser.length,
                       separatorBuilder: (context, index) => 10.verticalSpace,
-                      itemBuilder: (context, index) => buildMessageTile(
+                      itemBuilder: (context, index) => _buildInvitationTile(
                           provider, provider.inviteduser[index], context),
                     ),
                   ],
@@ -102,12 +98,11 @@ class _BaseNotificationState extends State<BaseNotification>
     });
   }
 
-  Widget buildMessageTile(
+  Widget _buildInvitationTile(
       ProfileProvider provider, Inviteduser inviteduser, BuildContext context) {
     return Slidable(
       endActionPane: _buildRightSwipeActions(provider, inviteduser, context),
       child: ListTile(
-        onTap: () {},
         contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.sp),
         tileColor: AppColors.whiteColor,
         leading: Container(
@@ -158,19 +153,18 @@ class _BaseNotificationState extends State<BaseNotification>
             forgroundColor: null,
             backgroundColor: AppColors.greenColor,
             onTap: () async {
-              await provider.acceptinvite(data: {
-                "user_id": inviteduser.userId,
-                "location_id": inviteduser.locationId,
-              });
-              onSuccess:
-              (context) {
-                CustomToast.showSuccess(
-                    context, 'Please select a file smaller than 5MB.');
-              };
-              onError:
-              (msg) {
-                CustomToast.showError(context, msg);
-              };
+              await provider.acceptinvite(
+                data: {
+                  "user_id": inviteduser.userId,
+                  "location_id": inviteduser.locationId,
+                },
+                onSuccess: () {
+                  CustomToast.showSuccess(context, 'Invitation Accepted.');
+                },
+                onError: (msg) {
+                  CustomToast.showError(context, msg);
+                },
+              );
             },
             isAsset: true,
             height: 90.sp,
@@ -179,18 +173,16 @@ class _BaseNotificationState extends State<BaseNotification>
             isRight: true,
             icon: AppAssets.removeinviteuser,
             onTap: () async {
-              await provider.rejectinvite(data: {
-                "user_id": inviteduser.userId,
-              });
-              onSuccess:
-              (context) {
-                CustomToast.showSuccess(
-                    context, 'Please select a file smaller than 5MB.');
-              };
-              onError:
-              (msg) {
-                CustomToast.showError(context, msg);
-              };
+              await provider.rejectinvite(
+                  data: {
+                    "user_id": inviteduser.userId,
+                  },
+                  onError: (msg) {
+                    CustomToast.showError(context, msg);
+                  },
+                  onSuccess: () {
+                    CustomToast.showWarning(context, 'Invitation rejected.');
+                  });
             },
             forgroundColor: null,
             backgroundColor: AppColors.redColor,

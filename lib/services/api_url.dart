@@ -19,6 +19,8 @@ class ApiUrl {
 
   static const String inviteUser = '/inviteuser';
 
+  static const String removeUser = '/removeuserfromgroup';
+
   static const String getinvitesbyuser = '/getinvitesbyuser';
 
   static const String acceptinvite = '/acceptinvite';
@@ -56,9 +58,8 @@ class ApiUrl {
   static const String getUserNotification = '/getusernotification';
 
   static const String updateUserNotification = '/updateusernotification';
- 
-  static const String  cancelinvite = '/cancelinvite';
 
-  static const String  rejectinvite = '/rejectinvite';
+  static const String cancelinvite = '/cancelinvite';
 
+  static const String rejectinvite = '/rejectinvite';
 }

@@ -21,7 +21,6 @@ class ProfileProvider extends ChangeNotifier {
   XFile? _selectedFile;
   List<ProfileData> _groupProfiles = [];
   List<Inviteduser> _userInvitation = [];
-  Country _selectedCountry = Country.from(json: Constants.selectedCountryMap);
 
   bool get set => _set;
   int _selectedUser = -1;
@@ -33,7 +32,6 @@ class ProfileProvider extends ChangeNotifier {
   List<ProfileData> get groupProfiles => _groupProfiles;
   XFile? get selectedFile => _selectedFile;
   List<Inviteduser> get inviteduser => _userInvitation;
-  Country get selectedCountry => _selectedCountry;
 
   void toggleSet(bool value) {
     _set = !set;
@@ -47,11 +45,6 @@ class ProfileProvider extends ChangeNotifier {
 
   void setEditProfileLoading(bool newValue) {
     _editProfileLoading = newValue;
-    notifyListeners();
-  }
-
-  setSelectedCountry(Country newCountry) {
-    _selectedCountry = newCountry;
     notifyListeners();
   }
 
