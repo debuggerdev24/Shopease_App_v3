@@ -5,8 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
+import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/CheckList/multiple_checklist_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -15,7 +18,9 @@ import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/date_picker.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
@@ -34,6 +39,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabsController;
   TextEditingController searchController = TextEditingController();
+  bool checklist = false;
+
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -161,7 +169,18 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
                 child: Row(
                   children: [
-                    Text('${provider.checklist.length} Products'),
+                    InkWell(
+                      onTap: () => _showChecklistFilterSheet(context),
+                      child: SvgPicture.asset(
+                        (provider.selectedCategoryFilters.isEmpty &&
+                                provider.selectedItemFilter == null)
+                            ? AppAssets.filterIcon
+                            : AppAssets.selectedFilterIcon,
+                        width: 22.h,
+                        height: 22.h,
+                      ),
+                    ),
+                    Text('${provider.filteredChecklist.length} Products'),
                     const Spacer(),
                     TextButton(
                       onPressed: () {
@@ -179,7 +198,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 ),
               ),
               // Checklist List view
-              provider.checklist.isEmpty
+              provider.filteredChecklist.isEmpty
                   ? Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -206,30 +225,39 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     )
                   : Expanded(
                       child: ListView.separated(
-                          itemCount: provider.checklist.length,
-                          separatorBuilder: (context, index) =>
-                              10.verticalSpace,
-                          itemBuilder: (context, index) => ChecklistTile(
-                                product: provider.checklist[index],
-                                onLongPress: () {
-                                  context.goNamed(
-                                      AppRoute.multipleChecklistSelection.name);
-                                },
-                                onDelete: () async {
-                                  await provider.deleteChecklistItems(itemIds: [
-                                    provider.checklist[index].itemId!
-                                  ]);
-                                },
-                              )),
+                        shrinkWrap: true,
+                        primary: false,
+                        itemCount: provider.filteredChecklist.length,
+                        separatorBuilder: (context, index) => 10.verticalSpace,
+                        itemBuilder: (context, index) {
+                          final product = provider.filteredChecklist[index];
+                          return ChecklistTile(
+                            product: product,
+                            showCheckbox: true,
+                            isSelected: product.isSelectedForComplete,
+                            onDelete: () async {
+                              await provider.deleteChecklistItems(
+                                itemIds: [product.itemId!],
+                              );
+                            },
+                            onSelectionChanges: (value) {
+                              provider.addProductToSelected(value, product);
+                            },
+                          );
+                        },
+                      ),
                     ),
+
               // Buy button
-              if (provider.checklist.isNotEmpty)
+              if (provider.filteredChecklist
+                  .any((e) => e.isSelectedForComplete))
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: AppButton(
-                      colorType: AppButtonColorType.secondary,
+                      isLoading: provider.isLoading,
                       onPressed: () async {
-                        if (provider.selectedChecklists.isEmpty) {
+                        if (!provider.filteredChecklist
+                            .any((e) => e.isSelectedForComplete)) {
                           CustomToast.showWarning(
                               context, 'Please select product first.');
                           return;
@@ -241,19 +269,22 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           return;
                         }
 
-                        // await provider.putInventoryFromChecklist(
-                        //   itemIds: provider.selectedChecklists
-                        //       .map((e) => e.itemId!)
-                        //       .toList(),
-                        //   onSuccess: () {
-                        //     CustomToast.showSuccess(context,
-                        //         '${provider.selectedChecklists.length} Products purchased.');
-                        //     context.goNamed(AppRoute.uploadInvoice.name);
-                        //   },
-                        // );
+                        await provider.putInventoryFromChecklist(
+                          itemIds: provider.filteredChecklist
+                              .where((e) => e.isSelectedForComplete)
+                              .map((e) => e.itemId!)
+                              .toList(),
+                          onSuccess: () async {
+                            CustomToast.showSuccess(context,
+                                '${provider.selectedItemsCount} Products purchased.');
+                            context.goNamed(AppRoute.uploadInvoice.name);
+
+                            // context.goNamed(AppRoute.checkList.name);
+                          },
+                        );
+                        // provider.clearSelectedProducts();
                       },
-                      text:
-                          'Buy products (${provider.selectedChecklists.length})'),
+                      text: 'Complete (${provider.selectedItemsCount})'),
                 )
             ],
           );
@@ -406,6 +437,95 @@ void _showHistoryFilterSheet(BuildContext context) {
             ),
           );
         });
+      });
+}
+
+_showChecklistFilterSheet(BuildContext context) async {
+  return showModalBottomSheet(
+      showDragHandle: true,
+      enableDrag: true,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          alignment: Alignment.center,
+          height: 480.h,
+          padding: EdgeInsets.symmetric(horizontal: 13.sp, vertical: 5.sp),
+          child: SingleChildScrollView(
+            child: Consumer<ChecklistProvider>(builder: (context, provider, _) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child:
+                        GlobalText('Filters', textStyle: textStyle20SemiBold),
+                  ),
+                  20.h.verticalSpace,
+                  GlobalText(
+                    'Filter by category',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    children: Constants.categories
+                        .map(
+                          (e) => AppChip(
+                            text: e.categoryName,
+                            isSelected: provider.selectedCategoryFilters
+                                .contains(e.categoryId),
+                            onTap: () {
+                              provider.changeFilterCategoty(e.categoryId);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  10.h.verticalSpace,
+                  GlobalText(
+                    'Filter by Items',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
+                  10.h.verticalSpace,
+                  Row(
+                    children: ['Selected', 'Non Selected']
+                        .map(
+                          (e) => AppChip(
+                            text: e,
+                            isSelected:
+                                provider.selectedItemFilter == e.toLowerCase(),
+                            onTap: () {
+                              provider.changeFilterItem(e.toLowerCase());
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  50.h.verticalSpace,
+                  Center(
+                    child: AppButton(
+                        colorType: AppButtonColorType.primary,
+                        onPressed: () {
+                          provider.filterChecklist();
+                          context.pop();
+                        },
+                        text: 'Apply'),
+                  ),
+                  10.h.verticalSpace,
+                  Center(
+                    child: AppButton(
+                        colorType: AppButtonColorType.greyed,
+                        onPressed: () {
+                          context.pop();
+                        },
+                        text: 'Cancel'),
+                  ),
+                ],
+              );
+            }),
+          ),
+        );
       });
 }
 

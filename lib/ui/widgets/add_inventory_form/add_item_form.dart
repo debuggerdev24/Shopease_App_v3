@@ -119,7 +119,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
         ),
         titleSpacing: 0,
         title: Text(
-          widget.title ?? "Add Manually",
+          widget.title ?? "Add `Manually`",
           style: textStyle20SemiBold.copyWith(fontSize: 24),
         ),
       ),

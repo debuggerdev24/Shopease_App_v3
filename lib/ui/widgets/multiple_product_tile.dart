@@ -40,7 +40,10 @@ class _MultipleProductTileState extends State<MultipleProductTile>
   Widget build(BuildContext context) {
     return CheckboxListTile(
       controlAffinity: ListTileControlAffinity.leading,
-      tileColor: Colors.grey[800]!.withOpacity(0.05),
+
+      tileColor: widget.isSelected
+          ? Colors.grey[700]!.withOpacity(0.05)
+          : Colors.grey.withOpacity(0.2),
       activeColor: AppColors.primaryColor,
       checkColor: AppColors.lightGreenColor,
       contentPadding: const EdgeInsets.only(
@@ -63,8 +66,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 ),
               ),
             ),
-            const SizedBox(
-                width: 8), // Assuming 8.horizontalSpace is a SizedBox
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,17 +75,17 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                   const SizedBox(height: 10),
                   Text(
                     widget.product.productName!,
+                    maxLines: 5,
                     style: textStyle16.copyWith(
-                        fontSize: 18, overflow: TextOverflow.ellipsis),
+                      fontSize: 18,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   SizedBox(height: 10.h),
-                  AppChip(
-                      text: widget.product.brand ??
-                          '') // Assuming 20.verticalSpace is a SizedBox
+                  AppChip(text: widget.product.brand ?? '')
                 ],
               ),
             ),
-
             if (widget.product.isInChecklist == true) ...[
               20.horizontalSpace,
               SvgIcon(
@@ -102,7 +104,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
               width: 18.h,
               height: 18.h,
             ),
-            SizedBox(width: 10.sp), // Assuming 10.horizontalSpace is a SizedBox
+            SizedBox(width: 10.sp),
           ],
         ),
       ),

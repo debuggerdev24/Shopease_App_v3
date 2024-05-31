@@ -9,7 +9,6 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -56,11 +55,10 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
                 child: ListView.separated(
                   itemBuilder: (context, index) => ChecklistTile(
                     product: provider.selectedChecklists[index],
-                    onDelete: () {
-                      // provider.deleteChecklistItem(
-                      //     provider.checklist[index].itemId!);
-                    },
+                    onDelete: () {},
                     isSlideEnabled: false,
+                    isSelected: false,
+                    showCheckbox: false,
                   ),
                   separatorBuilder: (context, index) => 10.verticalSpace,
                   itemCount: provider.selectedChecklists.length,

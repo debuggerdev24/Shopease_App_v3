@@ -46,6 +46,7 @@ class AppChip extends StatelessWidget {
               ],
               Expanded(
                 child: Text(
+                  maxLines: 10,
                   text,
                   style: textStyle14.copyWith(
                     color: AppColors.primaryColor,

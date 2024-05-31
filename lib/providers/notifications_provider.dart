@@ -45,6 +45,7 @@ class NotificationProvider extends ChangeNotifier {
             (res.data as List).map((e) => NotificationModel.fromJson(e)));
         notifyListeners();
         onSuccess?.call();
+        
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }

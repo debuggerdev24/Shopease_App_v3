@@ -82,10 +82,14 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
         body: Column(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
               child: Row(
                 children: [
-                  Text('${provider.filteredShops.length} Products'),
+                  10.horizontalSpace,
+                  Text(
+                    '${provider.filteredShops.length} Products',
+                    style: textStyle16.copyWith(fontSize: 18),
+                  ),
                   const Spacer(),
                   IconButton(
                     onPressed: _showFilterSheet,
@@ -93,10 +97,11 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                       provider.selectedShopFilter.isEmpty
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
-                      size: 20.r,
+                      size: 25.r,
                       // color: AppColors.blackColor,
                     ),
-                  )
+                  ),
+                  8.w.horizontalSpace,
                 ],
               ),
             ),
@@ -158,7 +163,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
         context.pop();
       },
     );
-  }   
+  }
 
   void _showFilterSheet() {
     showModalBottomSheet(

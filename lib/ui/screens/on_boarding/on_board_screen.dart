@@ -24,21 +24,21 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
   final List<Map<String, String>> onBoardList = [
     {
       'image': AppAssets.onBoard1,
-      'title': 'Keep Your Receipts in Check',
+      'title': 'Share the Shopping Share the Love',
       'subTitle':
-          'Organize receipts with easy photos. \nTrack budget quickly & find purchases with \n  ease',
+          'Create & share lists instantly,track shopping \n progress, and link the items to top stores',
     },
     {
       'image': AppAssets.onBoard2,
-      'title': 'Keep Your Receipts in Check',
+      'title': 'Keep Track Of Your Fridge',
       'subTitle':
-          'Organize receipts with easy photos. \nTrack budget quickly & find purchases with \n ease',
+          'Track your fridge contents,never miss \n ites,organize your way , and use scan & go',
     },
     {
       'image': AppAssets.onBoard3,
       'title': 'Keep Your Receipts in Check',
       'subTitle':
-          'Organize receipts with easy photos. \nTrack budget quickly & find purchases\n with ease',
+          'Organize receipts with easy photos.\nTrack budget quickly & find purchases \n with ease',
     },
   ];
 
@@ -140,18 +140,19 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: AppButton(
-                onPressed: () {
-                  if (selectedPage == onBoardList.length - 1) {
-                    context.goNamed(AppRoute.nickNameScreen.name, extra: false);
-                  } else {
-                    _pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeInOut);
-                  }
-                },
-                text: selectedPage == (onBoardList.length - 1)
-                    ? 'Get Started'
-                    : 'Next'),
+              onPressed: () {
+                if (selectedPage == onBoardList.length - 1) {
+                  context.goNamed(AppRoute.nickNameScreen.name, extra: false);
+                } else {
+                  _pageController.nextPage(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut);
+                }
+              },
+              text: selectedPage == (onBoardList.length - 1)
+                  ? 'Get Started'
+                  : 'Next',
+            ),
           ),
           20.h.verticalSpace,
         ],
@@ -183,7 +184,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
           Text(
             onBoardDetails['title'],
             style: appBarTitleStyle.copyWith(
-                fontWeight: FontWeight.w500, fontSize: 20.sp),
+                fontWeight: FontWeight.w800, fontSize: 22.sp),
             textAlign: TextAlign.center,
           ),
           25.h.verticalSpace,
@@ -192,7 +193,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
             style: textStyle14.copyWith(
                 color: Colors.grey,
                 fontSize: 14.sp,
-                fontWeight: FontWeight.w400),
+                fontWeight: FontWeight.w800),
             textAlign: TextAlign.center,
           ),
         ],
