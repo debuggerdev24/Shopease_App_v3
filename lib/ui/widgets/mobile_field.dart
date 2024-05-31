@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,6 +44,7 @@ class _MobileFieldState extends State<MobileField> {
             return 'please enter phone number';
           }
           if (provider.selectedCountry.example.length != value.length) {
+            log('selected country while validating: ${provider.selectedCountry.countryCode}');
             return "please enter correct phone number";
           }
           return null;

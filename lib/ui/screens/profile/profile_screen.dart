@@ -108,66 +108,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
-                          leading: Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundImage: NetworkImage(
-                                  (user.imageUrl.isEmpty == true)
-                                      ? Constants.placeholdeImg
-                                      : user.imageUrl,
-                                ),
-                              ),
-                              if (user.isAdmin)
-                                Positioned(
-                                  bottom: 0,
-                                  right: 5,
-                                  child: SvgPicture.asset(
-                                    AppAssets.update,
-                                    width: 20.sp,
-                                  ),
-                                ),
-                            ],
+                          leading: _buildProfilePicture(
+                            user.isAdmin,
+                            (user.imageUrl.isEmpty == true)
+                                ? Constants.placeholdeImg
+                                : user.imageUrl,
                           ),
                           title: GlobalText(user.phoneNumber),
-                          trailing: user.isInvited == true
-                              ? GlobalText(
-                                  'Invited',
-                                  textStyle: textStyle14,
-                                )
-                              : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (user.isAdmin) ...[
-                                      SvgIcon(
-                                        AppAssets.userEdit,
-                                        size: 15.sp,
-                                        color: AppColors.blackGreyColor,
-                                      ),
-                                      15.horizontalSpace
-                                    ],
-                                    GestureDetector(
-                                      onTap: () async {
-                                        await provider.removeUserFromGroup(
-                                          data: {'user_id': user.userId},
-                                          onSuccess: () {
-                                            CustomToast.showSuccess(
-                                              context,
-                                              'User removed successfully.',
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: SvgIcon(
-                                        AppAssets.delete,
-                                        size: 16.sp,
-                                      ),
-                                    )
-                                  ],
-                                ),
+                          trailing: _buildTrailingRow(provider, user),
                         );
                       },
                     ),
@@ -191,6 +139,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
       },
     );
+  }
+
+  Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
+    return user.isInvited == true
+        ? GlobalText(
+            'Invited',
+            textStyle: textStyle14,
+          )
+        : provider.profileData?.isAdmin == true
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!user.isAdmin) ...[
+                    SvgIcon(
+                      AppAssets.userEdit,
+                      size: 15.sp,
+                      color: AppColors.blackGreyColor,
+                    ),
+                    15.horizontalSpace
+                  ],
+                  GestureDetector(
+                    onTap: () async {
+                      await provider.removeUserFromGroup(
+                        data: {'user_id': user.userId},
+                        onSuccess: () {
+                          CustomToast.showSuccess(
+                            context,
+                            'User removed successfully.',
+                          );
+                        },
+                      );
+                    },
+                    child: SvgIcon(
+                      AppAssets.delete,
+                      size: 16.sp,
+                    ),
+                  )
+                ],
+              )
+            : const SizedBox.shrink();
   }
 
   void _showAddMemberSheet() {
@@ -222,11 +212,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       20.h.verticalSpace,
                       AppButton(
                           colorType: !(mobileController.text.length ==
-                                  provider.selectedCountry.example.length)
+                                  auth.selectedCountry.example.length)
                               ? AppButtonColorType.greyed
                               : AppButtonColorType.primary,
                           onPressed: !(mobileController.text.length ==
-                                  provider.selectedCountry.example.length)
+                                  auth.selectedCountry.example.length)
                               ? () {
                                   CustomToast.showWarning(context,
                                       'Please enter valid mobile number');
@@ -236,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     await provider.inviteUserToGroup(
                                       data: {
                                         'phone_number':
-                                            '${auth.selectedCountry.countryCode}${mobileController.text}',
+                                            '+${auth.selectedCountry.phoneCode}${mobileController.text}',
                                       },
                                       onSuccess: () {
                                         mobileController.clear();
@@ -543,26 +533,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ListTile(
       isThreeLine: false,
       contentPadding: EdgeInsets.zero,
-      leading: Stack(
-        children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage: NetworkImage(
-                (provider.profileData?.imageUrl == null ||
-                        provider.profileData?.imageUrl.isEmpty == true)
-                    ? Constants.placeholdeImg
-                    : provider.profileData?.imageUrl ?? ''),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 5,
-            child: SvgPicture.asset(
-              AppAssets.update,
-              width: 20.sp,
-            ),
-          ),
-        ],
-      ),
+      leading: _buildProfilePicture(
+          provider.profileData?.isAdmin == true,
+          (provider.profileData?.imageUrl == null ||
+                  provider.profileData?.imageUrl.isEmpty == true)
+              ? Constants.placeholdeImg
+              : provider.profileData?.imageUrl ?? ''),
       title: GlobalText(
         provider.profileData?.preferredUsername ?? 'user name',
         textStyle: textStyle16.copyWith(fontWeight: FontWeight.w500),
@@ -585,6 +561,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           size: 20.sp,
         ),
       ),
+    );
+  }
+
+  _buildProfilePicture(bool isAdmin, String url) {
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 40,
+          backgroundImage: NetworkImage(url),
+        ),
+        if (isAdmin)
+          Positioned(
+            bottom: 0,
+            right: 5,
+            child: SvgPicture.asset(
+              AppAssets.update,
+              width: 20.sp,
+            ),
+          ),
+      ],
     );
   }
 }

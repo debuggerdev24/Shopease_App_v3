@@ -100,17 +100,17 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
             onPressed: () async {
               log('calling put checklist from history');
               await provider.putChecklistFromHistory(
-                  data: [
-                    {
-                      'hist_id': widget.history.histId,
-                    }
-                  ],
-                  onSuccess: () {
-                    CustomToast.showSuccess(
-                        context, 'Items added to checklist!');
-                    context.read<ChecklistProvider>().getChecklistItems();
-                    context.goNamed(AppRoute.checkList.name);
-                  });
+                data: [
+                  {
+                    'hist_id': widget.history.histId,
+                  }
+                ],
+                onSuccess: () {
+                  CustomToast.showSuccess(context, 'Items added to checklist!');
+                  context.read<ChecklistProvider>().getChecklistItems();
+                  context.goNamed(AppRoute.checkList.name);
+                },
+              );
             },
           ),
         ),
