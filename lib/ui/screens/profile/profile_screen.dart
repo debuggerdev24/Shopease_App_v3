@@ -14,6 +14,7 @@ import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -44,141 +45,121 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileProvider>(builder: (context, provider, _) {
-      return provider.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  50.h.verticalSpace,
-                  GlobalText(
-                    'My Profile',
-                    textStyle: appBarTitleStyle.copyWith(
-                        fontWeight: FontWeight.w600, fontSize: 25.sp),
-                  ),
-                  20.h.verticalSpace,
-                  buildProfileTile(provider),
-                  20.h.verticalSpace,
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GlobalText(
-                        'My Group (${provider.groupProfiles.length})',
-                        textStyle: textStyle16,
-                      ),
-                      const Spacer(),
-                      if (provider.groupProfiles.isNotEmpty)
-                        GestureDetector(
-                          child: GlobalText(
-                            'Leave Group',
-                            textStyle: textStyle12.copyWith(
-                                decoration: TextDecoration.underline),
-                          ),
-                          onTap: () {
-                            _showLeavePopUp(provider);
-                          },
+    return Consumer<ProfileProvider>(
+      builder: (context, provider, _) {
+        return provider.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    50.h.verticalSpace,
+                    GlobalText(
+                      'My Profile',
+                      textStyle: appBarTitleStyle.copyWith(
+                          fontWeight: FontWeight.w600, fontSize: 25.sp),
+                    ),
+                    20.h.verticalSpace,
+                    _buildProfileTile(provider),
+                    20.h.verticalSpace,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GlobalText(
+                          'My Group (${provider.groupProfiles.length})',
+                          textStyle: textStyle16,
                         ),
-                      25.w.horizontalSpace,
-                      GestureDetector(
-                        onTap: _showAddMemberSheet,
-                        child: SvgIcon(
-                          AppAssets.add,
-                          color: AppColors.primaryColor,
-                          size: 20.sp,
-                        ),
-                      ),
-                      4.w.horizontalSpace,
-                    ],
-                  ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: provider.groupProfiles.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      ProfileData user = provider.groupProfiles[index];
-                      log("usdert =====>${user.userId}");
-
-                      return ListTile(
-                        contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
-                        leading: Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 40,
-                              backgroundImage: NetworkImage(
-                                (user.imageUrl.isEmpty == true)
-                                    ? Constants.placeholdeImg
-                                    : user.imageUrl,
-                              ),
+                        const Spacer(),
+                        if (provider.groupProfiles.isNotEmpty)
+                          GestureDetector(
+                            child: GlobalText(
+                              'Leave Group',
+                              textStyle: textStyle12.copyWith(
+                                  decoration: TextDecoration.underline),
                             ),
-                            // Positioned(
-                            //   bottom: 0,
-                            //   right: 5,
-                            //   child: SvgPicture.asset(
-                            //     AppAssets.update,
-                            //     width: 20.sp,
-                            //   ),
-                            // ),
-                          ],
+                            onTap: () {
+                              _showLeaveGroupSheet(provider);
+                            },
+                          ),
+                        25.w.horizontalSpace,
+                        GestureDetector(
+                          onTap: _showAddMemberSheet,
+                          child: SvgIcon(
+                            AppAssets.add,
+                            color: AppColors.primaryColor,
+                            size: 20.sp,
+                          ),
                         ),
-                        title: GlobalText(user.phoneNumber),
-                        trailing: user.isInvited == true
-                            ? InkWell(
-                                onTap: () async {
-                                  provider.deleteUser(user.userId);
-                                  // await provider.cancelinvite(
-                                  //   data: {
-                                  //     'user_id': user.userId,
-                                  //   },
-                                  //   onSuccess: () {
+                        4.w.horizontalSpace,
+                      ],
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: provider.groupProfiles.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        ProfileData user = provider.groupProfiles[index];
+                        log("usdert =====>${user.userId}");
 
-                                  //     context.pop();
-                                  //   },
-                                  //   onError: (msg) {
-                                  //     CustomToast.showError(context, msg);
-                                  //   },
-                                  // );
-                                },
-                                child: GlobalText(
+                        return ListTile(
+                          contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
+                          leading: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundImage: NetworkImage(
+                                  (user.imageUrl.isEmpty == true)
+                                      ? Constants.placeholdeImg
+                                      : user.imageUrl,
+                                ),
+                              ),
+                              if (user.isAdmin)
+                                Positioned(
+                                  bottom: 0,
+                                  right: 5,
+                                  child: SvgPicture.asset(
+                                    AppAssets.update,
+                                    width: 20.sp,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          title: GlobalText(user.phoneNumber),
+                          trailing: user.isInvited == true
+                              ? GlobalText(
                                   'Invited',
                                   textStyle: textStyle14,
-                                ),
-                              )
-                            : SizedBox(
-                                width: 70.sp,
-                                child: Row(
+                                )
+                              : Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
+                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    provider.selectedUserIndex == index
-                                        ? SvgIcon(
-                                            AppAssets.userEdit,
-                                            size: 18.sp,
-                                            color: AppColors.blackGreyColor,
-                                          )
-                                        : const SizedBox(),
+                                    if (user.isAdmin) ...[
+                                      SvgIcon(
+                                        AppAssets.userEdit,
+                                        size: 15.sp,
+                                        color: AppColors.blackGreyColor,
+                                      ),
+                                      15.horizontalSpace
+                                    ],
                                     GestureDetector(
                                       onTap: () async {
-                                        provider.deleteUser(user.userId);
-                                        // await provider.cancelinvite(
-                                        //   data: {
-                                        //     'user_id': user.userId,
-                                        //   },
-                                        //   onSuccess: () {
-                                        //     provider.deleteUser(user.userId);
-
-                                        //     context.pop();
-                                        //   },
-                                        //   onError: (msg) {
-                                        //     CustomToast.showError(context, msg);
-                                        //   },
-                                        // );
+                                        await provider.removeUserFromGroup(
+                                          data: {'user_id': user.userId},
+                                          onSuccess: () {
+                                            CustomToast.showSuccess(
+                                              context,
+                                              'User removed successfully.',
+                                            );
+                                          },
+                                        );
                                       },
                                       child: SvgIcon(
                                         AppAssets.delete,
@@ -187,11 +168,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     )
                                   ],
                                 ),
-                              ),
-                      );
-                    },
-                  ),
-                  ListTile(
+                        );
+                      },
+                    ),
+                    ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: GlobalText(
                         'Support',
@@ -203,144 +183,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: SvgPicture.asset(
                           AppAssets.support,
                         ),
-                      )
-
-                      // subtitle: RichText(
-                      //   text: TextSpan(
-                      //       children: [
-                      //         const TextSpan(
-                      //           text: 'If you have any queries, write to ',
-                      //         ),
-                      //         TextSpan(
-                      //           text: 'support@ShopEaseApp.com',
-                      //           style: textStyle12.copyWith(
-                      //               decoration: TextDecoration.underline),
-                      //         ),
-                      //       ],
-                      //       style: textStyle12.copyWith(
-                      //         color: AppColors.blackColor,
-                      //       )),
-                      // ),
                       ),
-                  20.h.verticalSpace,
-                ],
-              ),
-            );
-    });
+                    ),
+                    20.h.verticalSpace,
+                  ],
+                ),
+              );
+      },
+    );
   }
 
   void _showAddMemberSheet() {
-    late final TextEditingController nameController = TextEditingController();
-    
+    final TextEditingController mobileController = TextEditingController();
     showModalBottomSheet(
         enableDrag: true,
         showDragHandle: true,
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.sp),
-            width: double.infinity,
-            child: SingleChildScrollView(
-              child: Consumer2<ProfileProvider, AuthProvider>(
-                  builder: (context, provider, auth, _) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GlobalText('Add  New User', textStyle: textStyle16),
-                    20.h.verticalSpace,
-                    9.verticalSpace,
-                    // AppTextField(
-                    //   controller: nameController,
-                    //   name: "Enter User name",
-                    //   labelText: 'Name',
-                    //   isRequired: true,
-                    //   hintText: "Enter User name",
-                    //   labelStyle: textStyle16.copyWith(
-                    //     color: AppColors.blackColor,
-                    //     fontWeight: FontWeight.w400,
-                    //   ),
-                    //   validator: (value) {
-                    //     if (value != null || value.toString().isNotEmpty) {
-                    //       return '';
-                    //     }
-                    //     return 'Enter valid name';
-                    //   },
-                    // ),
-
-                    10.h.verticalSpace,
-                    9.verticalSpace,
-
-                    // AppTextField(
-                    //     controller: mobileController,
-                    //     name: "Enter Mobile NUmber",
-                    //     labelText: 'Mobile Number',
-                    //     isRequired: true,
-                    //     hintText: "enter mobile number with country code",
-                    //     labelStyle: textStyle16.copyWith(
-                    //         color: AppColors.blackColor,
-                    //         fontWeight: FontWeight.w400),
-                    //     keyboardType: TextInputType.phone,
-                    //     validator: (value) {
-                    //       if (value != null || value.toString().isNotEmpty) {
-                    //         return '';
-                    //       }
-                    //       return 'Enter valid mobile number';
-                    //     }),
-                    _buildMobileField(auth),
-                    70.h.verticalSpace,
-                    AppButton(
-                        colorType: (_mobileController.text.isNotEmpty)
-                            ? AppButtonColorType.primary
-                            : AppButtonColorType.secondary,
-                        onPressed: () async {
-                          if (_mobileController.text.isNotEmpty) {
-                            await provider.inviteUserToGroup(
-                              data: {
-                                'phone_number': _mobileController.text,
-                              },
-                              onSuccess: () {
-                                _mobileController.clear();
-                                context.pop();
-                              },
-                              onError: (msg) {
-                                CustomToast.showError(context, msg);
-                              },
-                            );
-
-                            // await provider.addProfileToGroup(
-                            //   data: [
-                            //     {
-                            //       'preferred_username': nameController.text,
-                            //       'phone_number': mobileController.text,
-                            //     }
-                            //   ],
-                            //   onSuccess: () {
-                            //     _mobileController.clear();
-                            //     _nameController.clear();
-                            //     context.pop();
-                            //   },
-                            //   onError: (msg) {
-                            //     CustomToast.showError(context, msg);
-                            //   },
-                            // );
-                          }
+          return StatefulBuilder(builder: (context, rebuild) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.sp),
+              width: double.infinity,
+              child: SingleChildScrollView(
+                child: Consumer2<ProfileProvider, AuthProvider>(
+                    builder: (context, provider, auth, _) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GlobalText('Add  New User', textStyle: textStyle16),
+                      20.h.verticalSpace,
+                      MobileField(
+                        controller: mobileController,
+                        onTextChanged: (_) {
+                          rebuild(() {});
                         },
-                        text: 'Invite'),
-                    10.h.verticalSpace,
-                    AppButton(
-                        colorType: AppButtonColorType.greyed,
-                        onPressed: () {
-                          context.pop();
-                          _mobileController.clear();
-                          _nameController.clear();
-                        },
-                        text: 'Cancel'),
-                  ],
-                );
-              }),
-            ),
-          );
+                      ),
+                      20.h.verticalSpace,
+                      AppButton(
+                          colorType: !(mobileController.text.length ==
+                                  provider.selectedCountry.example.length)
+                              ? AppButtonColorType.greyed
+                              : AppButtonColorType.primary,
+                          onPressed: !(mobileController.text.length ==
+                                  provider.selectedCountry.example.length)
+                              ? () {
+                                  CustomToast.showWarning(context,
+                                      'Please enter valid mobile number');
+                                }
+                              : () async {
+                                  if (mobileController.text.isNotEmpty) {
+                                    await provider.inviteUserToGroup(
+                                      data: {
+                                        'phone_number':
+                                            '${auth.selectedCountry.countryCode}${mobileController.text}',
+                                      },
+                                      onSuccess: () {
+                                        mobileController.clear();
+                                        context.pop();
+                                      },
+                                      onError: (msg) {
+                                        CustomToast.showError(context, msg);
+                                      },
+                                    );
+                                  }
+                                },
+                          text: 'Invite'),
+                      10.h.verticalSpace,
+                      AppButton(
+                          colorType: AppButtonColorType.greyed,
+                          onPressed: () {
+                            context.pop();
+                            mobileController.clear();
+                          },
+                          text: 'Cancel'),
+                    ],
+                  );
+                }),
+              ),
+            );
+          });
         });
   }
 
@@ -388,18 +310,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  // 10.h.verticalSpace,
-                  // AppTextField(
-                  //   controller: mobileController,
-                  //   name: "Enter Mobile Number",
-                  //   hintText: "Mobile Number",
-                  //   labelText: "Mobile Number",
-                  //   isRequired: true,
-                  //   labelStyle: textStyle16.copyWith(
-                  //     color: AppColors.blackColor,
-                  //     fontWeight: FontWeight.w400,
-                  //   ),
-                  // ),
                   10.h.verticalSpace,
                   AppTextField(
                     name: 'productImg',
@@ -494,57 +404,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  _buildMobileField(AuthProvider provider) => AppTextField(
-        name: "Enter Mobile NUmber",
-        labelText: 'Mobile Number',
-        isRequired: true,
-        hintText: "Enter mobile number",
-        labelStyle: textStyle16.copyWith(
-            color: AppColors.blackColor, fontWeight: FontWeight.w400),
-        keyboardType: TextInputType.phone,
-        onChanged: (value) {
-          setState(() {});
-        },
-        controller: _mobileController,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'please enter phone number';
-          }
-          if (provider.selectedCountry.example.length != value.length) {
-            return "please enter correct phone number";
-          }
-          return null;
-        },
-        maxLength: provider.selectedCountry.example.length,
-        prefixIcon: InkWell(
-          onTap: () {
-            showCountryPicker(
-              context: context,
-              countryListTheme: const CountryListThemeData(
-                bottomSheetHeight: 500,
-              ),
-              onSelect: provider.setSelectedCountry,
-            );
-          },
-          child: _buildTextFieldPrefix(provider),
-        ),
-      );
-
-  _buildTextFieldPrefix(AuthProvider provider) => Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '+${provider.selectedCountry.phoneCode}',
-              style: Theme.of(context).appBarTheme.titleTextStyle,
-            ),
-            const Icon(Icons.arrow_drop_down),
-          ],
-        ),
-      );
-  void _showLeavePopUp(ProfileProvider profileProvider) {
+  void _showLeaveGroupSheet(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");
     log("uninvitedUsers length: ${profileProvider.uninvitedUsers.length}");
@@ -557,78 +417,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
         showDragHandle: true,
         isScrollControlled: true,
         builder: (context) {
-          return Container(
-            width: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 10.sp),
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: SingleChildScrollView(
-              child: BounceInUp(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    GlobalText('Assign & Leave',
-                        textStyle: textStyle18SemiBold),
-                    20.h.verticalSpace,
-                    Consumer<ProfileProvider>(builder: (context, provider, _) {
-                      return Column(
-                        children: profileProvider.groupProfiles
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                          final ProfileData user = entry.value;
+          return StatefulBuilder(builder: (context, rebuild) {
+            return Container(
+              width: double.infinity,
+              margin: EdgeInsets.symmetric(vertical: 10.sp),
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: SingleChildScrollView(
+                child: BounceInUp(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      GlobalText('Assign & Leave',
+                          textStyle: textStyle18SemiBold),
+                      20.h.verticalSpace,
+                      Consumer<ProfileProvider>(
+                          builder: (context, provider, _) {
+                        return Column(
+                          children: profileProvider.groupProfiles
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                            final ProfileData user = entry.value;
 
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                profileProvider.changeSelectedUser(entry.key);
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  profileProvider.selectedUserIndex == entry.key
-                                      ? const SvgIcon(
-                                          AppAssets.check,
-                                          color: AppColors.primaryColor,
-                                        )
-                                      : const SizedBox.shrink(),
-                                  20.horizontalSpace,
-                                  GlobalText(
-                                    user.preferredUsername,
-                                    fontSize: 15.sp,
-                                  ),
-                                ],
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  profileProvider.changeSelectedUser(entry.key);
+                                  rebuild(() {});
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    profileProvider.selectedUserIndex ==
+                                            entry.key
+                                        ? const SvgIcon(
+                                            AppAssets.check,
+                                            color: AppColors.primaryColor,
+                                          )
+                                        : const SizedBox.shrink(),
+                                    20.horizontalSpace,
+                                    GlobalText(
+                                      user.preferredUsername,
+                                      fontSize: 15.sp,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    }),
-                    30.h.verticalSpace,
-                    AppButton(
-                        colorType: profileProvider.selectedUserIndex == -1
-                            ? AppButtonColorType.greyed
-                            : AppButtonColorType.primary,
-                        onPressed: () {
-                          profileProvider.clearGroupProfiles();
-                          context.pop();
-                          CustomToast.showSuccess(
-                              context, 'Successfully left the existing group.');
-                        },
-                        text: 'Assign & Leave'),
-                    10.h.verticalSpace,
-                    AppButton(
-                        colorType: AppButtonColorType.greyed,
-                        onPressed: () {
-                          context.pop();
-                        },
-                        text: 'Changed my Mind'),
-                  ],
+                            );
+                          }).toList(),
+                        );
+                      }),
+                      30.h.verticalSpace,
+                      AppButton(
+                          colorType: profileProvider.selectedUserIndex == -1
+                              ? AppButtonColorType.greyed
+                              : AppButtonColorType.primary,
+                          onPressed: () {
+                            profileProvider.clearGroupProfiles();
+                            context.pop();
+                            CustomToast.showSuccess(context,
+                                'Successfully left the existing group.');
+                          },
+                          text: 'Assign & Leave'),
+                      10.h.verticalSpace,
+                      AppButton(
+                          colorType: AppButtonColorType.greyed,
+                          onPressed: () {
+                            context.pop();
+                          },
+                          text: 'Changed my Mind'),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          });
         });
   }
 
@@ -674,7 +539,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildProfileTile(ProfileProvider provider) {
+  Widget _buildProfileTile(ProfileProvider provider) {
     return ListTile(
       isThreeLine: false,
       contentPadding: EdgeInsets.zero,

@@ -11,6 +11,7 @@ class Product {
   String? itemImage;
   String? itemStorage;
   String? barcode;
+  bool isSelectedForComplete;
 
   Product({
     this.itemId,
@@ -25,7 +26,10 @@ class Product {
     this.itemImage,
     this.itemStorage,
     this.barcode,
+    this.isSelectedForComplete = false,
   });
+
+  void changeSelectedState(bool newValue) => isSelectedForComplete = newValue;
 
   Product copyWith({
     String? itemId,

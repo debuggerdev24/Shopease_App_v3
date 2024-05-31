@@ -15,21 +15,7 @@ class AuthProvider extends ChangeNotifier {
   bool _needToResendOTP = false;
   bool _showResendOTPText = false;
 
-  Country _selectedCountry = Country.from(
-    json: {
-      "e164_cc": "61",
-      "iso2_cc": "AU",
-      "e164_sc": 0,
-      "geographic": true,
-      "level": 1,
-      "name": "Australia",
-      "example": "412345678",
-      "display_name": "Australia (AU) [+61]",
-      "full_example_with_plus_sign": "+61412345678",
-      "display_name_no_e164_cc": "Australia (AU)",
-      "e164_key": "61-AU-0"
-    },
-  );
+  Country _selectedCountry = Country.from(json: Constants.selectedCountryMap);
 
   bool get isLoading => _isLoading;
   bool get showResendOTPText => _showResendOTPText;
@@ -44,6 +30,10 @@ class AuthProvider extends ChangeNotifier {
   setResendOtp(bool? value) {
     _needToResendOTP = value ?? _needToResendOTP;
     notifyListeners();
+  }
+
+  notifyAllListners() {
+    notifyAllListners();
   }
 
   setNeedToResendOTP(bool rensedOTP) {

@@ -22,12 +22,19 @@ class ChecklistTile extends StatefulWidget {
     this.onDelete,
     this.onLongPress,
     this.isSlideEnabled = true,
+    required this.isSelected,
+    this.onSelectionChanges,
+    this.showCheckbox = false,
   });
 
   final Product product;
   final VoidCallback? onDelete;
   final VoidCallback? onLongPress;
   final bool isSlideEnabled;
+  final bool isSelected;
+  final Function(bool?)? onSelectionChanges;
+  final bool showCheckbox;
+
 
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
@@ -64,71 +71,84 @@ class _ChecklistTileState extends State<ChecklistTile>
           });
         },
         onLongPress: widget.onLongPress,
-        child: Container(
-          color: Colors.grey[800]!.withOpacity(0.05),
-          padding: EdgeInsets.symmetric(horizontal: 10.w),
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(width: 8),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 100.h,
-                  width: 100.h,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        widget.product.itemImage ?? Constants.placeholdeImg,
+        child: Opacity(
+          opacity: widget.isSelected ? .75 : 1,
+          child: Container(
+            color: widget.isSelected
+                ? Colors.grey[200]!.withOpacity(.05)
+                : Colors.grey[800]!.withOpacity(0.05),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            width: double.infinity,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const SizedBox(width: 8),
+                if (widget.showCheckbox)
+                  Checkbox(
+                    value: widget.isSelected,
+                    onChanged: widget.onSelectionChanges,
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 100.h,
+                    width: 100.h,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          widget.product.itemImage ?? Constants.placeholdeImg,
+                        ),
+                        fit: BoxFit.contain,
                       ),
-                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    Text(
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.product.productName!,
                       maxLines: 10,
-                      widget.product.productName!,
-                      style: textStyle16.copyWith(
-                        fontSize: 18,
-                        overflow: TextOverflow.ellipsis,
+                        style: textStyle16.copyWith(
+                          fontSize: 18,
+                          overflow: TextOverflow.ellipsis,
+                          decoration: widget.isSelected
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10.h),
-                    AppChip(text: widget.product.brand ?? ''),
-                    SizedBox(width: 10.h),
-                  ],
+                      SizedBox(height: 10.h),
+                      AppChip(text: widget.product.brand ?? ''),
+                      SizedBox(width: 10.h),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(width: 10.h),
+                SizedBox(width: 10.h),
 
-              /// Saroj - told to remove this icon
-              // SvgIcon(
-              //   AppAssets.addCart,
-              //   size: 25.sp,
-              //   color: AppColors.greenColor,
-              // ),
-              SizedBox(width: 25.sp),
-              SvgPicture.asset(
-                widget.product.itemLevel == InventoryType.high.name
-                    ? AppAssets.inventoryHigh
-                    : widget.product.itemLevel == InventoryType.medium.name
-                        ? AppAssets.inventoryMid
-                        : AppAssets.inventoryLow,
-                width: 18.h,
-                height: 18.h,
-              ),
-              SizedBox(
-                  width: 10.sp), // Assuming 10.horizontalSpace is a SizedBox
-            ],
+                /// Saroj - told to remove this icon
+                // SvgIcon(
+                //   AppAssets.addCart,
+                //   size: 25.sp,
+                //   color: AppColors.greenColor,
+                // ),
+                SizedBox(width: 25.sp),
+                SvgPicture.asset(
+                  widget.product.itemLevel == InventoryType.high.name
+                      ? AppAssets.inventoryHigh
+                      : widget.product.itemLevel == InventoryType.medium.name
+                          ? AppAssets.inventoryMid
+                          : AppAssets.inventoryLow,
+                  width: 18.h,
+                  height: 18.h,
+                ),
+                SizedBox(
+                    width: 10.sp), // Assuming 10.horizontalSpace is a SizedBox
+              ],
+            ),
           ),
         ),
       ),

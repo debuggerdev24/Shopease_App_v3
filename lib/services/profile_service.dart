@@ -19,9 +19,15 @@ abstract class BaseProfileService {
   Future<Response<dynamic>?> addProfile({
     required List<Map<String, dynamic>> data,
   });
+
   Future<Response<dynamic>?> inviteUser({
     required Map<String, dynamic> data,
   });
+
+  Future<Response<dynamic>?> removeUserFromGroup({
+    required Map<String, dynamic> data,
+  });
+
   Future<Response<dynamic>?> getinvitesbyuser();
 
   Future<Response<dynamic>?> acceptinvite({
@@ -31,10 +37,9 @@ abstract class BaseProfileService {
   Future<Response<dynamic>?> cancelinvite({
     required Map<String, dynamic> data,
   });
-Future<Response<dynamic>?> rejectinvite({
+  Future<Response<dynamic>?> rejectinvite({
     required Map<String, dynamic> data,
   });
-
 }
 
 class ProfileService implements BaseProfileService {
@@ -111,6 +116,22 @@ class ProfileService implements BaseProfileService {
   }
 
   @override
+  Future<Response?> removeUserFromGroup({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'removeUserFromGroup');
+
+    return await BaseRepository().post(
+      ApiUrl.inviteUser,
+      data: formData,
+    );
+  }
+
+  @override
   Future<Response?> getinvitesbyuser() async {
     final Map<String, dynamic> formData = {'records': []};
 
@@ -123,7 +144,6 @@ class ProfileService implements BaseProfileService {
       data: formData,
     );
   }
-
 
   @override
   Future<Response?> acceptinvite({
@@ -140,7 +160,8 @@ class ProfileService implements BaseProfileService {
       data: formData,
     );
   }
-   @override
+
+  @override
   Future<Response?> cancelinvite({
     required Map<String, dynamic> data,
   }) async {
@@ -156,7 +177,7 @@ class ProfileService implements BaseProfileService {
     );
   }
 
-   @override
+  @override
   Future<Response?> rejectinvite({
     required Map<String, dynamic> data,
   }) async {

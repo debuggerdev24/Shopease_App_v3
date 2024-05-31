@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
+import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -45,7 +46,12 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
                 style: textStyle20SemiBold.copyWith(fontSize: 24),
               ),
               30.verticalSpace,
-              _buildMobileField(provider),
+              MobileField(
+                controller: _phoneController,
+                onTextChanged: (value) {
+                  setState(() {});
+                },
+              ),
               30.verticalSpace,
               AppButton(
                 onPressed: !(_phoneController.text.length ==
@@ -93,66 +99,6 @@ class _MobileLoginscreenState extends State<MobileLoginscreen> {
       }),
     );
   }
-
-  _buildMobileField(AuthProvider provider) => AppTextField(
-        name: 'Mobile Number',
-        labelStyle: textStyle14,
-        onChanged: (value) {
-          setState(() {});
-        },
-        controller: _phoneController,
-        labelText: 'Mobile Number',
-        suffix: _phoneController.text.length ==
-                provider.selectedCountry.example.length
-            ? const SvgIcon(
-                AppAssets.tickMark,
-              )
-            : null,
-        keyboardType: TextInputType.number,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'please enter phone number';
-          }
-          if (provider.selectedCountry.example.length != value.length) {
-            return "please enter correct phone number";
-          }
-          return null;
-        },
-        maxLength: provider.selectedCountry.example.length,
-        prefixIcon: InkWell(
-          onTap: () {
-            showCountryPicker(
-              context: context,
-              countryListTheme: const CountryListThemeData(
-                bottomSheetHeight: 500,
-              ),
-              onSelect: provider.setSelectedCountry,
-            );
-          },
-          child: _buildTextFieldPrefix(provider),
-        ),
-      );
-
-  _buildTextFieldPrefix(AuthProvider provider) => Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '+${provider.selectedCountry.phoneCode}',
-              style: Theme.of(context).appBarTheme.titleTextStyle,
-            ),
-            const Icon(Icons.arrow_drop_down),
-            Container(
-              width: 1,
-              height: 40.h,
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              color: AppColors.greyColor,
-            ),
-          ],
-        ),
-      );
 
   _buildTosLine() => RichText(
         text: TextSpan(

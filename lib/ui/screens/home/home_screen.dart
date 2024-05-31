@@ -15,6 +15,7 @@ import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -32,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<InventoryProvider>().getInventoryItems();
-      context.read<InventoryProvider>().getCategories();
     });
   }
 
@@ -294,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     Wrap(
                       direction: Axis.horizontal,
-                      children: provider.categories
+                      children: Constants.categories
                           .map(
                             (e) => AppChip(
                               text: e.categoryName,

@@ -26,7 +26,6 @@ class InventoryProvider extends ChangeNotifier {
   final List<String> _selectedCategoryFilters = [];
   String? _selectedInventoryLevelFilter;
   final List<Product> _selectedProducts = [];
-  final List<CategoryModel> _categories = [];
 
   /// getters
   bool get isLoading => _isLoading;
@@ -34,7 +33,6 @@ class InventoryProvider extends ChangeNotifier {
   List<String> get selectedCategoryFilters => _selectedCategoryFilters;
   String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
   List<Product> get filteredProducts => _filteredProducts;
-  List<CategoryModel> get categories => _categories;
   List<Product> get selectedProducts => _selectedProducts;
 
   void setLoading(bool newValue) {
@@ -82,7 +80,7 @@ class InventoryProvider extends ChangeNotifier {
     if (_selectedInventoryLevelFilter == null) {
       _filteredProducts.addAll(
         _products.where(
-          (product) => _selectedCategoryFilters.contains(categories
+          (product) => _selectedCategoryFilters.contains(Constants.categories
               .firstWhere(
                   (category) => category.categoryName == product.itemCategory)
               .categoryId),
@@ -97,7 +95,7 @@ class InventoryProvider extends ChangeNotifier {
       _products.where(
         (product) =>
             product.itemLevel == _selectedInventoryLevelFilter &&
-            _selectedCategoryFilters.contains(categories
+            _selectedCategoryFilters.contains(Constants.categories
                 .firstWhere(
                     (category) => category.categoryName == product.itemCategory)
                 .categoryId),
@@ -179,37 +177,6 @@ class InventoryProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while getInventoryItems: $e");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> getCategories({
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await services.getCategories();
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        _categories.clear();
-        _categories
-            .addAll((res.data as List).map((e) => CategoryModel.fromJson(e)));
-        notifyListeners();
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e) {
-      debugPrint("Error while getCategories: $e");
     } finally {
       setLoading(false);
     }
