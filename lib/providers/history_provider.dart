@@ -125,6 +125,11 @@ class HistoryProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> changeSelectedFile(XFile? file) async {
+    _selectedFile = file;
+    notifyListeners();
+  }
+
   Future<void> selectFileFromGallery({VoidCallback? onSuccess}) async {
     final file = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (file == null) return;

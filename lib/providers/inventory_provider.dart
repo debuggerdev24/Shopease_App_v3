@@ -22,6 +22,7 @@ class InventoryProvider extends ChangeNotifier {
   /// Variables
   bool _isLoading = false;
   final List<Product> _products = [];
+  final List<Product> _serchresult = [];
   final List<Product> _filteredProducts = [];
   final List<String> _selectedCategoryFilters = [];
   String? _selectedInventoryLevelFilter;

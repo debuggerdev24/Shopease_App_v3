@@ -233,6 +233,14 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           final product = provider.filteredChecklist[index];
                           return ChecklistTile(
                             product: product,
+                            onTap: () {
+                              context.pushNamed(AppRoute.productDetail.name,
+                                  extra: {
+                                    'product':
+                                        provider.selectedChecklists[index],
+                                    'isFromChecklist': true,
+                                  });
+                            },
                             showCheckbox: true,
                             isSelected: product.isSelectedForComplete,
                             onDelete: () async {
@@ -277,7 +285,10 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           onSuccess: () async {
                             CustomToast.showSuccess(context,
                                 '${provider.selectedItemsCount} Products purchased.');
-                            context.goNamed(AppRoute.uploadInvoice.name);
+                            context.read<HistoryProvider>().getHistoryItems();
+                            context.goNamed(
+                              AppRoute.uploadInvoice.name,
+                            );
 
                             // context.goNamed(AppRoute.checkList.name);
                           },

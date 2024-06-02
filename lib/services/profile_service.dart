@@ -126,7 +126,7 @@ class ProfileService implements BaseProfileService {
     log('form data: ${formData.toString()}', name: 'removeUserFromGroup');
 
     return await BaseRepository().post(
-      ApiUrl.inviteUser,
+      ApiUrl.removeUser,
       data: formData,
     );
   }

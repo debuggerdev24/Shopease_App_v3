@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,8 @@ class AuthProvider extends ChangeNotifier {
 
   setSelectedCountry(Country newCountry) {
     _selectedCountry = newCountry;
+    log('setted selected country: ${newCountry.countryCode}');
+    log('actually setted selected country: ${_selectedCountry.countryCode}');
     notifyListeners();
   }
 
