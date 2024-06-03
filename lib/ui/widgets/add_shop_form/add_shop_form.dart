@@ -71,12 +71,14 @@ class _AddShopFormState extends State<AddShopForm> {
                 labelText: 'Shop name',
                 isRequired: true,
                 controller: _nameController,
+                maxLength: 10,
               ),
               20.h.verticalSpace,
               AppTextField(
                 name: 'location',
                 controller: _locationController,
                 labelText: 'Location',
+                maxLength: 10,
               ),
               20.h.verticalSpace,
               AppTextField(
@@ -121,7 +123,6 @@ class _AddShopFormState extends State<AddShopForm> {
                             {'item_image': provider.selectedFile!.path});
                       }
                       widget.onSubmit(data);
-                      
                     }
                   },
                   text: 'Create',

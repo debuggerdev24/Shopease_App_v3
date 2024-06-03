@@ -126,6 +126,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         textStyle:
                             textStyle16.copyWith(fontWeight: FontWeight.w500),
                       ),
+                      // subtitle: RichText(
+                      //   text: TextSpan(
+                      //       children: [
+                      //         const TextSpan(
+                      //           text: 'If you have any queries, write to ',
+                      //         ),
+                      //         TextSpan(
+                      //           text: 'support@ShopEaseApp.com',
+                      //           style: textStyle12.copyWith(
+                      //               decoration: TextDecoration.underline),
+                      //         ),
+                      //       ],
+                      //       style: textStyle12.copyWith(
+                      //         color: AppColors.blackColor,
+                      //       )),
+                      // ),
                       trailing: GestureDetector(
                         onTap: () {},
                         child: SvgPicture.asset(

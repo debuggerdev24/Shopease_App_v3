@@ -176,6 +176,7 @@ class _HomeScreenState extends State<HomeScreen>
     return ListView.separated(
         shrinkWrap: true,
         primary: false,
+        reverse: true,
         itemCount: provider.filteredProducts.length,
         separatorBuilder: (context, index) => 10.verticalSpace,
         itemBuilder: (BuildContext context, int index) {

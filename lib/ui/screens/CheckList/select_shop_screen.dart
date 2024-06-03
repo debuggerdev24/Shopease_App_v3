@@ -87,7 +87,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 children: [
                   10.horizontalSpace,
                   Text(
-                    '${provider.filteredShops.length} Products',
+                    '${provider.filteredShops.length} Shops',
                     style: textStyle16.copyWith(fontSize: 18),
                   ),
                   const Spacer(),

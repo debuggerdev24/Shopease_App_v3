@@ -43,6 +43,8 @@ class SharedPrefs {
   /// REFRESH TOKEN ///
   String? get refreshToken => _prefs.getString(_refreshTokenKey);
 
+
+
   Future<bool> setRefreshToken(String sessionId) =>
       _prefs.setString(_refreshTokenKey, sessionId);
 

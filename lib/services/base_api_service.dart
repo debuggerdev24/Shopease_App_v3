@@ -82,6 +82,7 @@ class BaseRepository {
   Future<Response<dynamic>?> post(String path,
       {Map<String, dynamic>? data}) async {
     try {
+      log("${_dio.options.headers}");
       final res = await _dio.post(path, data: data);
       if (res.statusCode == 200) {
         return res;
@@ -128,8 +129,6 @@ class BaseRepository {
 
       return e.response;
     }
-
-    return null;
   }
 
   Future<Response<dynamic>?> delete(String path, {dynamic data}) async {

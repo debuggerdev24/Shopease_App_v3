@@ -60,6 +60,7 @@ class ShopTile extends StatelessWidget {
                   shop.shopName ?? '',
                   maxLines: 10,
                   style: textStyle16.copyWith(
+                    
                       fontSize: 18, overflow: TextOverflow.ellipsis),
                 ),
                 SizedBox(height: 10.h),
