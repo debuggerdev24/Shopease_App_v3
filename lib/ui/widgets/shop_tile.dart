@@ -113,7 +113,6 @@ class _ShopTileState extends State<ShopTile>
       ),
     );
   }
-  
 
   _buildRightSwipeActions(Shop shop) => ActionPane(
         motion: const DrawerMotion(),
@@ -137,7 +136,11 @@ class _ShopTileState extends State<ShopTile>
       isDismissible: false,
       builder: (context) => Consumer<ChecklistProvider>(
         builder: (context, provider, _) {
-          return AddShopFormWidget(onSubmit: submit, shop: shop);
+          return AddShopFormWidget(
+            onSubmit: submit,
+            shop: shop,
+            isEdit: true,
+          );
         },
       ),
     );
