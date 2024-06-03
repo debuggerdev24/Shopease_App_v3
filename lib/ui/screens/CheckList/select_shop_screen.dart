@@ -146,7 +146,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       isDismissible: false,
       builder: (context) => Consumer<ChecklistProvider>(
         builder: (context, provider, _) {
-          return AddShopFormWidget(onSubmit: submit);
+          return AddShopFormWidget(onSubmit: submit, shop: null);
         },
       ),
     );
@@ -155,7 +155,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<ChecklistProvider>().putShops(
       data: [data],
-      isEdit: false,
+      isEdit: true,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
         CustomToast.showSuccess(context, 'Shop has been added.');

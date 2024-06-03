@@ -48,7 +48,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             children: [
               10.verticalSpace,
               GlobalText(
-                'Effortlessly manage your receipts by capturing photos. \n Quickly track your budget and easily locate your purchases',
+                'Effortlessly manage your receipts by capturing photos.Quickly track your budget \nand easily locate your purchases',
                 textStyle: textStyle14.copyWith(fontSize: 16),
               ),
               const Spacer(),

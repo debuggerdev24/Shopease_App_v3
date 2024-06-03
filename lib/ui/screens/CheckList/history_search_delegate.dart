@@ -64,6 +64,7 @@ class HistorySearchDelegate extends SearchDelegate {
               return HistorylistTile(
                 product: products[index],
                 isFromInvoice: false,
+                isSlideEnabled: true,
                 onAddToChecklistTap: () {},
               );
             },

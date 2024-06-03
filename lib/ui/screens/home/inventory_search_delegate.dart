@@ -67,7 +67,7 @@ class ProductSearchDelegate extends SearchDelegate<String> {
             itemBuilder: (context, index) {
               return ProductTile(
                 product: products[index],
-                isSlideEnabled: false,
+                isSlideEnabled: true,
                 onTap: () {
                   context.pushNamed(AppRoute.productDetail.name,
                       extra: {'product': products[index]});

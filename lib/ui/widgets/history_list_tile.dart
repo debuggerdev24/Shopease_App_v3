@@ -29,11 +29,14 @@ class HistorylistTile extends StatefulWidget {
     required this.onAddToChecklistTap,
     required this.product,
     this.isFromInvoice = true,
+    this.isSlideEnabled = true,
   });
 
   final History product;
   final bool isFromInvoice;
   final VoidCallback onAddToChecklistTap;
+  final bool isSlideEnabled;
+
   @override
   State<HistorylistTile> createState() => _HistorylistTileState();
 }

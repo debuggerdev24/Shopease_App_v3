@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
@@ -13,29 +14,26 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
-  const AddShopFormWidget({
-    super.key,
-    required this.onSubmit,
-  });
+  const AddShopFormWidget(
+      {super.key, required this.onSubmit, required this.shop});
 
   final Function(Map<String, dynamic>) onSubmit;
+  final Shop? shop;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => AddShopFormProvider(),
-      builder: (context, _) => AddShopForm(onSubmit: onSubmit),
+      builder: (context, _) => AddShopForm(onSubmit: onSubmit, shop: shop),
     );
   }
 }
 
 class AddShopForm extends StatefulWidget {
-  const AddShopForm({
-    super.key,
-    required this.onSubmit,
-  });
+  const AddShopForm({super.key, required this.onSubmit, required this.shop});
 
   final Function(Map<String, dynamic>) onSubmit;
+  final Shop? shop;
 
   @override
   State<AddShopForm> createState() => _AddShopFormState();
@@ -52,6 +50,9 @@ class _AddShopFormState extends State<AddShopForm> {
     super.initState();
     _nameController.addListener(() {
       setState(() {});
+      _nameController.text = widget.shop!.shopName ?? '';
+      _locationController.text = widget.shop!.shopLocation ?? '';
+      _fileFieldController.text = widget.shop!.itemImage ?? '';
     });
   }
 
@@ -64,7 +65,8 @@ class _AddShopFormState extends State<AddShopForm> {
         child: Consumer<AddShopFormProvider>(builder: (context, provider, _) {
           return Column(
             children: [
-              GlobalText('Create New Shop', textStyle: textStyle18SemiBold),
+              GlobalText(widget.shop != null ? "Edit Shop" : 'Create New Shop',
+                  textStyle: textStyle18SemiBold),
               30.h.verticalSpace,
               AppTextField(
                 name: 'name',
@@ -160,10 +162,10 @@ class AddShopFormProvider extends ChangeNotifier {
   XFile? get selectedFile => _selectedFile;
 
   Future<String?> setFile(XFile? newFile) async {
-    if (newFile == null) return null;
+    if (newFile != null) return null;
     _selectedFile = newFile;
     notifyListeners();
-    return newFile.name;
+    return newFile!.name;
   }
 
   void clearFile() {
