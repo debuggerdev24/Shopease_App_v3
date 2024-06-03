@@ -32,7 +32,7 @@ Future<void> main() async {
   if (SharedPrefs().idToken != null) {
     BaseRepository().addToken(SharedPrefs().idToken!);
   }
-  await Constants.getCategories();
+  
   runApp(const MyApp());
 }
 

@@ -57,7 +57,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 onPressed: () {
                   showSearch(
                     context: context,
-                    delegate: ShopSearchDelegate(provider.shops),
+                    delegate: ShopSearchDelegate(provider.shops.toList()),
                   );
                 },
                 icon: const SvgIcon(
@@ -87,7 +87,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 children: [
                   10.horizontalSpace,
                   Text(
-                    '${provider.filteredShops.length} Products',
+                    '${provider.filteredShops.length} Shops',
                     style: textStyle16.copyWith(fontSize: 18),
                   ),
                   const Spacer(),
@@ -138,7 +138,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
     });
   }
 
-  _showAddShopSheet(BuildContext context) {
+  _showAddShopSheet(BuildContext context, {bool isEdit = false}) {
     return showModalBottomSheet(
       showDragHandle: true,
       context: context,
@@ -146,7 +146,11 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       isDismissible: false,
       builder: (context) => Consumer<ChecklistProvider>(
         builder: (context, provider, _) {
-          return AddShopFormWidget(onSubmit: submit);
+          return AddShopFormWidget(
+            onSubmit: submit,
+            isEdit: isEdit,
+            shop: null
+          );
         },
       ),
     );
@@ -155,7 +159,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<ChecklistProvider>().putShops(
       data: [data],
-      isEdit: false,
+      isEdit: true,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
         CustomToast.showSuccess(context, 'Shop has been added.');

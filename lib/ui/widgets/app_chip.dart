@@ -23,7 +23,7 @@ class AppChip extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: IntrinsicWidth(
-        stepWidth: text.isEmpty ? 100 : null,
+        // stepWidth: text.isEmpty ? 100 : null,
         child: Container(
           margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10),

@@ -27,6 +27,7 @@ class AppAssets {
   static const String orange = "assets/images/orange.png";
   static const String noImage = "assets/images/noImage.png";
   static const String beetroot = "assets/images/beetroot.png";
+  static const String doitlater = "assets/images/doit_later.png";
   static const String addInventory = "assets/images/addInventory.png";
   static const String noSearch = "assets/images/no_search.png";
   static const String devider = "assets/images/devider.png";

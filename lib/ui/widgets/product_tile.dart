@@ -30,6 +30,7 @@ class ProductTile extends StatefulWidget {
     this.onLongPress,
     this.check,
     this.isSlideEnabled = true,
+    this.onSelectionChanges, 
   });
 
   final Product product;
@@ -39,6 +40,7 @@ class ProductTile extends StatefulWidget {
   final VoidCallback? onAddToCart;
   final VoidCallback? onLongPress;
   final bool isSlideEnabled;
+  final Function(bool?)? onSelectionChanges;
   final Function(InventoryType type)? onInventoryChange;
 
   @override
@@ -139,7 +141,7 @@ class _ProductTileState extends State<ProductTile>
                 height: 18.h,
               ),
               SizedBox(
-                  width: 10.sp), // Assuming 10.horizontalSpace is a SizedBox
+                  width: 10.sp),
             ],
           ),
         ),

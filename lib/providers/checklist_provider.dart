@@ -31,7 +31,7 @@ class ChecklistProvider extends ChangeNotifier {
   bool _isAllSelected = false;
 
   Shop? _selectedShop;
-  final List<Shop> _shops = [];
+  final Set<Shop> _shops = {};
   final List<Shop> _filteredShops = [];
   final List<String> _selectedShopFilter = [];
   final Set<String> _shopLoacations = <String>{};
@@ -56,7 +56,7 @@ class ChecklistProvider extends ChangeNotifier {
   String? get currentHistId => _currentHistId;
 
   Shop? get selectedShop => _selectedShop;
-  List<Shop> get shops => _shops;
+  Set<Shop> get shops => _shops;
   List<Shop> get filteredShops => _filteredShops;
   List<String> get selectedShopFilter => _selectedShopFilter;
   Set<String> get shopLoacations => _shopLoacations;
@@ -102,6 +102,12 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearChecklistFilter() {
+    _selectedCategoryFilters.clear();
+    _selectedItemFilter = null;
+    notifyListeners();
+  }
+
   void clearShopFilter() {
     _selectedShopFilter.clear();
     // notifyListeners();
@@ -128,6 +134,7 @@ class ChecklistProvider extends ChangeNotifier {
 
   void deleteChecklistItem(String itemId) {
     _checklist.removeWhere((element) => element.itemId == itemId);
+    _filteredChecklist.removeWhere((element) => element.itemId == itemId);
   }
 
   addToHistory(Map<String, dynamic> newData) {

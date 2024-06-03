@@ -78,7 +78,7 @@ class AppTextField extends StatelessWidget {
       children: [
         labelText?.isNotEmpty ?? false
             ? Container(
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                margin: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                 alignment: Alignment.centerLeft,
                 child: RichText(
                   text: TextSpan(children: [

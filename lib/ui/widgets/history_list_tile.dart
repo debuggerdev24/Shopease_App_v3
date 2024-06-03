@@ -29,11 +29,14 @@ class HistorylistTile extends StatefulWidget {
     required this.onAddToChecklistTap,
     required this.product,
     this.isFromInvoice = true,
+    this.isSlideEnabled = true,
   });
 
   final History product;
   final bool isFromInvoice;
   final VoidCallback onAddToChecklistTap;
+  final bool isSlideEnabled;
+
   @override
   State<HistorylistTile> createState() => _HistorylistTileState();
 }
@@ -71,47 +74,50 @@ class _HistorylistTileState extends State<HistorylistTile>
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: GestureDetector(
-                    onTap: () {
-                      if (widget.product.imageUrl == null ||
-                          widget.product.imageUrl?.isEmpty == true) {
-                        context.pushNamed(
-                          AppRoute.addInvoice.name,
-                          extra: {
-                            'shop': widget.product.shopName,
-                            'histId': widget.product.histId,
-                          },
-                        );
-                      } else {
-                        _showImgSheet();
-                      }
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 70.h,
-                      width: 70.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.whiteColor,
-                        image: (widget.product.imageUrl == null ||
-                                widget.product.imageUrl?.isEmpty == true)
-                            ? null
-                            : DecorationImage(
-                                image: NetworkImage(
-                                  widget.product.imageUrl!,
-                                ),
-                                fit: BoxFit.fill,
-                              ),
-                      ),
+                      onTap: () {
+                        if (widget.product.imageUrl == null ||
+                            widget.product.imageUrl?.isEmpty == true) {
+                          context.pushNamed(
+                            AppRoute.addInvoice.name,
+                            extra: {
+                              'shop': widget.product.shopName,
+                              'histId': widget.product.histId,
+                            },
+                          );
+                        } else {
+                          _showImgSheet();
+                        }
+                      },
                       child: Container(
                         alignment: Alignment.center,
-                        child: SvgPicture.asset(
-                          (widget.product.imageUrl == null ||
-                                  widget.product.imageUrl?.isEmpty == true)
-                              ? AppAssets.addInvoice
-                              : AppAssets.zoomIcon,
+                        height: 70.h,
+                        width: 70.h,
+                        decoration: BoxDecoration(
+                          color: AppColors.whiteColor,
+                          image: widget.product.imageUrl == null ||
+                                  widget.product.imageUrl!.isEmpty
+                              ? null
+                              : DecorationImage(
+                                  image: NetworkImage(widget.product.imageUrl!),
+                                  fit: BoxFit.fill,
+                                ),
                         ),
-                      ),
-                    ),
-                  ),
+                        child: widget.product.imageUrl == null ||
+                                widget.product.imageUrl!.isEmpty
+                            ? Image.asset(
+                                AppAssets.doitlater,
+                                height: 30.h,
+                                width: 30.h,
+                              )
+                            : Container(
+                                alignment: Alignment.center,
+                                child: SvgPicture.asset(
+                                  AppAssets.zoomIcon,
+                                  height: 30.h,
+                                  width: 30.h,
+                                ),
+                              ),
+                      )),
                 ),
                 const SizedBox(width: 8),
                 Expanded(

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -11,10 +12,12 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/back_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/card_drop_down.dart';
+import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddItemFormWidget extends StatelessWidget {
@@ -133,6 +136,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                 child: Form(
                   key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       AppTextField(
                         controller: _nameController,
@@ -141,8 +145,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         hintText: "Enter product name",
                         isRequired: true,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Enter a valid name!';
+                          } else if (value.length > 10) {
+                            return 'Name cannot be more than 10 characters!';
                           }
                           return null;
                         },
@@ -160,6 +166,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             color: AppColors.mediumGreyColor,
                           ),
                         ),
+                        validator: (value) {
+                          if (value.length > 100) {
+                            return 'Name cannot be more than 45 characters!';
+                          }
+                          return null;
+                        },
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.r),
                           borderSide: const BorderSide(
@@ -173,6 +185,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         controller: _brandController,
                         labelText: "Brand",
                         hintText: "Enter brand name",
+                        validator: (value) {
+                          // if (value.length > 10) {
+                          //   return 'Brand Name cannot be more than 10 characters!';
+                          // }
+                          return null;
+                        },
                       ),
                       12.h.verticalSpace,
                       CardDropDownField(
@@ -205,37 +223,105 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         },
                       ),
                       12.h.verticalSpace,
-                      AppTextField(
-                        name: 'productImg',
-                        controller: _fileFieldController,
-                        maxLines: 1,
-                        readOnly: true,
-                        labelText: 'Upload Photo',
-                        hintText: 'Select a photo',
-                        bottomText: 'Max File Size:5MB',
-                        onTap: onSelectFileTap,
-                        suffixIcon: _fileFieldController.text.isEmpty
-                            ? IconButton(
-                                onPressed: onSelectFileTap,
-                                icon: SvgIcon(
-                                  AppAssets.upload,
-                                  color: AppColors.blackColor,
-                                  size: 18.sp,
-                                ),
-                              )
-                            : IconButton(
-                                onPressed: () {
-                                  _fileFieldController.clear();
-                                  provider.clearFile();
-                                },
-                                icon: const Icon(Icons.clear),
-                              ),
+                      GlobalText(
+                        'Upload Photo',
+                        textStyle: textStyle16,
+                        textAlign: TextAlign.start,
                       ),
+                      9.verticalSpace,
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: onSelectFileTap,
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: AppColors.blackColor),
+                                image: _fileFieldController.text.isEmpty
+                                    ? null
+                                    : provider.selectedFile != null
+                                        ? DecorationImage(
+                                            image: FileImage(
+                                              File(_fileFieldController.text),
+                                            ),
+                                          )
+                                        : DecorationImage(
+                                            image: NetworkImage(
+                                                _fileFieldController.text),
+                                          ),
+                              ),
+                              child: SvgPicture.asset(
+                                provider.selectedFile == null
+                                    ? AppAssets.addInvoice
+                                    : AppAssets.zoomIcon,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _fileFieldController.clear();
+                              provider.clearFile();
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                              color: AppColors.redColor,
+                            ),
+                          )
+                        ],
+                      ),
+                      // AppTextField(
+                      //   name: 'productImg',
+                      //   controller: _fileFieldController,
+                      //   maxLines: 1,
+                      //   readOnly: true,
+                      //   labelText: 'Upload Photo',
+                      //   hintText: 'Select a photo',
+                      //   bottomText: 'Max File Size:5MB',
+                      //   onTap: onSelectFileTap,
+                      //   prefix: Container(
+                      //     height: 100,
+                      //     width: 100,
+                      //     decoration: BoxDecoration(
+                      //       image: DecorationImage(
+                      //         image: widget.isEdit
+                      //             ? NetworkImage(_fileFieldController.text)
+                      //                 as ImageProvider
+                      //             : FileImage(File(_fileFieldController.text))
+                      //                 as ImageProvider,
+                      //       ),
+                      //     ),
+                      //   ),
+                      //   suffixIcon: _fileFieldController.text.isEmpty
+                      //       ? IconButton(
+                      //           onPressed: onSelectFileTap,
+                      //           icon: SvgIcon(
+                      //             AppAssets.upload,
+                      //             color: AppColors.blackColor,
+                      //             size: 18.sp,
+                      //           ),
+                      //         )
+                      //       : IconButton(
+                      //           onPressed: () {
+                      //             _fileFieldController.clear();
+                      //             provider.clearFile();
+                      //           },
+                      //           icon: const Icon(Icons.clear),
+                      //         ),
+                      // ),
+                      12.h.verticalSpace,
                       AppTextField(
                         controller: _storageController,
                         hintText: "Enter storage detail",
                         name: "Storage Details",
                         labelText: "Storage Details",
+                        validator: (value) {
+                          if (value.length > 15) {
+                            return 'Name cannot be more than 15 characters!';
+                          }
+                          return null;
+                        },
                       ),
                       30.h.verticalSpace,
                       AppButton(
@@ -290,6 +376,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             log('data: ${data.toString()}', name: 'onsubmit');
 
                             widget.onSubmit(data);
+                            provider.setFile(null);
                           }
                         },
                         text: 'Save',

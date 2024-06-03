@@ -15,23 +15,25 @@ class ProfileProvider extends ChangeNotifier {
   ProfileProvider(this.services);
 
   bool _set = false;
+  bool _support = false;
   bool _isLoading = false;
   bool _editProfileLoading = false;
   ProfileData? _profileData;
   XFile? _selectedFile;
   List<ProfileData> _groupProfiles = [];
-  List<Inviteduser> _userInvitation = [];
+  List<Invitation> _userInvitation = [];
 
   bool get set => _set;
   int _selectedUser = -1;
 
   int get selectedUserIndex => _selectedUser;
   bool get isLoading => _isLoading;
+  bool get support => _support;
   bool get editProfileLoading => _editProfileLoading;
   ProfileData? get profileData => _profileData;
   List<ProfileData> get groupProfiles => _groupProfiles;
   XFile? get selectedFile => _selectedFile;
-  List<Inviteduser> get inviteduser => _userInvitation;
+  List<Invitation> get inviteduser => _userInvitation;
 
   void toggleSet(bool value) {
     _set = !set;
@@ -48,6 +50,11 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _toggleSubtitleVisibility() {
+    _support = !_support;
+    notifyListeners();
+  }
+
   void changeSelectedUser(int newUserIndex) {
     if (_selectedUser == newUserIndex) {
       _selectedUser = -1;
@@ -58,8 +65,8 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteUser(String userId) {
-    groupProfiles.removeWhere((element) => element.userId == userId);
+  void removeGroupProfile(ProfileData profile) {
+    groupProfiles.remove(profile);
     notifyListeners();
   }
 
@@ -73,7 +80,7 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void settingInviteduser(List<Inviteduser> value) {
+  void settingInviteduser(List<Invitation> value) {
     _userInvitation = value;
     notifyListeners();
   }
@@ -247,67 +254,8 @@ class ProfileProvider extends ChangeNotifier {
     } on DioException {
       rethrow;
     } catch (e, s) {
-      debugPrint("Error while inviteUserToGroup: $e");
-      debugPrint("Error while inviteUserToGroup: $s");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> getinvitesbyuser({
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await services.getinvitesbyuser();
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        print("0res.data ========== ${res}");
-        settingInviteduser(inviteduserFromJson(res.data));
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e, s) {
-      debugPrint("Error while inviteUserToGroup: $e");
-      debugPrint("Error while inviteUserToGroup: $s");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> acceptinvite({
-    required Map<String, dynamic> data,
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await services.acceptinvite(data: data);
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e, s) {
-      debugPrint("Error while inviteUserToGroup: $e");
-      debugPrint("Error while inviteUserToGroup: $s");
+      debugPrint("Error while removeUserFromGroup: $e");
+      debugPrint("Error while removeUserFromGroup: $s");
     } finally {
       setLoading(false);
     }
@@ -335,37 +283,8 @@ class ProfileProvider extends ChangeNotifier {
     } on DioException {
       rethrow;
     } catch (e, s) {
-      debugPrint("Error while inviteUserToGroup: $e");
-      debugPrint("Error while inviteUserToGroup: $s");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> rejectinvite({
-    required Map<String, dynamic> data,
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      setLoading(true);
-      final res = await services.rejectinvite(data: data);
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e, s) {
-      debugPrint("Error while inviteUserToGroup: $e");
-      debugPrint("Error while inviteUserToGroup: $s");
+      debugPrint("Error while cancelinvite: $e");
+      debugPrint("Error while cancelinvite: $s");
     } finally {
       setLoading(false);
     }

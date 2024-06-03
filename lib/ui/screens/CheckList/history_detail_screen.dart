@@ -107,7 +107,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ],
                 onSuccess: () {
                   CustomToast.showSuccess(context, 'Items added to checklist!');
-                  context.read<ChecklistProvider>().getChecklistItems();
+                  
+                   context.read<ChecklistProvider>().getChecklistItems();
                   context.goNamed(AppRoute.checkList.name);
                 },
               );

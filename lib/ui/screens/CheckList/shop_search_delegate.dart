@@ -68,6 +68,7 @@ class ShopSearchDelegate extends SearchDelegate {
               return Consumer<ChecklistProvider>(
                   builder: (context, provider, _) {
                 return ShopTile(
+                  
                   shop: shops[index],
                   isSelected:
                       provider.selectedShop?.shopId == shops[index].shopId,

@@ -12,6 +12,7 @@ import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class TabScreen extends StatefulWidget {
@@ -34,6 +35,11 @@ class _TabScreenState extends State<TabScreen> {
     super.initState();
     context.read<ChecklistProvider>().getChecklistItems();
     context.read<NotificationProvider>().getNotifications();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        await Constants.getCategories();
+      },
+    );
   }
 
   @override
@@ -83,6 +89,7 @@ class _TabScreenState extends State<TabScreen> {
 
         if (index == 3) {
           context.read<NotificationProvider>().getNotifications();
+          context.read<NotificationProvider>().getinvitations();
         }
 
         goToBranch(index);

@@ -41,105 +41,78 @@ class _HomeScreenState extends State<HomeScreen>
     return Consumer<InventoryProvider>(
       builder: (context, provider, _) {
         return Scaffold(
-            appBar: AppBar(
-              // toolbarHeight: 150,
+          appBar: AppBar(
+            // toolbarHeight: 150,
 
-              backgroundColor: Colors.white,
-              automaticallyImplyLeading: false,
-              title: GlobalText(
-                "Inventory List",
-                textStyle: appBarTitleStyle.copyWith(
-                    fontWeight: FontWeight.w600, fontSize: 24.sp),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    showSearch(
-                        context: context,
-                        delegate: ProductSearchDelegate(provider.products));
-                  },
-                  icon: SvgIcon(
-                    AppAssets.search,
-                    size: 20.sp,
-                    color: AppColors.blackGreyColor,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: AppIconButton(
-                      onTap: () {
-                        context.pushNamed(AppRoute.scanAndAddScreen.name);
-                      },
-                      child: const SvgIcon(
-                        AppAssets.scanner,
-                        size: 23,
-                        color: AppColors.blackGreyColor,
-                      )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 5, right: 10),
-                  child: AppIconButton(
-                      onTap: () {
-                        context.pushNamed(
-                          AppRoute.addInventoryForm.name,
-                          extra: {'isEdit': false},
-                        );
-                      },
-                      child: const SvgIcon(
-                        AppAssets.add,
-                        size: 20,
-                        color: AppColors.orangeColor,
-                      )),
-                ),
-              ],
+            backgroundColor: Colors.white,
+            automaticallyImplyLeading: false,
+            title: GlobalText(
+              "Inventory List",
+              textStyle: appBarTitleStyle.copyWith(
+                  fontWeight: FontWeight.w600, fontSize: 24.sp),
             ),
-            body: provider.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    child: Column(
+            actions: [
+              IconButton(
+                onPressed: () {
+                  showSearch(
+                      context: context,
+                      delegate: ProductSearchDelegate(provider.products));
+                },
+                icon: SvgIcon(
+                  AppAssets.search,
+                  size: 20.sp,
+                  color: AppColors.blackGreyColor,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: AppIconButton(
+                    onTap: () {
+                      context.pushNamed(AppRoute.scanAndAddScreen.name);
+                    },
+                    child: const SvgIcon(
+                      AppAssets.scanner,
+                      size: 23,
+                      color: AppColors.blackGreyColor,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5, right: 10),
+                child: AppIconButton(
+                    onTap: () {
+                      context.pushNamed(
+                        AppRoute.addInventoryForm.name,
+                        extra: {'isEdit': false},
+                      );
+                    },
+                    child: const SvgIcon(
+                      AppAssets.add,
+                      size: 20,
+                      color: AppColors.orangeColor,
+                    )),
+              ),
+            ],
+          ),
+          body: provider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : provider.products.isEmpty
+                  ? _buildAdDInvWidget()
+                  : Column(
                       children: [
                         _buildInventoryHeadingBar(provider),
-                        provider.filteredProducts.isNotEmpty
-                            ? _buildProductsList(provider)
-                            : BounceInUp(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    120.h.verticalSpace,
-                                    Container(
-                                      height: 200.h,
-                                      width: double.infinity,
-                                      decoration: const BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                AppAssets.addInventory)),
-                                      ),
-                                    ),
-                                    10.h.verticalSpace,
-                                    GlobalText(
-                                      'Add your First Inventory',
-                                      textStyle: textStyle16.copyWith(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w400,
-                                          color: AppColors.blackGreyColor),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.all(20.sp),
-                                      child: AppButton(
-                                          onPressed: () {
-                                            context.pushNamed(
-                                                AppRoute.addInventoryForm.name);
-                                          },
-                                          text: 'Add an Inventory'),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        Expanded(
+                          child: provider.filteredProducts.isEmpty
+                              ? Center(
+                                  child: GlobalText(
+                                    'No matching results found.',
+                                    textStyle: textStyle16,
+                                  ),
+                                )
+                              : _buildProductsList(provider),
+                        )
                       ],
                     ),
-                  ));
+        );
       },
     );
   }
@@ -175,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildProductsList(InventoryProvider provider) {
     return ListView.separated(
         shrinkWrap: true,
-        primary: false,
+        reverse: true,
         itemCount: provider.filteredProducts.length,
         separatorBuilder: (context, index) => 10.verticalSpace,
         itemBuilder: (BuildContext context, int index) {
@@ -226,6 +199,40 @@ class _HomeScreenState extends State<HomeScreen>
         });
   }
 
+  _buildAdDInvWidget() => BounceInUp(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            120.h.verticalSpace,
+            Container(
+              height: 200.h,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image:
+                    DecorationImage(image: AssetImage(AppAssets.addInventory)),
+              ),
+            ),
+            10.h.verticalSpace,
+            GlobalText(
+              'Add your First Inventory',
+              textStyle: textStyle16.copyWith(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.blackGreyColor),
+            ),
+            Padding(
+              padding: EdgeInsets.all(20.sp),
+              child: AppButton(
+                  onPressed: () {
+                    context.pushNamed(AppRoute.addInventoryForm.name);
+                  },
+                  text: 'Add an Inventory'),
+            ),
+          ],
+        ),
+      );
+
   Widget buildInventoryContainer(
       String text, String level, InventoryProvider provider) {
     return GestureDetector(
@@ -271,82 +278,77 @@ class _HomeScreenState extends State<HomeScreen>
         context: context,
         isScrollControlled: true,
         builder: (context) {
-          return Container(
-            alignment: Alignment.center,
-            height: 480.h,
-            padding: EdgeInsets.symmetric(horizontal: 13.sp, vertical: 5.sp),
-            child: SingleChildScrollView(
-              child:
-                  Consumer<InventoryProvider>(builder: (context, provider, _) {
-                return Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child:
-                          GlobalText('Filters', textStyle: textStyle20SemiBold),
-                    ),
-                    20.h.verticalSpace,
-                    GlobalText(
-                      'Filter by category',
-                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
-                    ),
-                    Wrap(
-                      direction: Axis.horizontal,
-                      children: Constants.categories
-                          .map(
-                            (e) => AppChip(
-                              text: e.categoryName,
-                              isSelected: provider.selectedCategoryFilters
-                                  .contains(e.categoryId),
-                              onTap: () {
-                                provider.changeFilterCategoty(e.categoryId);
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
-                    10.h.verticalSpace,
-                    GlobalText(
-                      'Filter by Inventory Level',
-                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
-                    ),
-                    10.h.verticalSpace,
-                    Wrap(
-                      children: [
-                        buildInventoryContainer(
-                            'High', AppAssets.inventoryHigh, provider),
-                        buildInventoryContainer(
-                            'Medium', AppAssets.inventoryMid, provider),
-                        buildInventoryContainer(
-                            'Low', AppAssets.inventoryLow, provider),
-                      ],
-                    ),
-                    50.h.verticalSpace,
-                    Center(
-                      child: AppButton(
-                          colorType: AppButtonColorType.primary,
-                          onPressed: () {
-                            provider.filterProducts();
-                            context.pop();
-                          },
-                          text: 'Apply'),
-                    ),
-                    10.h.verticalSpace,
-                    Center(
-                      child: AppButton(
-                          colorType: AppButtonColorType.greyed,
-                          onPressed: () {
-                            context.pop();
-                          },
-                          text: 'Cancel'),
-                    ),
-                  ],
-                );
-              }),
-            ),
-          );
+          return Consumer<InventoryProvider>(builder: (context, provider, _) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child:
+                        GlobalText('Filters', textStyle: textStyle20SemiBold),
+                  ),
+                  20.h.verticalSpace,
+                  GlobalText(
+                    'Filter by category',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    children: Constants.categories
+                        .map(
+                          (e) => AppChip(
+                            text: e.categoryName,
+                            isSelected: provider.selectedCategoryFilters
+                                .contains(e.categoryId),
+                            onTap: () {
+                              provider.changeFilterCategoty(e.categoryId);
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  10.h.verticalSpace,
+                  GlobalText(
+                    'Filter by Inventory Level',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
+                  10.h.verticalSpace,
+                  Wrap(
+                    children: [
+                      buildInventoryContainer(
+                          'High', AppAssets.inventoryHigh, provider),
+                      buildInventoryContainer(
+                          'Medium', AppAssets.inventoryMid, provider),
+                      buildInventoryContainer(
+                          'Low', AppAssets.inventoryLow, provider),
+                    ],
+                  ),
+                  50.h.verticalSpace,
+                  Center(
+                    child: AppButton(
+                        colorType: AppButtonColorType.primary,
+                        onPressed: () {
+                          provider.filterProducts();
+                          context.pop();
+                        },
+                        text: 'Apply'),
+                  ),
+                  10.h.verticalSpace,
+                  Center(
+                    child: AppButton(
+                        colorType: AppButtonColorType.greyed,
+                        onPressed: () {
+                          context.pop();
+                        },
+                        text: 'Cancel'),
+                  ),
+                ],
+              ),
+            );
+          });
         });
   }
 }
