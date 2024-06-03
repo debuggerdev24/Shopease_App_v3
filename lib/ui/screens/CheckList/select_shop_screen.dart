@@ -149,6 +149,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
           return AddShopFormWidget(
             onSubmit: submit,
             isEdit: isEdit,
+            shop: null
           );
         },
       ),
@@ -158,7 +159,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<ChecklistProvider>().putShops(
       data: [data],
-      isEdit: false,
+      isEdit: true,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
         CustomToast.showSuccess(context, 'Shop has been added.');

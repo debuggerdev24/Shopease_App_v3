@@ -14,6 +14,7 @@ class AddChecklistScreen extends StatefulWidget {
   const AddChecklistScreen({
     super.key,
     this.isEdit = false,
+    
     this.isFromScan = false,
     this.isReplace = false,
     this.product,

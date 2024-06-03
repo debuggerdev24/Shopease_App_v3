@@ -11,6 +11,7 @@ class Product {
   String? itemImage;
   String? itemStorage;
   String? barcode;
+  final DateTime? addedDate;
   bool isSelectedForComplete;
 
   Product({
@@ -27,7 +28,12 @@ class Product {
     this.itemStorage,
     this.barcode,
     this.isSelectedForComplete = false,
+    this.addedDate,
   });
+
+  get name => null;
+
+  get timestamp => null;
 
   void changeSelectedState(bool newValue) => isSelectedForComplete = newValue;
 
@@ -43,6 +49,7 @@ class Product {
     String? locationId,
     String? itemImage,
     String? itemStorage,
+    final DateTime? addedDate,
   }) =>
       Product(
         itemId: itemId ?? this.itemId,
@@ -56,6 +63,7 @@ class Product {
         locationId: locationId ?? this.locationId,
         itemImage: itemImage,
         itemStorage: itemStorage ?? this.itemStorage,
+        
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
