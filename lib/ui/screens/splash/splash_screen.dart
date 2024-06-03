@@ -8,6 +8,7 @@ import 'package:shopease_app_flutter/main.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopease_app_flutter/utils/styles.dart';
 import '../../../utils/routes/routes.dart';
 import '../../../utils/shared_prefs.dart';
 
@@ -56,11 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         floatingActionButton: Text(
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'OpenSansRegular',
-            ),
+            style: textStyle14,
             'Version ${packageInfo.version}'),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -14,25 +17,41 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
-  const AddShopFormWidget(
-      {super.key, required this.onSubmit, required this.shop});
+  const AddShopFormWidget({
+    super.key,
+    required this.onSubmit,
+    required this.isEdit,
+    required this.shop
+  });
 
   final Function(Map<String, dynamic>) onSubmit;
+  final bool isEdit;
   final Shop? shop;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => AddShopFormProvider(),
-      builder: (context, _) => AddShopForm(onSubmit: onSubmit, shop: shop),
+      builder: (context, _) => AddShopForm(
+        onSubmit: onSubmit,
+        isEdit: isEdit,
+         shop: shop,
+      ),
     );
   }
 }
 
 class AddShopForm extends StatefulWidget {
-  const AddShopForm({super.key, required this.onSubmit, required this.shop});
+
+  const AddShopForm({
+    super.key,
+    required this.onSubmit,
+    required this.isEdit,
+    required this.shop,
+  });
 
   final Function(Map<String, dynamic>) onSubmit;
+  final bool isEdit;
   final Shop? shop;
 
   @override
@@ -83,32 +102,80 @@ class _AddShopFormState extends State<AddShopForm> {
                 maxLength: 10,
               ),
               20.h.verticalSpace,
-              AppTextField(
-                name: 'shopImg',
-                controller: _fileFieldController,
-                maxLines: 1,
-                readOnly: true,
-                labelText: 'Upload shop image',
-                hintText: 'Select a photo',
-                bottomText: 'Max File Size:5MB',
-                onTap: onSelectFileTap,
-                suffixIcon: _fileFieldController.text.isEmpty
-                    ? IconButton(
-                        onPressed: onSelectFileTap,
-                        icon: SvgIcon(
-                          AppAssets.upload,
-                          color: AppColors.blackColor,
-                          size: 18.sp,
-                        ),
-                      )
-                    : IconButton(
-                        onPressed: () {
-                          _fileFieldController.clear();
-                          provider.clearFile();
-                        },
-                        icon: const Icon(Icons.clear),
-                      ),
+              GlobalText(
+                'Upload Photo',
+                textStyle: textStyle16,
+                textAlign: TextAlign.start,
               ),
+              9.verticalSpace,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: onSelectFileTap,
+                    child: Container(
+                      height: 80,
+                      width: 80,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.blackColor),
+                        image: _fileFieldController.text.isEmpty
+                            ? null
+                            : provider.selectedFile != null
+                                ? DecorationImage(
+                                    image: FileImage(
+                                      File(_fileFieldController.text),
+                                    ),
+                                  )
+                                : DecorationImage(
+                                    image:
+                                        NetworkImage(_fileFieldController.text),
+                                  ),
+                      ),
+                      child: SvgPicture.asset(
+                        provider.selectedFile == null
+                            ? AppAssets.addInvoice
+                            : AppAssets.zoomIcon,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      _fileFieldController.clear();
+                      provider.clearFile();
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: AppColors.redColor,
+                    ),
+                  )
+                ],
+              ),
+              // AppTextField(
+              //   name: 'shopImg',
+              //   controller: _fileFieldController,
+              //   maxLines: 1,
+              //   readOnly: true,
+              //   labelText: 'Upload shop image',
+              //   hintText: 'Select a photo',
+              //   bottomText: 'Max File Size:5MB',
+              //   onTap: onSelectFileTap,
+              //   suffixIcon: _fileFieldController.text.isEmpty
+              //       ? IconButton(
+              //           onPressed: onSelectFileTap,
+              //           icon: SvgIcon(
+              //             AppAssets.upload,
+              //             color: AppColors.blackColor,
+              //             size: 18.sp,
+              //           ),
+              //         )
+              //       : IconButton(
+              //           onPressed: () {
+              //             _fileFieldController.clear();
+              //             provider.clearFile();
+              //           },
+              //           icon: const Icon(Icons.clear),
+              //         ),
+              // ),
               60.h.verticalSpace,
               Consumer2<AddShopFormProvider, ChecklistProvider>(
                   builder: (context, provider, checklistProvider, _) {
@@ -165,7 +232,8 @@ class AddShopFormProvider extends ChangeNotifier {
     if (newFile != null) return null;
     _selectedFile = newFile;
     notifyListeners();
-    return newFile!.name;
+
+    return newFile.path;
   }
 
   void clearFile() {

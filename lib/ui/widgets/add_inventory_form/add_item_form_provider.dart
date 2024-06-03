@@ -46,7 +46,7 @@ class AddItemFormProvider extends ChangeNotifier {
     if (newFile == null) return null;
     _selectedFile = newFile;
     notifyListeners();
-    return newFile.name;
+    return newFile.path;
   }
 
   void clearFile() {

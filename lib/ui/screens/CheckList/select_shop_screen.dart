@@ -57,7 +57,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 onPressed: () {
                   showSearch(
                     context: context,
-                    delegate: ShopSearchDelegate(provider.shops),
+                    delegate: ShopSearchDelegate(provider.shops.toList()),
                   );
                 },
                 icon: const SvgIcon(
@@ -138,7 +138,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
     });
   }
 
-  _showAddShopSheet(BuildContext context) {
+  _showAddShopSheet(BuildContext context, {bool isEdit = false}) {
     return showModalBottomSheet(
       showDragHandle: true,
       context: context,
@@ -146,7 +146,11 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       isDismissible: false,
       builder: (context) => Consumer<ChecklistProvider>(
         builder: (context, provider, _) {
-          return AddShopFormWidget(onSubmit: submit, shop: null);
+          return AddShopFormWidget(
+            onSubmit: submit,
+            isEdit: isEdit,
+            shop: null
+          );
         },
       ),
     );
