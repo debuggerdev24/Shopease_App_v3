@@ -15,6 +15,7 @@ class ProfileProvider extends ChangeNotifier {
   ProfileProvider(this.services);
 
   bool _set = false;
+  bool _support = false;
   bool _isLoading = false;
   bool _editProfileLoading = false;
   ProfileData? _profileData;
@@ -27,6 +28,7 @@ class ProfileProvider extends ChangeNotifier {
 
   int get selectedUserIndex => _selectedUser;
   bool get isLoading => _isLoading;
+  bool get support => _support;
   bool get editProfileLoading => _editProfileLoading;
   ProfileData? get profileData => _profileData;
   List<ProfileData> get groupProfiles => _groupProfiles;
@@ -45,6 +47,11 @@ class ProfileProvider extends ChangeNotifier {
 
   void setEditProfileLoading(bool newValue) {
     _editProfileLoading = newValue;
+    notifyListeners();
+  }
+
+  void _toggleSubtitleVisibility() {
+    _support = !_support;
     notifyListeners();
   }
 

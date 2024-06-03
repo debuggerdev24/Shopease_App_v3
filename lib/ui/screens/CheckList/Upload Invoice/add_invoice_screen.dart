@@ -48,7 +48,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             children: [
               10.verticalSpace,
               GlobalText(
-                'Lorem Ipsum available, but the majority have suffered alteration in some form',
+                'Effortlessly manage your receipts by capturing photos. \n Quickly track your budget and easily locate your purchases',
                 textStyle: textStyle14.copyWith(fontSize: 16),
               ),
               const Spacer(),

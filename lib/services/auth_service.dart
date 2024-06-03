@@ -56,7 +56,7 @@ class AuthService implements BaseAuthService {
   @override
   Future<Response?> refreshAuth() async {
     return await BaseRepository().post(ApiUrl.refreshAuth, data: {
-      'refresh_token': SharedPrefs().refreshToken,
+      'refresh_token': SharedPrefs().refreshToken ?? "",
     });
   }
 }

@@ -16,6 +16,7 @@ class MultipleProductTile extends StatefulWidget {
     required this.isSelected,
     this.onInventoryChange,
     this.onLongPress,
+     this.showCheckbox = false,
     this.onSelectionChanges,
   });
 
@@ -24,6 +25,7 @@ class MultipleProductTile extends StatefulWidget {
   final Function(bool?)? onSelectionChanges;
   final Function(InventoryType type)? onInventoryChange;
   final bool isSelected;
+   final bool showCheckbox;
 
   @override
   State<MultipleProductTile> createState() => _MultipleProductTileState();

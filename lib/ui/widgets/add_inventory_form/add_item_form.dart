@@ -125,7 +125,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
       ),
       body: Consumer<AddItemFormProvider>(builder: (context, provider, _) {
         return provider.isLoading
-            ? const Center(
+            ? Center(
                 child: CircularProgressIndicator(),
               )
             : SingleChildScrollView(
@@ -141,8 +141,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         hintText: "Enter product name",
                         isRequired: true,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Enter a valid name!';
+                          } else if (value.length > 10) {
+                            return 'Name cannot be more than 10 characters!';
                           }
                           return null;
                         },
@@ -160,6 +162,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             color: AppColors.mediumGreyColor,
                           ),
                         ),
+                        validator: (value) {
+                          if (value.length > 100) {
+                            return 'Name cannot be more than 45 characters!';
+                          }
+                          return null;
+                        },
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.r),
                           borderSide: const BorderSide(
@@ -173,6 +181,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         controller: _brandController,
                         labelText: "Brand",
                         hintText: "Enter brand name",
+                        validator: (value) {
+                          if (value.length > 10) {
+                            return 'Brand Name cannot be more than 10 characters!';
+                          }
+                          return null;
+                        },
                       ),
                       12.h.verticalSpace,
                       CardDropDownField(
@@ -236,6 +250,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         hintText: "Enter storage detail",
                         name: "Storage Details",
                         labelText: "Storage Details",
+                        validator: (value) {
+                          if (value.length > 15) {
+                            return 'Name cannot be more than 15 characters!';
+                          }
+                          return null;
+                        },
                       ),
                       30.h.verticalSpace,
                       AppButton(

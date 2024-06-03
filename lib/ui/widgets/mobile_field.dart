@@ -78,6 +78,10 @@ class _MobileFieldState extends State<MobileField> {
             const Icon(Icons.arrow_drop_down),
             Container(
               width: 1,
+
+
+
+              
               height: 40.h,
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               color: AppColors.greyColor,
