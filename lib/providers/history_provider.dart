@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/history_item_detail_model.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
+import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/services/history_service.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 
@@ -24,6 +25,8 @@ class HistoryProvider extends ChangeNotifier {
   DateTime? _fromDate;
   DateTime _toDate = DateTime.now();
 
+  final List<String> _selectedShopFilter = [];
+
   bool get isLoading => _isLoading;
   List<History> get histories => _histories;
   List<History> get filteredHistories => _filteredHistories;
@@ -36,13 +39,10 @@ class HistoryProvider extends ChangeNotifier {
   DateTime? get fromDate => _fromDate;
   DateTime? get toDate => _toDate;
 
+  List<String> get selectedShopFilter => _selectedShopFilter;
+
   void setLoading(bool newValue) {
     _isLoading = newValue;
-    notifyListeners();
-  }
-
-  void deleteHistory(String itemId) {
-    _histories.removeWhere((element) => element.histId == itemId);
     notifyListeners();
   }
 
@@ -53,6 +53,15 @@ class HistoryProvider extends ChangeNotifier {
 
   void changeSelectedValue(int newIndex) {
     _selectedValue = newIndex;
+    notifyListeners();
+  }
+
+  void changeShopFilter(String newFilter) {
+    if (_selectedShopFilter.contains(newFilter)) {
+      _selectedShopFilter.remove(newFilter);
+    } else {
+      _selectedShopFilter.add(newFilter);
+    }
     notifyListeners();
   }
 
@@ -87,15 +96,26 @@ class HistoryProvider extends ChangeNotifier {
 
   void filterHistories() {
     _filteredHistories.clear();
+
     if (_fromDate == null || _toDate == DateTime.now()) {
       _filteredHistories.addAll(_histories);
     } else {
       _filteredHistories.addAll(
         _histories.where(
-          (element) =>
-              (element.updatedDate?.isAfter(_fromDate!) ?? false) &&
-              ((element.updatedDate?.isBefore(_toDate) ?? false) ||
-                  (element.updatedDate?.day ?? 0) <= _toDate.day),
+          (element) {
+            final evaluateDateFiler =
+                (element.updatedDate?.isAfter(_fromDate!) ?? false) &&
+                    ((element.updatedDate?.isBefore(_toDate) ?? false) ||
+                        (element.updatedDate?.day ?? 0) <= _toDate.day);
+                        if(_selectedShopFilter.isEmpty) {
+                          return evaluateDateFiler;
+                        }
+
+            final evaluateShopFilter =
+                _selectedShopFilter.contains(element.shopName);
+
+            return evaluateShopFilter && evaluateDateFiler;
+          },
         ),
       );
     }
@@ -162,6 +182,11 @@ class HistoryProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _histories.clear();
         _histories.addAll((res.data as List).map((e) => History.fromJson(e)));
+        _histories.sort(
+          (a, b) {
+            return b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1;
+          },
+        );
         filterHistories();
         notifyListeners();
         onSuccess?.call();

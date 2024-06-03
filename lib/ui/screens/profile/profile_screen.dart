@@ -1,13 +1,11 @@
 import 'dart:developer';
 import 'package:animate_do/animate_do.dart';
-import 'package:country_picker/country_picker.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shopease_app_flutter/models/invitation_model.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
@@ -30,9 +28,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _mobileController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -119,35 +114,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
+                    ExpansionTile(
+                      childrenPadding: const EdgeInsets.symmetric(vertical: 8),
+                      tilePadding: EdgeInsets.zero,
                       title: GlobalText(
                         'Support',
                         textStyle:
                             textStyle16.copyWith(fontWeight: FontWeight.w500),
                       ),
-                      // subtitle: RichText(
-                      //   text: TextSpan(
-                      //       children: [
-                      //         const TextSpan(
-                      //           text: 'If you have any queries, write to ',
-                      //         ),
-                      //         TextSpan(
-                      //           text: 'support@ShopEaseApp.com',
-                      //           style: textStyle12.copyWith(
-                      //               decoration: TextDecoration.underline),
-                      //         ),
-                      //       ],
-                      //       style: textStyle12.copyWith(
-                      //         color: AppColors.blackColor,
-                      //       )),
-                      // ),
-                      trailing: GestureDetector(
-                        onTap: () {},
-                        child: SvgPicture.asset(
-                          AppAssets.support,
+                      shape: const RoundedRectangleBorder(),
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'If you have any queries, write to ',
+                                ),
+                                TextSpan(
+                                  text: 'support@ShopEaseApp.com',
+                                  style: textStyle12.copyWith(
+                                      decoration: TextDecoration.underline),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {},
+                                ),
+                              ],
+                              style: textStyle12.copyWith(
+                                color: AppColors.blackColor,
+                              )),
                         ),
-                      ),
+                      ],
                     ),
                     20.h.verticalSpace,
                   ],
@@ -159,9 +154,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
     return user.isInvited == true
-        ? GlobalText(
-            'Invited',
-            textStyle: textStyle14,
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GlobalText(
+                'Invited',
+                textStyle: textStyle14,
+              ),
+              15.horizontalSpace,
+              GestureDetector(
+                onTap: () async {
+                  await provider.cancelinvite(
+                    data: {'user_id': user.userId},
+                    onSuccess: () {
+                      CustomToast.showSuccess(
+                        context,
+                        'Invitation canceled successfully.',
+                      );
+                      provider.removeGroupProfile(user);
+                    },
+                  );
+                },
+                child: SvgIcon(
+                  AppAssets.delete,
+                  size: 16.sp,
+                ),
+              )
+            ],
           )
         : provider.profileData?.isAdmin == true
             ? Row(
@@ -278,7 +299,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ..text = context.read<ProfileProvider>().profileData!.preferredUsername;
     final TextEditingController mobileController = TextEditingController();
     // log('image url: ${context.read<ProfileProvider>().profileData!.imageUrl}');
-    final TextEditingController fileFieldController = TextEditingController();
+    final TextEditingController fileFieldController = TextEditingController()
+      ..text = context.read<ProfileProvider>().profileData!.imageUrl;
     // ..text = context.read<ProfileProvider>().profileData!.imageUrl;
 
     onSelectFileTap() async {
@@ -322,7 +344,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     controller: fileFieldController,
                     maxLines: 1,
                     readOnly: true,
-                    isRequired: true,
                     labelText: 'Upload Photo',
                     hintText: 'Select a photo',
                     bottomText: 'Max File Size:5MB',
@@ -356,11 +377,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         CustomToast.showWarning(context, 'Enter valid name');
                         return;
                       }
-                      if (fileFieldController.text.isEmpty) {
-                        CustomToast.showWarning(
-                            context, 'Upload a valid image');
-                        return;
-                      }
+                      // if (fileFieldController.text.isEmpty) {
+                      //   CustomToast.showWarning(
+                      //       context, 'Upload a valid image');
+                      //   return;
+                      // }
 
                       if (nameController.text.isNotEmpty &&
                           fileFieldController.text.isNotEmpty) {
@@ -369,7 +390,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           data: [
                             {
                               'preferred_username': nameController.text,
-                              'profile_image': provider.selectedFile?.path,
+                              'profile_image': provider.selectedFile?.path ??
+                                  provider.profileData!.imageUrl,
                             }
                           ],
                           isEdit: false,

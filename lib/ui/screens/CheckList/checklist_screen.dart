@@ -58,6 +58,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<ChecklistProvider>().getChecklistItems();
       context.read<HistoryProvider>().getHistoryItems();
+      if (context.read<ChecklistProvider>().shops.isEmpty) {
+        context.read<ChecklistProvider>().getShops();
+      }
     });
   }
 
@@ -93,7 +96,15 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 ),
               ),
             ],
-            onTap: provider.changeTab,
+            onTap: (value) {
+              provider.changeTab(value);
+              if (value == 0) {
+                context.read<ChecklistProvider>().getChecklistItems();
+              }
+              if (value == 1) {
+                context.read<HistoryProvider>().getHistoryItems();
+              }
+            },
           ),
         ),
         body: TabBarView(
@@ -237,7 +248,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                               context.pushNamed(AppRoute.productDetail.name,
                                   extra: {
                                     'product':
-                                        provider.selectedChecklists[index],
+                                        provider.filteredChecklist[index],
                                     'isFromChecklist': true,
                                   });
                             },
@@ -378,9 +389,12 @@ void _showHistoryFilterSheet(BuildContext context) {
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
+                  20.h.verticalSpace,
+                  GlobalText('Date', textStyle: textStyle14SemiBold),
                   20.h.verticalSpace,
                   Row(
                     children: [
@@ -418,6 +432,25 @@ void _showHistoryFilterSheet(BuildContext context) {
                         ),
                       ),
                     ],
+                  ),
+                  20.verticalSpace,
+                  GlobalText('Shop', textStyle: textStyle14SemiBold),
+                  Wrap(
+                    alignment: WrapAlignment.start,
+                    children: context
+                        .read<ChecklistProvider>()
+                        .shops
+                        .indexed
+                        .map((e) {
+                      return AppChip(
+                        text: '${e.$2.shopName}, ${e.$2.shopLocation}',
+                        isSelected:
+                            provider.selectedShopFilter.contains(e.$2.shopName),
+                        onTap: () {
+                          provider.changeShopFilter(e.$2.shopName);
+                        },
+                      );
+                    }).toList(),
                   ),
                   30.h.verticalSpace,
                   AppButton(
@@ -458,85 +491,101 @@ _showChecklistFilterSheet(BuildContext context) async {
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return Container(
-          alignment: Alignment.center,
-          height: 480.h,
-          padding: EdgeInsets.symmetric(horizontal: 13.sp, vertical: 5.sp),
-          child: SingleChildScrollView(
-            child: Consumer<ChecklistProvider>(builder: (context, provider, _) {
-              return Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child:
-                        GlobalText('Filters', textStyle: textStyle20SemiBold),
-                  ),
-                  20.h.verticalSpace,
-                  GlobalText(
-                    'Filter by category',
-                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
-                  ),
-                  Wrap(
-                    direction: Axis.horizontal,
-                    children: Constants.categories
-                        .map(
-                          (e) => AppChip(
-                            text: e.categoryName,
-                            isSelected: provider.selectedCategoryFilters
-                                .contains(e.categoryId),
-                            onTap: () {
-                              provider.changeFilterCategoty(e.categoryId);
-                            },
+        return Consumer<ChecklistProvider>(builder: (context, provider, _) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        fit: StackFit.loose,
+                        children: [
+                          GlobalText(
+                            'Filters',
+                            textStyle: textStyle20SemiBold,
+                            textAlign: TextAlign.center,
                           ),
-                        )
-                        .toList(),
-                  ),
-                  10.h.verticalSpace,
-                  GlobalText(
-                    'Filter by Items',
-                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
-                  ),
-                  10.h.verticalSpace,
-                  Row(
-                    children: ['Selected', 'Non Selected']
-                        .map(
-                          (e) => AppChip(
-                            text: e,
-                            isSelected:
-                                provider.selectedItemFilter == e.toLowerCase(),
-                            onTap: () {
-                              provider.changeFilterItem(e.toLowerCase());
-                            },
+                          Positioned(
+                            right: 0,
+                            child: TextButton(
+                              onPressed: provider.clearChecklistFilter,
+                              child: const Text('Clear'),
+                            ),
                           ),
-                        )
-                        .toList(),
-                  ),
-                  50.h.verticalSpace,
-                  Center(
-                    child: AppButton(
-                        colorType: AppButtonColorType.primary,
-                        onPressed: () {
-                          provider.filterChecklist();
-                          context.pop();
-                        },
-                        text: 'Apply'),
-                  ),
-                  10.h.verticalSpace,
-                  Center(
-                    child: AppButton(
-                        colorType: AppButtonColorType.greyed,
-                        onPressed: () {
-                          context.pop();
-                        },
-                        text: 'Cancel'),
-                  ),
-                ],
-              );
-            }),
-          ),
-        );
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                20.h.verticalSpace,
+                GlobalText(
+                  'Filter by category',
+                  textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                ),
+                Wrap(
+                  direction: Axis.horizontal,
+                  children: Constants.categories
+                      .map(
+                        (e) => AppChip(
+                          text: e.categoryName,
+                          isSelected: provider.selectedCategoryFilters
+                              .contains(e.categoryId),
+                          onTap: () {
+                            provider.changeFilterCategoty(e.categoryId);
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+                10.h.verticalSpace,
+                GlobalText(
+                  'Filter by Items',
+                  textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                ),
+                10.h.verticalSpace,
+                Row(
+                  children: ['Selected', 'Non Selected']
+                      .map(
+                        (e) => AppChip(
+                          text: e,
+                          isSelected:
+                              provider.selectedItemFilter == e.toLowerCase(),
+                          onTap: () {
+                            provider.changeFilterItem(e.toLowerCase());
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+                50.h.verticalSpace,
+                Center(
+                  child: AppButton(
+                      colorType: AppButtonColorType.primary,
+                      onPressed: () {
+                        provider.filterChecklist();
+                        context.pop();
+                      },
+                      text: 'Apply'),
+                ),
+                10.h.verticalSpace,
+                Center(
+                  child: AppButton(
+                      colorType: AppButtonColorType.greyed,
+                      onPressed: () {
+                        context.pop();
+                      },
+                      text: 'Cancel'),
+                ),
+              ],
+            ),
+          );
+        });
       });
 }
 

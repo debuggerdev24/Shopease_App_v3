@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shopease_app_flutter/models/invitation_model.dart';
 import 'package:shopease_app_flutter/models/notification_model.dart';
 import 'package:shopease_app_flutter/services/notifications_service.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -11,9 +12,11 @@ class NotificationProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   final List<NotificationModel> _notifications = [];
+  List<Invitation> _userInvitation = [];
 
   bool get isLoading => _isLoading;
   List<NotificationModel> get notifications => _notifications;
+  List<Invitation> get invitations => _userInvitation;
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -24,6 +27,15 @@ class NotificationProvider extends ChangeNotifier {
     _notifications
         .firstWhere((element) => element.notificationId == notificationId)
         .updateRead(newValue);
+  }
+
+  void settingInviteduser(List<Invitation> value) {
+    _userInvitation = value;
+    notifyListeners();
+  }
+
+  void removeInvitation(Invitation invitation) {
+    _userInvitation.remove(invitation);
   }
 
   Future<void> getNotifications({
@@ -45,7 +57,6 @@ class NotificationProvider extends ChangeNotifier {
             (res.data as List).map((e) => NotificationModel.fromJson(e)));
         notifyListeners();
         onSuccess?.call();
-        
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
@@ -88,6 +99,94 @@ class NotificationProvider extends ChangeNotifier {
       rethrow;
     } catch (e) {
       debugPrint("Error while updateNotifications: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getinvitations({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.getinvitations();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        print("0res.data ========== ${res}");
+        settingInviteduser(inviteduserFromJson(res.data));
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while getinvitesbyuser: $e");
+      debugPrint("Error while getinvitesbyuser: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> acceptinvite({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.acceptinvite(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while acceptinvite: $e");
+      debugPrint("Error while acceptinvite: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> rejectinvite({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await service.rejectinvite(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while rejectinvite: $e");
+      debugPrint("Error while rejectinvite: $s");
     } finally {
       setLoading(false);
     }

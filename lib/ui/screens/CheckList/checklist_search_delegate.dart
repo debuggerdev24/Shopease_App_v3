@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/no_search_found.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
@@ -44,7 +45,7 @@ class ChecklistSearchDelegate extends SearchDelegate {
             product.productName!.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    return _buildResultView(context.read<ChecklistProvider>(), searchResults);
+    return _buildResultView(searchResults);
   }
 
   @override
@@ -54,55 +55,42 @@ class ChecklistSearchDelegate extends SearchDelegate {
             product.productName!.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
-    return _buildResultView(context.read<ChecklistProvider>(), suggestionList);
+    return _buildResultView(suggestionList);
   }
 
-  _buildResultView(ChecklistProvider provider, List<Product> products) {
-    return products.isEmpty
-        ? const NoSearchFound()
-        : ListView.separated(
-            itemCount: products.length,
-            padding: EdgeInsets.symmetric(vertical: 10.h),
-            separatorBuilder: (context, index) => 10.verticalSpace,
-            itemBuilder: (context, index) {
-              return ProductTile(
-                product: products[index],
-                isSlideEnabled: false,
-                onTap: () {
-                  context.pushNamed(AppRoute.productDetail.name, extra: {
-                    'product': products[index],
-                    'isFromChecklist': true,
-                  });
-                },
-                /*onAddToCart: () {
-                  context.read<ChecklistProvider>().putCheklistItems(
-                    data: [
-                      products[index].copyWith(isInChecklist: true).toJson()
-                    ],
-                    isEdit: true,
-                    onSuccess: () {
-                      provider
-                          .addToChecklist([products[index]], context, false);
-                    },
-                  );
-                },
-                onDelete: () {
-                  provider.deletInventoryItems(
-                      itemIds: [products[index].itemId],
-                      onSuccess: () {
-                        provider.getInventoryItems();
-                        CustomToast.showSuccess(
-                            context, 'Successfully deleted');
-                      });
-                },
-                onInventoryChange: (newType) {
-                  provider.changeInventoryType(
-                    products[index].itemId,
-                    newType,
-                  );
-                },*/
-              );
-            },
-          );
+  _buildResultView(List<Product> products) {
+    return Consumer<ChecklistProvider>(builder: (context, provider, _) {
+      return provider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : products.isEmpty
+              ? const NoSearchFound()
+              : ListView.separated(
+                  itemCount: products.length,
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  separatorBuilder: (context, index) => 10.verticalSpace,
+                  itemBuilder: (context, index) {
+                    return ChecklistTile(
+                      product: products[index],
+                      onTap: () {
+                        context.pushNamed(AppRoute.productDetail.name, extra: {
+                          'product': products[index],
+                          'isFromChecklist': true,
+                        });
+                      },
+                      showCheckbox: true,
+                      isSelected: products[index].isSelectedForComplete,
+                      onDelete: () async {
+                        await provider.deleteChecklistItems(
+                          itemIds: [products[index].itemId!],
+                        );
+                        products.remove(products[index]);
+                      },
+                      onSelectionChanges: (value) {
+                        provider.addProductToSelected(value, products[index]);
+                      },
+                    );
+                  },
+                );
+    });
   }
 }

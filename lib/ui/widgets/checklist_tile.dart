@@ -236,6 +236,7 @@ class _ChecklistTileState extends State<ChecklistTile>
       context: context,
       builder: (context) => Container(
         padding: EdgeInsets.all(10.h),
+        width: double.infinity,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
