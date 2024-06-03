@@ -17,12 +17,11 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
-  const AddShopFormWidget({
-    super.key,
-    required this.onSubmit,
-    required this.isEdit,
-    required this.shop
-  });
+  const AddShopFormWidget(
+      {super.key,
+      required this.onSubmit,
+      required this.isEdit,
+      required this.shop});
 
   final Function(Map<String, dynamic>) onSubmit;
   final bool isEdit;
@@ -35,14 +34,13 @@ class AddShopFormWidget extends StatelessWidget {
       builder: (context, _) => AddShopForm(
         onSubmit: onSubmit,
         isEdit: isEdit,
-         shop: shop,
+        shop: shop,
       ),
     );
   }
 }
 
 class AddShopForm extends StatefulWidget {
-
   const AddShopForm({
     super.key,
     required this.onSubmit,
@@ -233,7 +231,7 @@ class AddShopFormProvider extends ChangeNotifier {
     _selectedFile = newFile;
     notifyListeners();
 
-    return newFile.path;
+    return newFile!.path;
   }
 
   void clearFile() {
