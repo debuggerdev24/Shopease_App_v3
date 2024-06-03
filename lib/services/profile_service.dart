@@ -28,16 +28,7 @@ abstract class BaseProfileService {
     required Map<String, dynamic> data,
   });
 
-  Future<Response<dynamic>?> getinvitesbyuser();
-
-  Future<Response<dynamic>?> acceptinvite({
-    required Map<String, dynamic> data,
-  });
-
   Future<Response<dynamic>?> cancelinvite({
-    required Map<String, dynamic> data,
-  });
-  Future<Response<dynamic>?> rejectinvite({
     required Map<String, dynamic> data,
   });
 }
@@ -59,10 +50,13 @@ class ProfileService implements BaseProfileService {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
-      if (!isEdit && record.containsKey('profile_image')) {
+      if ((record['profile_image'] != null) &&
+          !record['profile_image'].toString().startsWith('http')) {
         record['profile_image'] = Utils.getBse64String(record['profile_image']);
+      } else {
+        record.remove('profile_image');
       }
-      // recordMap['item_details'] = record;
+      if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'profile_details': record});
     }
 
@@ -132,36 +126,6 @@ class ProfileService implements BaseProfileService {
   }
 
   @override
-  Future<Response?> getinvitesbyuser() async {
-    final Map<String, dynamic> formData = {'records': []};
-
-    // (formData['records'] as List).add(data);
-
-    log('form data: ${formData.toString()}', name: 'getinvitesbyuser');
-
-    return await BaseRepository().post(
-      ApiUrl.getinvitesbyuser,
-      data: formData,
-    );
-  }
-
-  @override
-  Future<Response?> acceptinvite({
-    required Map<String, dynamic> data,
-  }) async {
-    final Map<String, dynamic> formData = {'records': []};
-
-    (formData['records'] as List).add(data);
-
-    log('form data: ${formData.toString()}', name: 'acceptinvite');
-
-    return await BaseRepository().post(
-      ApiUrl.acceptinvite,
-      data: formData,
-    );
-  }
-
-  @override
   Future<Response?> cancelinvite({
     required Map<String, dynamic> data,
   }) async {
@@ -173,22 +137,6 @@ class ProfileService implements BaseProfileService {
 
     return await BaseRepository().post(
       ApiUrl.cancelinvite,
-      data: formData,
-    );
-  }
-
-  @override
-  Future<Response?> rejectinvite({
-    required Map<String, dynamic> data,
-  }) async {
-    final Map<String, dynamic> formData = {'records': []};
-
-    (formData['records'] as List).add(data);
-
-    log('form data: ${formData.toString()}', name: 'rejectinvite');
-
-    return await BaseRepository().post(
-      ApiUrl.rejectinvite,
       data: formData,
     );
   }

@@ -144,12 +144,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 Wrap(
                   children: [
                     10.horizontalSpace,
-                    AppChip(text: widget.product.brand.toString()),
-                    // buildCustomContainer(widget.product!['brand'] ?? ''),
+                    if (widget.product.brand.toString().isNotEmpty)
+                      AppChip(text: widget.product.brand.toString()),
                     10.horizontalSpace,
                     AppChip(text: widget.product.itemCategory!),
                     10.horizontalSpace,
-                    if (widget.product.itemStorage != null)
+                    if (widget.product.itemStorage.toString().isNotEmpty)
                       AppChip(text: widget.product.itemStorage ?? ''),
                   ],
                 ),

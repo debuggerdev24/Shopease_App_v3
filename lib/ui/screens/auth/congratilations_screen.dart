@@ -19,7 +19,7 @@ class _CongaratulationsScreenState extends State<CongaratulationsScreen> {
   @override
   void initState() {
     super.initState();
-      startTimer();
+    startTimer();
   }
 
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class _CongaratulationsScreenState extends State<CongaratulationsScreen> {
               Container(
                 height: 200.h,
                 width: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage(AppAssets.addInventory)),
                 ),
