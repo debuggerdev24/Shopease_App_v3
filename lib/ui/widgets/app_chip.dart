@@ -11,12 +11,14 @@ class AppChip extends StatelessWidget {
     this.backgroundColor,
     this.isSelected = false,
     this.onTap,
+    this.isnotselected = false,
   });
 
   final String text;
   final Color? backgroundColor;
   final bool isSelected;
   final VoidCallback? onTap;
+  final bool isnotselected;
 
   @override
   Widget build(BuildContext context) {

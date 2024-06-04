@@ -210,10 +210,10 @@ class _MultipleChecklistSelectionScreenState
                   const Wrap(
                     direction: Axis.horizontal,
                     children: [
-                      AppChip(text: 'Fresh Fruits'),
-                      AppChip(text: 'Category', isSelected: true),
-                      AppChip(text: 'Fresh Vegetables'),
-                      AppChip(text: 'Other Category'),
+                      // AppChip(text: 'Fresh Fruits'),
+                      // AppChip(text: 'Category', isSelected: true),
+                      // AppChip(text: 'Fresh Vegetables'),
+                      // AppChip(text: 'Other Category'),
                     ],
                   ),
                   10.h.verticalSpace,
@@ -224,9 +224,9 @@ class _MultipleChecklistSelectionScreenState
                   10.h.verticalSpace,
                   Wrap(
                     children: [
-                      buildInventoryContainer('High', AppAssets.inventoryHigh),
-                      buildInventoryContainer('Medium', AppAssets.inventoryMid),
-                      buildInventoryContainer('Low', AppAssets.inventoryLow),
+                      // buildInventoryContainer('High', AppAssets.inventoryHigh),
+                      // buildInventoryContainer('Medium', AppAssets.inventoryMid),
+                      // buildInventoryContainer('Low', AppAssets.inventoryLow),
                     ],
                   ),
                   50.h.verticalSpace,

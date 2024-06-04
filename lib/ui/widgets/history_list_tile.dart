@@ -8,6 +8,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/Models/product_model.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
@@ -55,7 +56,9 @@ class _HistorylistTileState extends State<HistorylistTile>
   Widget build(BuildContext context) {
     return Slidable(
       controller: _slideController,
-      endActionPane: _buildRightSwipeActions(widget.product),
+      endActionPane: _buildRightSwipeActions(
+        widget.product,
+      ),
       child: GestureDetector(
           onTap: () {
             context.pushNamed(
@@ -178,7 +181,10 @@ class _HistorylistTileState extends State<HistorylistTile>
     );
   }
 
-  _buildRightSwipeActions(History history) => ActionPane(
+  _buildRightSwipeActions(
+    History history,
+  ) =>
+      ActionPane(
         motion: const DrawerMotion(),
         extentRatio: 0.3,
         children: [
@@ -191,6 +197,16 @@ class _HistorylistTileState extends State<HistorylistTile>
               _slideController.close();
             },
           ),
+          // AppSlidableaction(
+          //   isRight: true,
+          //   icon: AppAssets.replace,
+          //   forgroundColor: AppColors.primaryColor,
+          //   onTap: () {
+          //     _showReplaceBrandSheet();
+          //     // widget.onAddToChecklistTap();
+          //     _slideController.close();
+          //   },
+          // ),
         ],
       );
 
@@ -220,5 +236,58 @@ class _HistorylistTileState extends State<HistorylistTile>
             ),
           );
         });
+  }
+
+  _showReplaceBrandSheet() {
+    showModalBottomSheet(
+        showDragHandle: true,
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => Container(
+              padding: EdgeInsets.all(20.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Replace Brand',
+                    style: textStyle18SemiBold,
+                    textAlign: TextAlign.center,
+                  ),
+                  10.verticalSpace,
+                  Text(
+                    'Some times good to try new brand to get the same flavour.',
+                    style: textStyle16,
+                    textAlign: TextAlign.start,
+                  ),
+                  40.h.verticalSpace,
+                  AppButton(
+                      onPressed: () {
+                        _slideController.close();
+                        context.pop();
+                        context
+                            .pushNamed(AppRoute.scanAndAddScreen.name, extra: {
+                          'isReplace': true,
+                          'isFromChecklist': true,
+                          // 'isInvoice': false,
+                        });
+                      },
+                      colorType: AppButtonColorType.primary,
+                      text: 'Scan And Replace'),
+                  10.verticalSpace,
+                  AppButton(
+                    onPressed: () {
+                      _slideController.close();
+                      context.pop();
+                      context.pushNamed(AppRoute.addChecklistForm.name, extra: {
+                        'isReplace': true,
+                      });
+                    },
+                    text: 'Replace Manually',
+                    colorType: AppButtonColorType.secondary,
+                  ),
+                ],
+              ),
+            ));
   }
 }

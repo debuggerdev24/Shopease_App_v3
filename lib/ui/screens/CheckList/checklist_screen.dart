@@ -346,6 +346,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => HistorylistTile(
+                           
                           product: provider.filteredHistories[index],
                           isFromInvoice: false,
                           onAddToChecklistTap: () {
