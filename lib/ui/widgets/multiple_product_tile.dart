@@ -56,7 +56,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 child: Checkbox(
                   value: widget.isSelected,
                   onChanged: widget.onSelectionChanges,
-                  activeColor: AppColors.greenColor,
+                  // activeColor: AppColors.greenColor,
                 ),
               ),
             const SizedBox(width: 8),
