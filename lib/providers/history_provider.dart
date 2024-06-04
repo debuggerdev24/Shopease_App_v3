@@ -183,9 +183,8 @@ class HistoryProvider extends ChangeNotifier {
         _histories.clear();
         _histories.addAll((res.data as List).map((e) => History.fromJson(e)));
         _histories.sort(
-          (a, b) {
-            return b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1;
-          },
+          (a, b) =>
+              b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
         );
         filterHistories();
         notifyListeners();

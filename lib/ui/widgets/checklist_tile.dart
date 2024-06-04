@@ -85,7 +85,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                     child: Checkbox(
                       value: widget.isSelected,
                       onChanged: widget.onSelectionChanges,
-                      // activeColor: AppColors.greenColor,
+                      activeColor: AppColors.greenColor,
                     ),
                   ),
                 Padding(
@@ -210,6 +210,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                           'isReplace': true,
                           'isFromChecklist': true,
                           // 'isInvoice': false,
+                          'oldId': widget.product.itemId,
                         });
                       },
                       colorType: AppButtonColorType.primary,
@@ -221,6 +222,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                       context.pop();
                       context.pushNamed(AppRoute.addChecklistForm.name, extra: {
                         'isReplace': true,
+                        'oldId': widget.product.itemId,
                       });
                     },
                     text: 'Replace Manually',

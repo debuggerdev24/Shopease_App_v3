@@ -7,11 +7,16 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class ScanNotFoundScreen extends StatelessWidget {
-  const ScanNotFoundScreen(
-      {super.key, this.isFromChecklist = false, this.isReplace = false});
+  const ScanNotFoundScreen({
+    super.key,
+    this.isFromChecklist = false,
+    this.isReplace = false,
+    this.oldChecklistItemId,
+  });
 
   final bool isFromChecklist;
   final bool isReplace;
+  final String? oldChecklistItemId;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +52,7 @@ class ScanNotFoundScreen extends StatelessWidget {
                   if (isFromChecklist) {
                     context.goNamed(AppRoute.addChecklistForm.name, extra: {
                       'isReplace': isReplace,
+                      'oldId': oldChecklistItemId
                     });
                   } else {
                     context.goNamed(

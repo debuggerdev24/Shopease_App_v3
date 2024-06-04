@@ -80,14 +80,15 @@ class _ScanScreenState extends State<ScanScreen> {
                       widget.isFromChecklist
                           ? context
                               .goNamed(AppRoute.addChecklistForm.name, extra: {
-                              'isEdit': true,
+                              'isEdit': false,
                               'isFromScan': true,
                               'isReplace': widget.isReplace,
                               'details': provider.scannedProduct,
+                              'oldId': widget.oldChecklistItemId,
                             })
                           : context
                               .goNamed(AppRoute.addInventoryForm.name, extra: {
-                              'isEdit': true,
+                              'isEdit': false,
                               'isFromScan': true,
                               'details': provider.scannedProduct,
                             });
@@ -97,6 +98,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           AppRoute.scanNotFoundScreen.name,
                           extra: {
                             'isReplace': widget.isReplace,
+                            'oldId': widget.oldChecklistItemId,
                             'isFromChecklist': widget.isFromChecklist,
                           });
                     },

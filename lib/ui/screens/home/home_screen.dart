@@ -314,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen>
                     textStyle: textStyle16.copyWith(fontSize: 15.sp),
                   ),
                   10.h.verticalSpace,
-                  Wrap(
+                  Row(
                     children: [
                       buildInventoryContainer(
                           'High', AppAssets.inventoryHigh, provider),
