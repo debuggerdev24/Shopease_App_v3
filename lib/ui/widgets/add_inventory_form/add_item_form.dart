@@ -27,16 +27,20 @@ class AddItemFormWidget extends StatelessWidget {
     this.isLoading = false,
     this.isEdit = false,
     this.isFromScan = false,
+    this.isFromReplace = false,
     this.title,
     this.product,
+    this.oldChecklistItemId,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
   final bool isLoading;
   final Product? product;
   final bool isFromScan;
+  final bool isFromReplace;
   final bool isEdit;
   final String? title;
+  final String? oldChecklistItemId;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +53,8 @@ class AddItemFormWidget extends StatelessWidget {
         isEdit: isEdit,
         product: product,
         title: title,
+        isFromReplace: isFromReplace,
+        oldChecklistItemId: oldChecklistItemId,
       ),
     );
   }
@@ -61,8 +67,10 @@ class AddItemForm extends StatefulWidget {
     this.isLoading = false,
     this.isEdit = false,
     this.isFromScan = false,
+    this.isFromReplace = false,
     this.product,
     this.title,
+    this.oldChecklistItemId,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
@@ -70,7 +78,9 @@ class AddItemForm extends StatefulWidget {
   final Product? product;
   final bool isEdit;
   final bool isFromScan;
+  final bool isFromReplace;
   final String? title;
+  final String? oldChecklistItemId;
 
   @override
   State<AddItemForm> createState() => _AddItemFormState();
@@ -168,7 +178,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         ),
                         validator: (value) {
                           if (value.length > 100) {
-                            return 'Name cannot be more than 45 characters!';
+                            return 'Description cannot be more than 45 characters!';
                           }
                           return null;
                         },
@@ -371,6 +381,14 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     itemStorage: _storageController.text,
                                   )
                                   .toJson());
+                            }
+
+                            if (widget.isFromReplace &&
+                                widget.oldChecklistItemId != null) {
+                              data.addAll({
+                                'old_checklist_item_id':
+                                    widget.oldChecklistItemId
+                              });
                             }
 
                             log('data: ${data.toString()}', name: 'onsubmit');

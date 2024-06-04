@@ -42,8 +42,6 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (context, provider, _) {
         return Scaffold(
           appBar: AppBar(
-            // toolbarHeight: 150,
-
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
             title: GlobalText(
@@ -148,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildProductsList(InventoryProvider provider) {
     return ListView.separated(
         shrinkWrap: true,
-        reverse: true,
         itemCount: provider.filteredProducts.length,
         separatorBuilder: (context, index) => 10.verticalSpace,
         itemBuilder: (BuildContext context, int index) {

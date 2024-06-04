@@ -16,10 +16,12 @@ class ScanScreen extends StatefulWidget {
     this.isReplace = false,
     // this.isInvoice = false,
     this.isFromChecklist = false,
+    this.oldChecklistItemId,
   });
   final bool isReplace;
   // final bool isInvoice;
   final bool isFromChecklist;
+  final String? oldChecklistItemId;
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();

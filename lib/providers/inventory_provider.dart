@@ -56,7 +56,7 @@ class InventoryProvider extends ChangeNotifier {
     } else {
       _selectedInventoryLevelFilter = level;
     }
-    
+
     notifyListeners();
   }
 
@@ -103,7 +103,7 @@ class InventoryProvider extends ChangeNotifier {
                 .categoryId),
       ),
     );
-  
+
     notifyListeners();
   }
 

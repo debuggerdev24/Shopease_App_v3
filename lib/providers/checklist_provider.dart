@@ -460,8 +460,9 @@ class ChecklistProvider extends ChangeNotifier {
       }
     } on DioException {
       rethrow;
-    } catch (e) {
+    } catch (e, s) {
       debugPrint("Error while putShops: $e");
+      debugPrint("Error while putShops: $s");
     } finally {
       setLoading(false);
     }

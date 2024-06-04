@@ -63,7 +63,6 @@ class Product {
         locationId: locationId ?? this.locationId,
         itemImage: itemImage,
         itemStorage: itemStorage ?? this.itemStorage,
-        
       );
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -79,7 +78,7 @@ class Product {
       itemImage: (json["image_url"] is List)
           ? json['image_url'][0]
           : json['image_url'],
-      itemStorage: json['item_storage'],
+      itemStorage: json['item_storage'] ?? '',
       barcode: json['barcode']);
 
   Map<String, dynamic> toJson() => {

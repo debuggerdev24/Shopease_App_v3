@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -17,14 +18,9 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
-  const AddShopFormWidget(
-      {super.key,
-      required this.onSubmit,
-      required this.isEdit,
-      required this.shop});
+  const AddShopFormWidget({super.key, required this.onSubmit, this.shop});
 
   final Function(Map<String, dynamic>) onSubmit;
-  final bool isEdit;
   final Shop? shop;
 
   @override
@@ -33,7 +29,6 @@ class AddShopFormWidget extends StatelessWidget {
       create: (context) => AddShopFormProvider(),
       builder: (context, _) => AddShopForm(
         onSubmit: onSubmit,
-        isEdit: isEdit,
         shop: shop,
       ),
     );
@@ -44,12 +39,10 @@ class AddShopForm extends StatefulWidget {
   const AddShopForm({
     super.key,
     required this.onSubmit,
-    required this.isEdit,
     required this.shop,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
-  final bool isEdit;
   final Shop? shop;
 
   @override
@@ -65,22 +58,21 @@ class _AddShopFormState extends State<AddShopForm> {
   @override
   void initState() {
     super.initState();
-    _nameController.addListener(() {
-      setState(() {});
-      _nameController.text = widget.shop!.shopName ?? '';
-      _locationController.text = widget.shop!.shopLocation ?? '';
-      _fileFieldController.text = widget.shop!.itemImage ?? '';
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setFormFields();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 15.h),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       child: Form(
         key: _formKey,
         child: Consumer<AddShopFormProvider>(builder: (context, provider, _) {
           return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GlobalText(widget.shop != null ? "Edit Shop" : 'Create New Shop',
                   textStyle: textStyle18SemiBold),
@@ -109,7 +101,9 @@ class _AddShopFormState extends State<AddShopForm> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: onSelectFileTap,
+                    onTap: _fileFieldController.text.isEmpty
+                        ? onSelectFileTap
+                        : () {},
                     child: Container(
                       height: 80,
                       width: 80,
@@ -181,18 +175,33 @@ class _AddShopFormState extends State<AddShopForm> {
                   isLoading: checklistProvider.isLoading,
                   onPressed: () {
                     if (_formKey.currentState?.validate() == true) {
-                      final data = {
+                      final Map<String, dynamic> data = {
                         'shop_name': _nameController.text,
                         'shop_location': _locationController.text,
                       };
-                      if (_fileFieldController.text.isNotEmpty) {
+                      if (widget.shop == null &&
+                          _fileFieldController.text.isNotEmpty) {
                         data.addAll(
-                            {'item_image': provider.selectedFile!.path});
+                          {'shop_image': provider.selectedFile!.path},
+                        );
                       }
+
+                      if (widget.shop != null) {
+                        data.clear();
+                        data.addAll(widget.shop!
+                            .copyWith(
+                              shopName: _nameController.text,
+                              shopLocation: _locationController.text,
+                              itemImage: provider.selectedFile?.path,
+                            )
+                            .toJson());
+                      }
+
                       widget.onSubmit(data);
+                      provider.setFile(null);
                     }
                   },
-                  text: 'Create',
+                  text: widget.shop == null ? 'Create' : 'Save',
                   colorType: _nameController.text.isNotEmpty
                       ? AppButtonColorType.primary
                       : AppButtonColorType.greyed,
@@ -215,9 +224,19 @@ class _AddShopFormState extends State<AddShopForm> {
     final name = await context.read<AddShopFormProvider>().setFile(
           await ImagePickerhelper().openPicker(context),
         );
+    log('file name => $name', name: 'onSelectFileTap');
     if (name != null) {
       _fileFieldController.text = name;
     }
+  }
+
+  setFormFields() {
+    if (widget.shop == null) return;
+
+    _nameController.text = widget.shop!.shopName;
+    _locationController.text = widget.shop!.shopLocation ?? '';
+    _fileFieldController.text = widget.shop!.itemImage ?? '';
+    setState(() {});
   }
 }
 
@@ -227,11 +246,13 @@ class AddShopFormProvider extends ChangeNotifier {
   XFile? get selectedFile => _selectedFile;
 
   Future<String?> setFile(XFile? newFile) async {
-    if (newFile != null) return null;
+    log('not sure');
+    if (newFile == null) return null;
+    log('not returned - notifying');
     _selectedFile = newFile;
     notifyListeners();
 
-    return newFile!.path;
+    return newFile.path;
   }
 
   void clearFile() {

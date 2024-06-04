@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +11,6 @@ import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/upload_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/add_checklist_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_detail_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/checkList/replace_manually_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/notification/notification_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/profile/profile_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_screen.dart';
@@ -266,11 +263,6 @@ class AppNavigator {
                         product: extra['details'],
                       );
                     },
-                  ),
-                  GoRoute(
-                    path: AppRoute.replaceManually.name,
-                    name: AppRoute.replaceManually.name,
-                    builder: (context, state) => const ReplaceManuallyscreen(),
                   ),
                   GoRoute(
                     path: AppRoute.uploadInvoice.name,
