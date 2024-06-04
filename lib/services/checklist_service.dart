@@ -80,14 +80,14 @@ class ChecklistService implements BaseChecklistService {
     final Map<String, dynamic> formData = {'records': []};
 
     for (Map<String, dynamic> record in data) {
-      // if (!isEdit && record.containsKey('item_image')) {
-      //   record['item_image'] = Utils.getBse64String(record['item_image']);
+      // if (!isEdit && record.containsKey('shop_image')) {
+      //   record['shop_image'] = Utils.getBse64String(record['shop_image']);
       // }
-      if ((record['item_image'] != null) &&
-          !record['item_image'].toString().startsWith('http')) {
-        record['item_image'] = Utils.getBse64String(record['item_image']);
+      if ((record['shop_image'] != null) &&
+          !record['shop_image'].toString().startsWith('http')) {
+        record['shop_image'] = Utils.getBse64String(record['shop_image']);
       } else {
-        record.remove('item_image');
+        record.remove('shop_image');
       }
       if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'shop_details': record});

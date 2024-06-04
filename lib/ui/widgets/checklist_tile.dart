@@ -85,7 +85,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                     child: Checkbox(
                       value: widget.isSelected,
                       onChanged: widget.onSelectionChanges,
-                      activeColor: AppColors.greenColor,
+                      // activeColor: AppColors.greenColor,
                     ),
                   ),
                 Padding(

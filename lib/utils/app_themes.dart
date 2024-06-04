@@ -10,10 +10,12 @@ class AppThemes {
     primaryColor: AppColors.orangeColor,
     // backgroundColor: AppColors.whiteColor,
     dialogBackgroundColor: AppColors.whiteColor,
-    appBarTheme: AppBarTheme(color: AppColors.whiteColor),
-    dialogTheme: DialogTheme(
+    appBarTheme: const AppBarTheme(color: AppColors.whiteColor),
+    dialogTheme: const DialogTheme(
       backgroundColor: AppColors.whiteColor,
     ),
+    progressIndicatorTheme:
+        const ProgressIndicatorThemeData(color: AppColors.primaryColor),
   );
 
   ///DARKTHEME
@@ -21,7 +23,9 @@ class AppThemes {
   static final darkTheme = ThemeData(
     fontFamily: 'Figtree',
     primaryColor: AppColors.orangeColor,
-    appBarTheme: AppBarTheme(color: AppColors.whiteColor),
-    dialogTheme: DialogTheme(backgroundColor: AppColors.blackGreyColor),
+    appBarTheme: const AppBarTheme(color: AppColors.whiteColor),
+    dialogTheme: const DialogTheme(backgroundColor: AppColors.blackGreyColor),
+    progressIndicatorTheme:
+        const ProgressIndicatorThemeData(color: AppColors.primaryColor),
   );
 }
