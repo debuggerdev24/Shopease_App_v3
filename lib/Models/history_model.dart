@@ -50,5 +50,6 @@ class History {
         "shop_name": shopName,
         "image_url": imageUrl,
         'total_amount': totalPrice,
+        
       };
 }

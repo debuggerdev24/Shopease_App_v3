@@ -132,7 +132,7 @@ class AppNavigator {
       GoRoute(
         path: AppRoute.nickNameScreen.path,
         name: AppRoute.nickNameScreen.name,
-        builder: (context, state) => NickNameScreen(),
+        builder: (context, state) => const NickNameScreen(),
       ),
       GoRoute(
         path: AppRoute.congratulationsScreen.path,
@@ -149,6 +149,7 @@ class AppNavigator {
             // isInvoice: extra['isInvoice'] ?? false,
             isReplace: extra['isReplace'] ?? false,
             isFromChecklist: extra['isFromChecklist'] ?? false,
+            oldChecklistItemId: extra['oldId'],
           );
         },
       ),
@@ -161,6 +162,7 @@ class AppNavigator {
             // isInvoice: extra['isInvoice'] ?? false,
             isReplace: extra['isReplace'] ?? false,
             isFromChecklist: extra['isFromChecklist'] ?? false,
+            oldChecklistItemId: extra['oldId'],
           );
         },
       ),
@@ -173,6 +175,7 @@ class AppNavigator {
           return ScanNotFoundScreen(
             isFromChecklist: extra['isFromChecklist'],
             isReplace: extra['isReplace'],
+            oldChecklistItemId: extra['oldId'],
           );
         },
       ),
@@ -261,6 +264,7 @@ class AppNavigator {
                         isFromScan: extra['isFromScan'] ?? false,
                         isReplace: extra['isReplace'] ?? false,
                         product: extra['details'],
+                        oldChecklistItemId: extra['oldId'],
                       );
                     },
                   ),

@@ -170,6 +170,10 @@ class InventoryProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _products.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
+        _products.sort(
+          (a, b) =>
+              b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
+        );
         filterProducts();
         notifyListeners();
         onSuccess?.call();
@@ -244,62 +248,4 @@ class InventoryProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
-
-  final List<Map<String, dynamic>> _productList = [
-    {
-      'image': AppAssets.apple,
-      'title': 'Apple',
-      'brand': 'Ice Berry',
-      'inventoryLevel': InventoryType.low,
-      'category': 'Fresh Fruits',
-      'storage': 'Fridge Rack',
-      'isInCart': false,
-      'desc':
-          'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
-    },
-    {
-      'image': AppAssets.leaf,
-      'title': 'Leaf',
-      'brand': 'Alvera',
-      'inventoryLevel': InventoryType.low,
-      'category': 'Fresh Vegetables',
-      'storage': 'Fridge Rack',
-      'isInCart': false,
-      'desc':
-          'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
-    },
-    {
-      'image': AppAssets.orange,
-      'title': 'Orange',
-      'brand': 'Devil',
-      'inventoryLevel': InventoryType.high,
-      'category': 'Fresh Fruits',
-      'storage': 'Fridge Rack',
-      'isInCart': false,
-      'desc':
-          'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
-    },
-    {
-      'image': AppAssets.noImage,
-      'title': 'Product Name',
-      'brand': 'William',
-      'inventoryLevel': InventoryType.high,
-      'category': 'Fresh Fruits',
-      'storage': 'Paper Rank',
-      'isInCart': false,
-      'desc':
-          'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
-    },
-    {
-      'image': AppAssets.beetroot,
-      'title': 'Beetroot',
-      'brand': 'Bee',
-      'inventoryLevel': InventoryType.low,
-      'category': 'Fresh Vegetables',
-      'storage': 'Paper Rack',
-      'isInCart': false,
-      'desc':
-          'Lorem Ipsum available, but the majority have \nsuffered alteration in some form. Lorem \nIpsum available, but the majority have suffered alteration'
-    },
-  ];
 }

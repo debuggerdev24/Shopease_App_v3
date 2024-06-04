@@ -260,7 +260,17 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                               );
                             },
                             onSelectionChanges: (value) {
-                              provider.addProductToSelected(value, product);
+                              provider.putCheklistItems(
+                                  data: [
+                                    product
+                                        .copyWith(isSelectedForComplete: value)
+                                        .toJson()
+                                  ],
+                                  isEdit: true,
+                                  onSuccess: () {
+                                    provider.addProductToSelected(
+                                        value, product);
+                                  });
                             },
                           );
                         },
@@ -297,6 +307,9 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                             CustomToast.showSuccess(context,
                                 '${provider.selectedItemsCount} Products purchased.');
                             context.read<HistoryProvider>().getHistoryItems();
+                            context
+                                .read<ChecklistProvider>()
+                                .getChecklistItems();
                             context.goNamed(
                               AppRoute.uploadInvoice.name,
                             );
@@ -346,7 +359,6 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) => HistorylistTile(
-                           
                           product: provider.filteredHistories[index],
                           isFromInvoice: false,
                           onAddToChecklistTap: () {

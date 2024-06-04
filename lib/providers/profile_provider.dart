@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -85,12 +87,12 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> selectFile() async {
-    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (file == null) return null;
-    _selectedFile = file;
+  Future<String?> setFile(XFile? newFile) async {
+    log('newFile => ${newFile?.path}', name: 'setFile - form provider');
+    if (newFile == null) return null;
+    _selectedFile = newFile;
     notifyListeners();
-    return file.name;
+    return newFile.path;
   }
 
   void clearFile() {

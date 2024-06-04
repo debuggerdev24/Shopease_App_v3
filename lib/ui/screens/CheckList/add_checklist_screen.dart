@@ -50,6 +50,7 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
           product: widget.product,
           isLoading: provider.isLoading,
           onSubmit: submit,
+          oldChecklistItemId: widget.oldChecklistItemId,
         );
       });
 
@@ -59,7 +60,7 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
       isEdit: widget.isEdit,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
-        if (widget.isFromScan) {
+        if (widget.isReplace) {
           context
               .read<ChecklistProvider>()
               .deleteChecklistItems(itemIds: [widget.oldChecklistItemId!]);

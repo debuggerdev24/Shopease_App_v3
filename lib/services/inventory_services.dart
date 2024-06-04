@@ -41,9 +41,10 @@ class InventoryService implements BaseInventoryService {
       if ((record['item_image'] != null) &&
           !record['item_image'].toString().startsWith('http')) {
         record['item_image'] = Utils.getBse64String(record['item_image']);
-      } else {
+      } else if (isEdit) {
         record.remove('item_image');
       }
+
       if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'item_details': record});
     }
