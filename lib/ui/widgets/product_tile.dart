@@ -30,7 +30,7 @@ class ProductTile extends StatefulWidget {
     this.onLongPress,
     this.check,
     this.isSlideEnabled = true,
-    this.onSelectionChanges, 
+    this.onSelectionChanges,
   });
 
   final Product product;
@@ -140,8 +140,7 @@ class _ProductTileState extends State<ProductTile>
                 width: 18.h,
                 height: 18.h,
               ),
-              SizedBox(
-                  width: 10.sp),
+              SizedBox(width: 10.sp),
             ],
           ),
         ),

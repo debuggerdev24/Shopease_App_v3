@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -339,32 +340,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   10.h.verticalSpace,
-                  AppTextField(
-                    name: 'productImg',
-                    controller: fileFieldController,
-                    maxLines: 1,
-                    readOnly: true,
-                    labelText: 'Upload Photo',
-                    hintText: 'Select a photo',
-                    bottomText: 'Max File Size:5MB',
-                    onTap: onSelectFileTap,
-                    suffixIcon: fileFieldController.text.isEmpty
-                        ? IconButton(
-                            onPressed: onSelectFileTap,
-                            icon: SvgIcon(
-                              AppAssets.upload,
-                              color: AppColors.blackColor,
-                              size: 18.sp,
-                            ),
-                          )
-                        : IconButton(
-                            onPressed: () {
-                              fileFieldController.clear();
-                              provider.clearFile();
-                            },
-                            icon: const Icon(Icons.clear),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: onSelectFileTap,
+                        child: Container(
+                          height: 80,
+                          width: 80,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.blackColor),
+                            image: fileFieldController.text.isEmpty
+                                ? null
+                                : provider.selectedFile != null
+                                    ? DecorationImage(
+                                        image: FileImage(
+                                          File(fileFieldController.text),
+                                        ),
+                                      )
+                                    : DecorationImage(
+                                        image: NetworkImage(
+                                            fileFieldController.text),
+                                      ),
                           ),
+                          child: SvgPicture.asset(
+                            provider.selectedFile == null
+                                ? AppAssets.addInvoice
+                                : AppAssets.zoomIcon,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          fileFieldController.clear();
+                          provider.clearFile();
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: AppColors.redColor,
+                        ),
+                      )
+                    ],
                   ),
+                  // AppTextField(
+                  //   name: 'productImg',
+                  //   controller: fileFieldController,
+                  //   maxLines: 1,
+                  //   readOnly: true,
+                  //   labelText: 'Upload Photo',
+                  //   hintText: 'Select a photo',
+                  //   bottomText: 'Max File Size:5MB',
+                  //   onTap: onSelectFileTap,
+                  //   suffixIcon: fileFieldController.text.isEmpty
+                  //       ? IconButton(
+                  //           onPressed: onSelectFileTap,
+                  //           icon: SvgIcon(
+                  //             AppAssets.upload,
+                  //             color: AppColors.blackColor,
+                  //             size: 18.sp,
+                  //           ),
+                  //         )
+                  //       : IconButton(
+                  //           onPressed: () {
+                  //             fileFieldController.clear();
+                  //             provider.clearFile();
+                  //           },
+                  //           icon: const Icon(Icons.clear),
+                  //         ),
+                  // ),
                   40.h.verticalSpace,
                   AppButton(
                     colorType: (nameController.text.isNotEmpty &&

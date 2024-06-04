@@ -297,6 +297,7 @@ class _HomeScreenState extends State<HomeScreen>
                     children: Constants.categories
                         .map(
                           (e) => AppChip(
+                            isnotselected: false,
                             text: e.categoryName,
                             isSelected: provider.selectedCategoryFilters
                                 .contains(e.categoryId),
