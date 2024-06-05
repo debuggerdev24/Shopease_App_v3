@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildProductsList(InventoryProvider provider) {
     return ListView.separated(
         shrinkWrap: true,
-        reverse: true,
+        reverse: false,
         itemCount: provider.filteredProducts.length,
         separatorBuilder: (context, index) => 10.verticalSpace,
         itemBuilder: (BuildContext context, int index) {
@@ -300,6 +300,7 @@ class _HomeScreenState extends State<HomeScreen>
                     children: Constants.categories
                         .map(
                           (e) => AppChip(
+                            isnotselected: true,
                             text: e.categoryName,
                             isSelected: provider.selectedCategoryFilters
                                 .contains(e.categoryId),
@@ -316,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen>
                     textStyle: textStyle16.copyWith(fontSize: 15.sp),
                   ),
                   10.h.verticalSpace,
-                  Wrap(
+                  Row(
                     children: [
                       buildInventoryContainer(
                           'High', AppAssets.inventoryHigh, provider),

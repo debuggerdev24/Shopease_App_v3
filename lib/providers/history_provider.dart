@@ -107,9 +107,9 @@ class HistoryProvider extends ChangeNotifier {
                 (element.updatedDate?.isAfter(_fromDate!) ?? false) &&
                     ((element.updatedDate?.isBefore(_toDate) ?? false) ||
                         (element.updatedDate?.day ?? 0) <= _toDate.day);
-                        if(_selectedShopFilter.isEmpty) {
-                          return evaluateDateFiler;
-                        }
+            if (_selectedShopFilter.isEmpty) {
+              return evaluateDateFiler;
+            }
 
             final evaluateShopFilter =
                 _selectedShopFilter.contains(element.shopName);
@@ -183,9 +183,8 @@ class HistoryProvider extends ChangeNotifier {
         _histories.clear();
         _histories.addAll((res.data as List).map((e) => History.fromJson(e)));
         _histories.sort(
-          (a, b) {
-            return b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1;
-          },
+          (a, b) =>
+              b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
         );
         filterHistories();
         notifyListeners();

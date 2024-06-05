@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
@@ -304,7 +306,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // ..text = context.read<ProfileProvider>().profileData!.imageUrl;
 
     onSelectFileTap() async {
-      final name = await context.read<ProfileProvider>().selectFile();
+      final name = await context.read<ProfileProvider>().setFile(
+            await ImagePickerhelper().openPicker(context),
+          );
       if (name != null) {
         fileFieldController.text = name;
       }
@@ -321,7 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             builder: (context, provider, child) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   GlobalText('Edit Profile', textStyle: textStyle18SemiBold),
@@ -339,32 +343,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   10.h.verticalSpace,
-                  AppTextField(
-                    name: 'productImg',
-                    controller: fileFieldController,
-                    maxLines: 1,
-                    readOnly: true,
-                    labelText: 'Upload Photo',
-                    hintText: 'Select a photo',
-                    bottomText: 'Max File Size:5MB',
-                    onTap: onSelectFileTap,
-                    suffixIcon: fileFieldController.text.isEmpty
-                        ? IconButton(
-                            onPressed: onSelectFileTap,
-                            icon: SvgIcon(
-                              AppAssets.upload,
-                              color: AppColors.blackColor,
-                              size: 18.sp,
-                            ),
-                          )
-                        : IconButton(
-                            onPressed: () {
-                              fileFieldController.clear();
-                              provider.clearFile();
-                            },
-                            icon: const Icon(Icons.clear),
-                          ),
+                  GlobalText(
+                    'Upload Photo',
+                    textStyle: textStyle16,
+                    textAlign: TextAlign.start,
                   ),
+                  9.verticalSpace,
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: onSelectFileTap,
+                        child: Container(
+                          height: 80,
+                          width: 80,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.blackColor),
+                            image: fileFieldController.text.isEmpty
+                                ? null
+                                : provider.selectedFile != null
+                                    ? DecorationImage(
+                                        image: FileImage(
+                                          File(fileFieldController.text),
+                                        ),
+                                      )
+                                    : DecorationImage(
+                                        image: NetworkImage(
+                                            fileFieldController.text),
+                                      ),
+                          ),
+                          child: provider.selectedFile == null
+                              ? SvgPicture.asset(AppAssets.addInvoice)
+                              : null,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          fileFieldController.clear();
+                          provider.clearFile();
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: AppColors.redColor,
+                        ),
+                      )
+                    ],
+                  ),
+                  // AppTextField(
+                  //   name: 'productImg',
+                  //   controller: fileFieldController,
+                  //   maxLines: 1,
+                  //   readOnly: true,
+                  //   labelText: 'Upload Photo',
+                  //   hintText: 'Select a photo',
+                  //   bottomText: 'Max File Size:5MB',
+                  //   onTap: onSelectFileTap,
+                  //   suffixIcon: fileFieldController.text.isEmpty
+                  //       ? IconButton(
+                  //           onPressed: onSelectFileTap,
+                  //           icon: SvgIcon(
+                  //             AppAssets.upload,
+                  //             color: AppColors.blackColor,
+                  //             size: 18.sp,
+                  //           ),
+                  //         )
+                  //       : IconButton(
+                  //           onPressed: () {
+                  //             fileFieldController.clear();
+                  //             provider.clearFile();
+                  //           },
+                  //           icon: const Icon(Icons.clear),
+                  //         ),
+                  // ),
                   40.h.verticalSpace,
                   AppButton(
                     colorType: (nameController.text.isNotEmpty &&
@@ -399,6 +449,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             context.pop();
                             provider.getProfile();
                             nameController.clear();
+                            provider.clearFile();
                             mobileController.clear();
                           },
                           onError: (msg) {

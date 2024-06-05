@@ -160,19 +160,20 @@ class ChecklistProvider extends ChangeNotifier {
     log('product value - after change: ${product.isSelectedForComplete}');
     product.changeSelectedState(value ?? false);
     if (value == true) {
-      _filteredChecklist.remove(product);
       _filteredChecklist.add(product);
       _selectedChecklists.add(product);
+      _filteredChecklist.remove(product);
     } else {
+      _filteredChecklist.insert(0, product);
       _selectedChecklists.remove(product);
       _filteredChecklist.remove(product);
-      _filteredChecklist.insert(0, product);
     }
     notifyListeners();
   }
 
   void filterChecklist() {
     _filteredChecklist.clear();
+    _selectedChecklists.clear();
     if (_selectedCategoryFilters.isEmpty && _selectedItemFilter == null) {
       _filteredChecklist.addAll(_checklist);
       notifyListeners();
@@ -261,6 +262,10 @@ class ChecklistProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _checklist.clear();
         _checklist.addAll((res.data as List).map((e) => Product.fromJson(e)));
+        _checklist.sort(
+          (a, b) =>
+              b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
+        );
         filterChecklist();
         onSuccess?.call();
       } else {
@@ -268,8 +273,9 @@ class ChecklistProvider extends ChangeNotifier {
       }
     } on DioException {
       rethrow;
-    } catch (e) {
+    } catch (e, s) {
       debugPrint("Error while getChecklistItems: $e");
+      debugPrint("Error while getChecklistItems: $s");
     } finally {
       setLoading(false);
     }
@@ -460,8 +466,9 @@ class ChecklistProvider extends ChangeNotifier {
       }
     } on DioException {
       rethrow;
-    } catch (e) {
+    } catch (e, s) {
       debugPrint("Error while putShops: $e");
+      debugPrint("Error while putShops: $s");
     } finally {
       setLoading(false);
     }

@@ -43,6 +43,6 @@ class Shop {
         "shop_name": shopName,
         "shop_location": shopLocation,
         "updated_date": updatedDate?.toIso8601String(),
-        "item_image": itemImage,
+        "shop_image": itemImage,
       };
 }

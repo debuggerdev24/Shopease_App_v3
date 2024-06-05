@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -13,7 +11,6 @@ import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/upload_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/add_checklist_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_detail_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/checkList/replace_manually_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/notification/notification_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/profile/profile_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_screen.dart';
@@ -135,7 +132,7 @@ class AppNavigator {
       GoRoute(
         path: AppRoute.nickNameScreen.path,
         name: AppRoute.nickNameScreen.name,
-        builder: (context, state) => NickNameScreen(),
+        builder: (context, state) => const NickNameScreen(),
       ),
       GoRoute(
         path: AppRoute.congratulationsScreen.path,
@@ -152,6 +149,7 @@ class AppNavigator {
             // isInvoice: extra['isInvoice'] ?? false,
             isReplace: extra['isReplace'] ?? false,
             isFromChecklist: extra['isFromChecklist'] ?? false,
+            oldChecklistItemId: extra['oldId'],
           );
         },
       ),
@@ -164,6 +162,7 @@ class AppNavigator {
             // isInvoice: extra['isInvoice'] ?? false,
             isReplace: extra['isReplace'] ?? false,
             isFromChecklist: extra['isFromChecklist'] ?? false,
+            oldChecklistItemId: extra['oldId'],
           );
         },
       ),
@@ -176,6 +175,7 @@ class AppNavigator {
           return ScanNotFoundScreen(
             isFromChecklist: extra['isFromChecklist'],
             isReplace: extra['isReplace'],
+            oldChecklistItemId: extra['oldId'],
           );
         },
       ),
@@ -264,13 +264,9 @@ class AppNavigator {
                         isFromScan: extra['isFromScan'] ?? false,
                         isReplace: extra['isReplace'] ?? false,
                         product: extra['details'],
+                        oldChecklistItemId: extra['oldId'],
                       );
                     },
-                  ),
-                  GoRoute(
-                    path: AppRoute.replaceManually.name,
-                    name: AppRoute.replaceManually.name,
-                    builder: (context, state) => const ReplaceManuallyscreen(),
                   ),
                   GoRoute(
                     path: AppRoute.uploadInvoice.name,

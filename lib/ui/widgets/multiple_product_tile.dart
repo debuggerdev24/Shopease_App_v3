@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
@@ -16,7 +16,7 @@ class MultipleProductTile extends StatefulWidget {
     required this.isSelected,
     this.onInventoryChange,
     this.onLongPress,
-     this.showCheckbox = false,
+    this.showCheckbox = true,
     this.onSelectionChanges,
   });
 
@@ -25,7 +25,7 @@ class MultipleProductTile extends StatefulWidget {
   final Function(bool?)? onSelectionChanges;
   final Function(InventoryType type)? onInventoryChange;
   final bool isSelected;
-   final bool showCheckbox;
+  final bool showCheckbox;
 
   @override
   State<MultipleProductTile> createState() => _MultipleProductTileState();
@@ -40,22 +40,25 @@ class _MultipleProductTileState extends State<MultipleProductTile>
 
   @override
   Widget build(BuildContext context) {
-    return CheckboxListTile(
-      controlAffinity: ListTileControlAffinity.leading,
-
-      tileColor: widget.isSelected
-          ? Colors.grey[700]!.withOpacity(0.05)
-          : Colors.grey.withOpacity(0.2),
-      activeColor: AppColors.primaryColor,
-      checkColor: AppColors.lightGreenColor,
-      contentPadding: const EdgeInsets.only(
-        left: 10,
-      ),
-      title: SizedBox(
-        width: double.infinity,
+    return GestureDetector(
+      onLongPress: widget.onLongPress,
+      child: Container(
+        color: widget.isSelected
+            ? Colors.grey[700]!.withOpacity(0.05)
+            : Colors.grey.withOpacity(0.2),
+        padding: const EdgeInsets.only(left: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            if (widget.showCheckbox)
+              Transform.scale(
+                scale: 1.25,
+                child: Checkbox(
+                  value: widget.isSelected,
+                  onChanged: widget.onSelectionChanges,
+                  // activeColor: AppColors.greenColor,
+                ),
+              ),
             const SizedBox(width: 8),
             Container(
               height: 100.h,
@@ -84,19 +87,20 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  AppChip(text: widget.product.brand ?? '')
+                  AppChip(text: widget.product.brand ?? ''),
                 ],
               ),
             ),
             if (widget.product.isInChecklist == true) ...[
-              20.horizontalSpace,
-              SvgIcon(
+              SizedBox(width: 20.w),
+              SvgPicture.asset(
                 AppAssets.succcessCart,
-                size: 20.sp,
+                width: 20.sp,
+                height: 20.sp,
                 color: AppColors.greenColor,
               ),
             ],
-            20.horizontalSpace,
+            SizedBox(width: 20.w),
             SvgPicture.asset(
               widget.product.itemLevel == InventoryType.high.name
                   ? AppAssets.inventoryHigh
@@ -110,8 +114,6 @@ class _MultipleProductTileState extends State<MultipleProductTile>
           ],
         ),
       ),
-      value: widget.isSelected,
-      onChanged: widget.onSelectionChanges,
     );
   }
 }

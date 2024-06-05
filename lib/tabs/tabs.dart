@@ -13,6 +13,7 @@ import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
+import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class TabScreen extends StatefulWidget {
@@ -49,6 +50,11 @@ class _TabScreenState extends State<TabScreen> {
   }
 
   void goToBranch(int index) {
+    if (index == 1) {
+      context.goNamed(AppRoute.checkList.name);
+      return;
+    }
+
     widget.navigationShell.goBranch(
       index,
     );
@@ -76,6 +82,7 @@ class _TabScreenState extends State<TabScreen> {
         }
 
         if (index == 1) {
+          context.read<ChecklistProvider>().selectedChecklists.clear();
           context.read<ChecklistProvider>();
           context.read<ChecklistProvider>().getChecklistItems();
           context.read<HistoryProvider>().getHistoryItems();

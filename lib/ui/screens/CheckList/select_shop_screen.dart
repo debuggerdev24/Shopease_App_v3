@@ -128,6 +128,10 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                                 provider.changeSelectedShop(
                                     provider.filteredShops[index].shopId);
                               },
+                              omEditTap: () {
+                                _showEditShopSheet(
+                                    provider.filteredShops[index]);
+                              },
                             );
                           },
                         ),
@@ -138,31 +142,42 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
     });
   }
 
-  _showAddShopSheet(BuildContext context, {bool isEdit = false}) {
+  _showAddShopSheet(BuildContext context) {
     return showModalBottomSheet(
       showDragHandle: true,
       context: context,
       isScrollControlled: true,
       isDismissible: false,
-      builder: (context) => Consumer<ChecklistProvider>(
-        builder: (context, provider, _) {
-          return AddShopFormWidget(
-            onSubmit: submit,
-            isEdit: isEdit,
-            shop: null
-          );
+      builder: (context) => AddShopFormWidget(onSubmit: (data) {
+        submitShopForm(data, false);
+      }),
+    );
+  }
+
+  _showEditShopSheet(Shop shop) {
+    return showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      builder: (context) => AddShopFormWidget(
+        shop: shop,
+        onSubmit: (data) {
+          log('data from form: $data');
+          submitShopForm(data, true);
         },
       ),
     );
   }
 
-  Future<void> submit(Map<String, dynamic> data) async {
+  Future<void> submitShopForm(Map<String, dynamic> data, bool isEdit) async {
     context.read<ChecklistProvider>().putShops(
       data: [data],
-      isEdit: true,
+      isEdit: isEdit,
       onError: (msg) => CustomToast.showError(context, msg),
       onSuccess: () {
-        CustomToast.showSuccess(context, 'Shop has been added.');
+        CustomToast.showSuccess(
+            context, 'Shop has been ${isEdit ? 'Edited' : 'Added'}.');
         context.read<ChecklistProvider>().getShops();
         context.pop();
       },
@@ -186,7 +201,47 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 children: [
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
                   20.h.verticalSpace,
-                  Wrap(
+                  SizedBox(
+                    height: 210.h,
+                    child: ListView.builder(
+                      itemCount: provider.shopLoacations.length,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            provider.changeShopFilter(
+                                provider.shopLoacations.toList()[index]);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(3.dg),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30.r),
+                              color: AppColors.primaryColor.withOpacity(0.2),
+                            ),
+                            height: 50.h,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                GlobalText(
+                                  textStyle: textStyle14,
+                                  provider.shopLoacations.toList()[index],
+                                  color: AppColors.primaryColor,
+                                ),
+                                if (provider.selectedShopFilter.contains(
+                                  provider.shopLoacations.toList()[index],
+                                ))
+                                  const Icon(
+                                    CupertinoIcons.checkmark,
+                                    color: AppColors.primaryColor,
+                                  )
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  /*Wrap(
                     alignment: WrapAlignment.start,
                     children: provider.shopLoacations.indexed.map((e) {
                       return AppChip(
@@ -197,7 +252,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                         },
                       );
                     }).toList(),
-                  ),
+                  ),*/
                   30.h.verticalSpace,
                   AppButton(
                       colorType: AppButtonColorType.primary,

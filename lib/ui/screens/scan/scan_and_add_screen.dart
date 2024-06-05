@@ -16,10 +16,13 @@ class ScanAndAddScreen extends StatefulWidget {
     this.isReplace = false,
     // this.isInvoice = false,
     this.isFromChecklist = false,
+    this.oldChecklistItemId,
   });
+
   final bool isReplace;
   // final bool isInvoice;
   final bool isFromChecklist;
+  final String? oldChecklistItemId;
   @override
   State<ScanAndAddScreen> createState() => _ScanAndAddScreenState();
 }
@@ -57,6 +60,7 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
                 // 'isInvoice': widget.isInvoice,
                 'isReplace': widget.isReplace,
                 'isFromChecklist': widget.isFromChecklist,
+                'oldId': widget.oldChecklistItemId,
               },
             );
           },
@@ -67,8 +71,13 @@ class _ScanAndAddScreenState extends State<ScanAndAddScreen> {
           AppButton(
             type: AppButtonWidthType.full,
             onPressed: () {
-              context.goNamed(AppRoute.addChecklistForm.name,
-                  extra: {'isReplace': true});
+              context.goNamed(
+                AppRoute.addChecklistForm.name,
+                extra: {
+                  'isReplace': true,
+                  'oldId': widget.oldChecklistItemId,
+                },
+              );
             },
             text: "Replace Manually",
             colorType: AppButtonColorType.secondary,

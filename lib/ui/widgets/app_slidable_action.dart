@@ -14,6 +14,7 @@ class AppSlidableaction extends StatelessWidget {
       this.forgroundColor,
       this.isRight = false,
       this.height,
+      this.padding,
       this.isAsset});
 
   final String icon;
@@ -24,6 +25,7 @@ class AppSlidableaction extends StatelessWidget {
   final bool isRight;
   final double? height;
   final bool? isAsset;
+  final Padding? padding;
 
   @override
   Widget build(BuildContext context) {

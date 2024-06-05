@@ -21,10 +21,12 @@ class ShopTile extends StatefulWidget {
     this.onTap,
     this.isSelected = false,
     this.isSlideEnabled = true,
+    this.omEditTap,
   });
 
   final Shop shop;
   final VoidCallback? onTap;
+  final VoidCallback? omEditTap;
   final bool isSelected;
   final bool isSlideEnabled;
 
@@ -39,21 +41,20 @@ class _ShopTileState extends State<ShopTile>
   @override
   void initState() {
     super.initState();
-
     _slideController = SlidableController(this);
   }
 
   @override
   dispose() {
-    _slideController.dispose();
     super.dispose();
+    _slideController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Slidable(
       controller: _slideController,
-      endActionPane: _buildRightSwipeActions(widget.shop),
+      endActionPane: _buildRightSwipeActions(),
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
@@ -88,7 +89,7 @@ class _ShopTileState extends State<ShopTile>
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    widget.shop.shopName ?? '',
+                    widget.shop.shopName,
                     maxLines: 10,
                     style: textStyle16.copyWith(
                         fontSize: 18, overflow: TextOverflow.ellipsis),
@@ -114,7 +115,7 @@ class _ShopTileState extends State<ShopTile>
     );
   }
 
-  _buildRightSwipeActions(Shop shop) => ActionPane(
+  _buildRightSwipeActions() => ActionPane(
         motion: const DrawerMotion(),
         extentRatio: 0.3,
         children: [
@@ -122,40 +123,8 @@ class _ShopTileState extends State<ShopTile>
             isRight: true,
             icon: AppAssets.edit,
             forgroundColor: AppColors.primaryColor,
-            onTap: () {
-              _showEditShopSheet(context, shop);
-            },
+            onTap: widget.omEditTap,
           ),
         ],
       );
-  _showEditShopSheet(BuildContext context, Shop shop) {
-    return showModalBottomSheet(
-      showDragHandle: true,
-      context: context,
-      isScrollControlled: true,
-      isDismissible: false,
-      builder: (context) => Consumer<ChecklistProvider>(
-        builder: (context, provider, _) {
-          return AddShopFormWidget(
-            onSubmit: submit,
-            shop: shop,
-            isEdit: true,
-          );
-        },
-      ),
-    );
-  }
-
-  Future<void> submit(Map<String, dynamic> data) async {
-    context.read<ChecklistProvider>().putShops(
-      data: [data],
-      isEdit: true,
-      onError: (msg) => CustomToast.showError(context, msg),
-      onSuccess: () {
-        CustomToast.showSuccess(context, 'Shop has been added.');
-        context.read<ChecklistProvider>().getShops();
-        context.pop();
-      },
-    );
-  }
 }

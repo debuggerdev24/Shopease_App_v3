@@ -11,7 +11,7 @@ class Product {
   String? itemImage;
   String? itemStorage;
   String? barcode;
-  final DateTime? addedDate;
+  final DateTime? updatedDate;
   bool isSelectedForComplete;
 
   Product({
@@ -28,7 +28,7 @@ class Product {
     this.itemStorage,
     this.barcode,
     this.isSelectedForComplete = false,
-    this.addedDate,
+    this.updatedDate,
   });
 
   get name => null;
@@ -49,38 +49,43 @@ class Product {
     String? locationId,
     String? itemImage,
     String? itemStorage,
-    final DateTime? addedDate,
+    bool? isSelectedForComplete,
   }) =>
       Product(
-        itemId: itemId ?? this.itemId,
-        productName: productName ?? this.productName,
-        itemCategory: itemCategory ?? this.itemCategory,
-        isInChecklist: isInChecklist ?? this.isInChecklist,
-        productDescription: productDescription ?? this.productDescription,
-        brand: brand ?? this.brand,
-        itemLevel: itemLevel ?? this.itemLevel,
-        itemCount: itemCount ?? this.itemCount,
-        locationId: locationId ?? this.locationId,
-        itemImage: itemImage,
-        itemStorage: itemStorage ?? this.itemStorage,
-        
-      );
+          itemId: itemId ?? this.itemId,
+          productName: productName ?? this.productName,
+          itemCategory: itemCategory ?? this.itemCategory,
+          isInChecklist: isInChecklist ?? this.isInChecklist,
+          productDescription: productDescription ?? this.productDescription,
+          brand: brand ?? this.brand,
+          itemLevel: itemLevel ?? this.itemLevel,
+          itemCount: itemCount ?? this.itemCount,
+          locationId: locationId ?? this.locationId,
+          itemImage: itemImage,
+          itemStorage: itemStorage ?? this.itemStorage,
+          isSelectedForComplete:
+              isSelectedForComplete ?? this.isSelectedForComplete);
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-      itemId: json["item_id"],
-      productName: json["product_name"],
-      itemCategory: json["item_category"],
-      isInChecklist: json['is_in_checklist'] ?? false,
-      productDescription: json["product_description"],
-      brand: json["brand"],
-      itemLevel: json["item_level"],
-      itemCount: json["item_count"],
-      locationId: json["location_id"],
-      itemImage: (json["image_url"] is List)
-          ? json['image_url'][0]
-          : json['image_url'],
-      itemStorage: json['item_storage'],
-      barcode: json['barcode']);
+        itemId: json["item_id"],
+        productName: json["product_name"],
+        itemCategory: json["item_category"],
+        isInChecklist: json['is_in_checklist'] ?? false,
+        productDescription: json["product_description"],
+        brand: json["brand"],
+        itemLevel: json["item_level"],
+        itemCount: json["item_count"],
+        locationId: json["location_id"],
+        itemImage: (json["image_url"] is List)
+            ? json['image_url'][0]
+            : json['image_url'],
+        itemStorage: json['item_storage'] ?? '',
+        barcode: json['barcode'],
+        updatedDate: json["last_updated_date"] == null
+            ? null
+            : DateTime.tryParse(json["last_updated_date"]),
+        isSelectedForComplete: json['is_selected_for_complete'] ?? false,
+      );
 
   Map<String, dynamic> toJson() => {
         "item_id": itemId,
@@ -95,5 +100,7 @@ class Product {
         "item_image": itemImage,
         'item_storage': itemStorage,
         'barcode': barcode,
+        'is_selected_for_complete': isSelectedForComplete,
+        "last_updated_date": updatedDate?.toIso8601String(),
       };
 }
