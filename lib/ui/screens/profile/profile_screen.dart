@@ -417,8 +417,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ),
                   40.h.verticalSpace,
                   AppButton(
-                    colorType: (nameController.text.isNotEmpty &&
-                            fileFieldController.text.isNotEmpty)
+                    colorType: (nameController.text.isNotEmpty)
                         ? AppButtonColorType.primary
                         : AppButtonColorType.secondary,
                     isLoading: provider.editProfileLoading,
@@ -433,8 +432,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       //   return;
                       // }
 
-                      if (nameController.text.isNotEmpty &&
-                          fileFieldController.text.isNotEmpty) {
+                      if (nameController.text.isNotEmpty) {
                         provider.toggleSet(true);
                         await provider.editProfile(
                           data: [

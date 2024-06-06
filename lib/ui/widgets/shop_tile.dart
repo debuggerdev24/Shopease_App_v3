@@ -95,7 +95,8 @@ class _ShopTileState extends State<ShopTile>
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 10.h),
-                  AppChip(text: widget.shop.shopLocation ?? ''),
+                   if (widget.shop.shopLocation.toString().isNotEmpty)
+                    AppChip(text: widget.shop.shopLocation ?? ''),
                 ],
               ),
               const Spacer(),

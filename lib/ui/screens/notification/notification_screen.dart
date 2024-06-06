@@ -330,7 +330,6 @@ class _NotificationScreenState extends State<NotificationScreen>
             forgroundColor: null,
             backgroundColor: AppColors.redColor,
             isAsset: true,
-            padding: Padding(padding: EdgeInsets.all(14)),
             height: 70.sp,
           ),
         ],

@@ -131,8 +131,7 @@ class _HomeScreenState extends State<HomeScreen>
           InkWell(
             onTap: showFilterSheet,
             child: SvgPicture.asset(
-              (provider.selectedCategoryFilters.isEmpty &&
-                      provider.selectedInventoryLevelFilter == null)
+              (!provider.selectValue)
                   ? AppAssets.filterIcon
                   : AppAssets.selectedFilterIcon,
               width: 22.h,
@@ -280,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen>
         builder: (context) {
           return Consumer<InventoryProvider>(builder: (context, provider, _) {
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: EdgeInsets.only(left: 14),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -291,30 +290,39 @@ class _HomeScreenState extends State<HomeScreen>
                         GlobalText('Filters', textStyle: textStyle20SemiBold),
                   ),
                   20.h.verticalSpace,
-                  GlobalText(
-                    'Filter by category',
-                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                    child: GlobalText(
+                      'Filter by category',
+                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                    ),
                   ),
                   Wrap(
                     direction: Axis.horizontal,
                     children: Constants.categories
                         .map(
-                          (e) => AppChip(
-                            isnotselected: true,
-                            text: e.categoryName,
-                            isSelected: provider.selectedCategoryFilters
-                                .contains(e.categoryId),
-                            onTap: () {
-                              provider.changeFilterCategoty(e.categoryId);
-                            },
+                          (e) => Padding(
+                            padding: EdgeInsets.only(top: 12.h),
+                            child: AppChip(
+                              isnotselected: true,
+                              text: e.categoryName,
+                              isSelected: provider.selectedCategoryFilters
+                                  .contains(e.categoryId),
+                              onTap: () {
+                                provider.changeFilterCategoty(e.categoryId);
+                              },
+                            ),
                           ),
                         )
                         .toList(),
                   ),
                   10.h.verticalSpace,
-                  GlobalText(
-                    'Filter by Inventory Level',
-                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                    child: GlobalText(
+                      'Filter by Inventory Level',
+                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                    ),
                   ),
                   10.h.verticalSpace,
                   Row(
@@ -327,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen>
                           'Low', AppAssets.inventoryLow, provider),
                     ],
                   ),
-                  50.h.verticalSpace,
+                  25.h.verticalSpace,
                   Center(
                     child: AppButton(
                         colorType: AppButtonColorType.primary,

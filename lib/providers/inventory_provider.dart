@@ -27,6 +27,7 @@ class InventoryProvider extends ChangeNotifier {
   final List<String> _selectedCategoryFilters = [];
   String? _selectedInventoryLevelFilter;
   final List<Product> _selectedProducts = [];
+  bool _selectValue = false;
 
   /// getters
   bool get isLoading => _isLoading;
@@ -35,6 +36,7 @@ class InventoryProvider extends ChangeNotifier {
   String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
   List<Product> get filteredProducts => _filteredProducts;
   List<Product> get selectedProducts => _selectedProducts;
+  bool get selectValue => _selectValue;
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -65,6 +67,7 @@ class InventoryProvider extends ChangeNotifier {
     if (_selectedCategoryFilters.isEmpty &&
         _selectedInventoryLevelFilter == null) {
       _filteredProducts.addAll(_products);
+      _selectValue = false;
       notifyListeners();
       return;
     }
@@ -75,6 +78,8 @@ class InventoryProvider extends ChangeNotifier {
           (element) => element.itemLevel == _selectedInventoryLevelFilter,
         ),
       );
+
+      _selectValue = true;
       notifyListeners();
       return;
     }
@@ -88,6 +93,8 @@ class InventoryProvider extends ChangeNotifier {
               .categoryId),
         ),
       );
+
+      _selectValue = true;
       notifyListeners();
 
       return;
@@ -104,6 +111,7 @@ class InventoryProvider extends ChangeNotifier {
       ),
     );
 
+    _selectValue = true;
     notifyListeners();
   }
 
@@ -174,6 +182,7 @@ class InventoryProvider extends ChangeNotifier {
           (a, b) =>
               b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
         );
+      //  print("updated date ========== ${a.updatedDate.toString()}");
         filterProducts();
         notifyListeners();
         onSuccess?.call();

@@ -94,7 +94,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                   IconButton(
                     onPressed: _showFilterSheet,
                     icon: SvgIcon(
-                      provider.selectedShopFilter.isEmpty
+                      provider.selectValue
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                       size: 25.r,
@@ -200,9 +200,8 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
-                  20.h.verticalSpace,
                   SizedBox(
-                    height: 210.h,
+                    height: 150.h,
                     child: ListView.builder(
                       itemCount: provider.shopLoacations.length,
                       shrinkWrap: true,
@@ -213,27 +212,27 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                                 provider.shopLoacations.toList()[index]);
                           },
                           child: Container(
-                            margin: EdgeInsets.all(3.dg),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30.r),
-                              color: AppColors.primaryColor.withOpacity(0.2),
+                              // color: AppColors.primaryColor.withOpacity(0.2),
                             ),
-                            height: 50.h,
+                            height: 40.h,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                GlobalText(
-                                  textStyle: textStyle14,
-                                  provider.shopLoacations.toList()[index],
-                                  color: AppColors.primaryColor,
-                                ),
                                 if (provider.selectedShopFilter.contains(
                                   provider.shopLoacations.toList()[index],
                                 ))
                                   const Icon(
                                     CupertinoIcons.checkmark,
                                     color: AppColors.primaryColor,
-                                  )
+                                  ),
+                                10.horizontalSpace,
+                                GlobalText(
+                                  textStyle: textStyle16,
+                                  provider.shopLoacations.toList()[index],
+                                  color: AppColors.primaryColor,
+                                ),
                               ],
                             ),
                           ),

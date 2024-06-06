@@ -183,8 +183,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     InkWell(
                       onTap: () => _showChecklistFilterSheet(context),
                       child: SvgPicture.asset(
-                        (provider.selectedCategoryFilters.isEmpty &&
-                                provider.selectedItemFilter == null)
+                        (!provider.selectValue)
                             ? AppAssets.filterIcon
                             : AppAssets.selectedFilterIcon,
                         width: 22.h,
@@ -342,7 +341,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                   InkWell(
                     onTap: () => _showHistoryFilterSheet(context),
                     child: SvgPicture.asset(
-                      provider.fromDate == null
+                      !provider.selectValue
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                     ),
@@ -537,29 +536,38 @@ _showChecklistFilterSheet(BuildContext context) async {
                   ],
                 ),
                 20.h.verticalSpace,
-                GlobalText(
-                  'Filter by category',
-                  textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                Padding(
+                  padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                  child: GlobalText(
+                    'Filter by category',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
                 ),
                 Wrap(
                   direction: Axis.horizontal,
                   children: Constants.categories
                       .map(
-                        (e) => AppChip(
-                          text: e.categoryName,
-                          isSelected: provider.selectedCategoryFilters
-                              .contains(e.categoryId),
-                          onTap: () {
-                            provider.changeFilterCategoty(e.categoryId);
-                          },
+                        (e) => Padding(
+                          padding: EdgeInsets.only(top: 11.h),
+                          child: AppChip(
+                            text: e.categoryName,
+                            isSelected: provider.selectedCategoryFilters
+                                .contains(e.categoryId),
+                            onTap: () {
+                              provider.changeFilterCategoty(e.categoryId);
+                            },
+                          ),
                         ),
                       )
                       .toList(),
                 ),
                 10.h.verticalSpace,
-                GlobalText(
-                  'Filter by Items',
-                  textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                Padding(
+                  padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                  child: GlobalText(
+                    'Filter by Items',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
                 ),
                 10.h.verticalSpace,
                 Row(

@@ -157,8 +157,8 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter a valid name!';
-                          } else if (value.length > 10) {
-                            return 'Name cannot be more than 10 characters!';
+                          } else if (value.length > 25) {
+                            return 'Name cannot be more than 25 characters!';
                           }
                           return null;
                         },
@@ -219,7 +219,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         isRequired: true,
                         labelText: 'Category',
                         hintText: 'Select a category',
-                        value: provider.selectedCategoryId,
+                        //value: provider.selectedCategoryId,
                         dropDownList: categoryList(),
                         trailing: SvgPicture.asset(AppAssets.dropDown),
                         onChanged: (value) {
@@ -251,7 +251,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                 border: Border.all(color: AppColors.blackColor),
                                 image: _fileFieldController.text.isEmpty
                                     ? null
-                                    : provider.selectedFile != null
+                                    : provider.selectedFile != null &&
+                                            File(_fileFieldController.text)
+                                                .existsSync()
                                         ? DecorationImage(
                                             image: FileImage(
                                               File(_fileFieldController.text),
@@ -262,11 +264,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                                 _fileFieldController.text),
                                           ),
                               ),
-                              child: SvgPicture.asset(
-                                provider.selectedFile == null
-                                    ? AppAssets.addInvoice
-                                    : AppAssets.zoomIcon,
-                              ),
+                              child: _fileFieldController.text.isEmpty
+                                  ? SvgPicture.asset(AppAssets.addInvoice)
+                                  : provider.selectedFile != null
+                                      ? SvgPicture.asset(AppAssets.zoomIcon)
+                                      : null,
                             ),
                           ),
                           IconButton(
@@ -278,9 +280,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               Icons.delete,
                               color: AppColors.redColor,
                             ),
-                          )
+                          ),
                         ],
                       ),
+
                       // AppTextField(
                       //   name: 'productImg',
                       //   controller: _fileFieldController,
@@ -335,8 +338,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       ),
                       30.h.verticalSpace,
                       AppButton(
-                        colorType: (_nameController.text.isNotEmpty &&
-                                provider.selectedCategoryId != null)
+                        colorType: (_nameController.text.isNotEmpty)
                             ? AppButtonColorType.primary
                             : AppButtonColorType.greyed,
                         isLoading: widget.isLoading,
@@ -382,6 +384,24 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                   )
                                   .toJson());
                             }
+                            // if (widget.isFromScan && widget.product != null) {
+                            //   data.clear();
+                            //   data.addAll(widget.product!
+                            //       .copyWith(
+                            //         productName: _nameController.text,
+                            //         productDescription: _descController.text,
+                            //         brand: _brandController.text,
+                            //         itemLevel: provider.selectedInvType,
+                            //         itemCategory: provider.categories
+                            //             .firstWhere((element) =>
+                            //                 element.categoryId ==
+                            //                 provider.selectedCategoryId)
+                            //             .categoryName,
+                            //         itemImage: provider.selectedFile?.path,
+                            //         itemStorage: _storageController.text,
+                            //       )
+                            //       .toJson());
+                            // }
 
                             if (widget.isFromReplace &&
                                 widget.oldChecklistItemId != null) {

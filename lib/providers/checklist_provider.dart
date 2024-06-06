@@ -29,6 +29,8 @@ class ChecklistProvider extends ChangeNotifier {
 
   final List<Product> _selectedChecklists = [];
   bool _isAllSelected = false;
+  bool _selectValue = false;
+  bool _shopvalue = false;
 
   Shop? _selectedShop;
   final Set<Shop> _shops = {};
@@ -60,7 +62,8 @@ class ChecklistProvider extends ChangeNotifier {
   List<Shop> get filteredShops => _filteredShops;
   List<String> get selectedShopFilter => _selectedShopFilter;
   Set<String> get shopLoacations => _shopLoacations;
-
+  bool get selectValue => _selectValue;
+  bool get shopvalue => _shopvalue;
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
@@ -99,6 +102,7 @@ class ChecklistProvider extends ChangeNotifier {
     } else {
       _selectedShopFilter.add(newFilter);
     }
+
     notifyListeners();
   }
 
@@ -168,6 +172,7 @@ class ChecklistProvider extends ChangeNotifier {
       _selectedChecklists.remove(product);
       _filteredChecklist.remove(product);
     }
+    _selectValue = true;
     notifyListeners();
   }
 
@@ -176,7 +181,9 @@ class ChecklistProvider extends ChangeNotifier {
     _selectedChecklists.clear();
     if (_selectedCategoryFilters.isEmpty && _selectedItemFilter == null) {
       _filteredChecklist.addAll(_checklist);
+
       notifyListeners();
+      _selectValue = false;
       return;
     }
 
@@ -194,6 +201,7 @@ class ChecklistProvider extends ChangeNotifier {
           ),
         );
       }
+      _selectValue = true;
       notifyListeners();
       return;
     }
@@ -207,6 +215,7 @@ class ChecklistProvider extends ChangeNotifier {
               .categoryId),
         ),
       );
+      _selectValue = true;
       notifyListeners();
 
       return;
@@ -223,12 +232,14 @@ class ChecklistProvider extends ChangeNotifier {
                 .categoryId),
       ),
     );
+    _selectValue = true;
     notifyListeners();
   }
 
   void clearSelectedProducts() {
     _selectedChecklists.clear();
     getChecklistItems();
+
     notifyListeners();
   }
 
@@ -240,7 +251,7 @@ class ChecklistProvider extends ChangeNotifier {
       _filteredShops.addAll(
           _shops.where((e) => _selectedShopFilter.contains(e.shopLocation)));
     }
-
+    _shopvalue = false;
     notifyListeners();
   }
 
