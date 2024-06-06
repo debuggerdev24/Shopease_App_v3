@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/tabs/tabs.dart';
-import 'package:shopease_app_flutter/ui/screens/checkList/multiple_checklist_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/multiple_history_item_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/add_invoice_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/save_invoice_screen.dart';
@@ -57,7 +56,6 @@ enum AppRoute {
   addInvoice,
   saveInvoice,
   historyDetail,
-  multipleChecklistSelection,
   multipleHistoryItemSelection,
 
   ////////// BRANCH 3 //////////
@@ -307,12 +305,6 @@ class AppNavigator {
                         history: state.extra as History,
                       );
                     },
-                  ),
-                  GoRoute(
-                    path: AppRoute.multipleChecklistSelection.name,
-                    name: AppRoute.multipleChecklistSelection.name,
-                    builder: (context, state) =>
-                        const MultipleChecklistSelectionScreen(),
                   ),
                   GoRoute(
                     path: AppRoute.multipleHistoryItemSelection.name,

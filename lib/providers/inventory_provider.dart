@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -28,6 +29,8 @@ class InventoryProvider extends ChangeNotifier {
   String? _selectedInventoryLevelFilter;
   final List<Product> _selectedProducts = [];
 
+  DateTime currentTime = DateTime.timestamp();
+
   /// getters
   bool get isLoading => _isLoading;
   List<Product> get products => _products;
@@ -35,6 +38,7 @@ class InventoryProvider extends ChangeNotifier {
   String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
   List<Product> get filteredProducts => _filteredProducts;
   List<Product> get selectedProducts => _selectedProducts;
+  DateTime get _currentTime => currentTime;
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -170,10 +174,11 @@ class InventoryProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _products.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
-        _products.sort(
-          (a, b) =>
-              b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
-        );
+
+        _products.sort((a, b) => b.updatedDate!.compareTo(a.updatedDate!));
+        print(
+            'Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
+
         filterProducts();
         notifyListeners();
         onSuccess?.call();

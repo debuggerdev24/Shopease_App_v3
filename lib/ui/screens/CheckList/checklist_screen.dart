@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,8 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
-import 'package:shopease_app_flutter/providers/inventory_provider.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/multiple_checklist_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -268,8 +265,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                                   ],
                                   isEdit: true,
                                   onSuccess: () {
-                                    provider.addProductToSelected(
-                                        value, product);
+                                    provider.addToSelected(value, product);
                                   });
                             },
                           );
@@ -296,6 +292,12 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           CustomToast.showWarning(
                               context, 'Please select shop');
                           return;
+                        }
+
+                        for (Product product in provider.filteredChecklist) {
+                          if (product.isSelectedForComplete) {
+                            provider.selectedChecklists.add(product);
+                          }
                         }
 
                         await provider.putInventoryFromChecklist(

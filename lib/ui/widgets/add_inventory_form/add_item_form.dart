@@ -149,6 +149,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       AppTextField(
+                        onChanged: (p0) {
+                          setState(() {});
+                        },
                         controller: _nameController,
                         name: "name",
                         labelText: "Name",
@@ -335,8 +338,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       ),
                       30.h.verticalSpace,
                       AppButton(
-                        colorType: (_nameController.text.isNotEmpty &&
-                                provider.selectedCategoryId != null)
+                        colorType: (_nameController.text.isNotEmpty)
                             ? AppButtonColorType.primary
                             : AppButtonColorType.greyed,
                         isLoading: widget.isLoading,

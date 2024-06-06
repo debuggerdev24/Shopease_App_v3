@@ -66,6 +66,8 @@ class _ProductTileState extends State<ProductTile>
 
   @override
   Widget build(BuildContext context) {
+    print("widget.product.isInChecklist --> ${widget.product.isInChecklist} ");
+
     return Slidable(
       controller: _slideController,
       endActionPane: !widget.isSlideEnabled
