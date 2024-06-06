@@ -53,9 +53,7 @@ class _UploadInvoiceScreenState extends State<UploadInvoiceScreen> {
               ),
               Expanded(
                 child: ListView.separated(
-
                   itemBuilder: (context, index) => ChecklistTile(
-                    
                     product: provider.selectedChecklists[index],
                     isSlideEnabled: false,
                     isSelected: false,

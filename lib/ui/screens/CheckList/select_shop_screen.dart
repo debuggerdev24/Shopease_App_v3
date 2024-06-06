@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/auth/nick_name_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/shop_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/add_shop_form/add_shop_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -33,6 +34,8 @@ class SelectShopScreen extends StatefulWidget {
 class _SelectShopScreenState extends State<SelectShopScreen> {
   TextEditingController searchController = TextEditingController();
 
+  bool checkfilterValue = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +48,8 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ChecklistProvider>(builder: (context, provider, _) {
+      log("provider.shopcreate. ---0-> ${provider.shopcreate}");
+      log("provider.selectedShopFilter ---0--> ${provider.selectedShopFilter}");
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -94,7 +99,9 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                   IconButton(
                     onPressed: _showFilterSheet,
                     icon: SvgIcon(
-                      provider.selectValue
+                      // checkfilterValue
+                      (!provider.selectValue)
+                          // provider.selectValue
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                       size: 25.r,
@@ -221,9 +228,8 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (provider.selectedShopFilter.contains(
-                                  provider.shopLoacations.toList()[index],
-                                ))
-                                  const Icon(
+                                    provider.shopLoacations.toList()[index]))
+                                  Icon(
                                     CupertinoIcons.checkmark,
                                     color: AppColors.primaryColor,
                                   ),
@@ -257,7 +263,10 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                       colorType: AppButtonColorType.primary,
                       onPressed: () {
                         provider.filterShops();
-                        context.pop();
+                        // context.pop();
+                        // setState(() {
+                        //   checkfilterValue = !checkfilterValue;
+                        // });
                       },
                       text: 'Apply'),
                   10.h.verticalSpace,

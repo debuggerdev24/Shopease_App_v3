@@ -135,7 +135,7 @@ class HistoryProvider extends ChangeNotifier {
 
   void resetToData() {
     _toDate = DateTime.now();
-    _selectValue = true;
+
     notifyListeners();
   }
 
@@ -154,7 +154,6 @@ class HistoryProvider extends ChangeNotifier {
 
   Future<void> changeSelectedFile(XFile? file) async {
     _selectedFile = file;
-    _selectValue = false;
     notifyListeners();
   }
 

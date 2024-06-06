@@ -157,8 +157,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter a valid name!';
-                          } else if (value.length > 25) {
-                            return 'Name cannot be more than 25 characters!';
                           }
                           return null;
                         },
@@ -176,12 +174,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             color: AppColors.mediumGreyColor,
                           ),
                         ),
-                        validator: (value) {
-                          if (value.length > 100) {
-                            return 'Description cannot be more than 45 characters!';
-                          }
-                          return null;
-                        },
+                        // validator: (value) {
+                        //   if (value.length > 100) {
+                        //     return 'Description cannot be more than 45 characters!';
+                        //   }
+                        //   return null;
+                        // },
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.r),
                           borderSide: const BorderSide(
@@ -219,7 +217,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         isRequired: true,
                         labelText: 'Category',
                         hintText: 'Select a category',
-                        //value: provider.selectedCategoryId,
+                        value: provider.selectedCategoryId,
                         dropDownList: categoryList(),
                         trailing: SvgPicture.asset(AppAssets.dropDown),
                         onChanged: (value) {
@@ -356,7 +354,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                   .categoryName,
                               'item_storage': _storageController.text,
                               'is_in_checklist': false,
-                            };
+                            }; 
 
                             if (!widget.isEdit &&
                                 _fileFieldController.text.isNotEmpty) {
@@ -384,24 +382,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                   )
                                   .toJson());
                             }
-                            // if (widget.isFromScan && widget.product != null) {
-                            //   data.clear();
-                            //   data.addAll(widget.product!
-                            //       .copyWith(
-                            //         productName: _nameController.text,
-                            //         productDescription: _descController.text,
-                            //         brand: _brandController.text,
-                            //         itemLevel: provider.selectedInvType,
-                            //         itemCategory: provider.categories
-                            //             .firstWhere((element) =>
-                            //                 element.categoryId ==
-                            //                 provider.selectedCategoryId)
-                            //             .categoryName,
-                            //         itemImage: provider.selectedFile?.path,
-                            //         itemStorage: _storageController.text,
-                            //       )
-                            //       .toJson());
-                            // }
 
                             if (widget.isFromReplace &&
                                 widget.oldChecklistItemId != null) {

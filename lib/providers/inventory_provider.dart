@@ -49,6 +49,7 @@ class InventoryProvider extends ChangeNotifier {
     } else {
       _selectedCategoryFilters.add(categoryId);
     }
+
     notifyListeners();
   }
 
@@ -178,11 +179,7 @@ class InventoryProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _products.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
-        _products.sort(
-          (a, b) =>
-              b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
-        );
-      //  print("updated date ========== ${a.updatedDate.toString()}");
+        _sortProductsByUpdatedDate();
         filterProducts();
         notifyListeners();
         onSuccess?.call();
@@ -196,6 +193,20 @@ class InventoryProvider extends ChangeNotifier {
     } finally {
       setLoading(false);
     }
+  }
+
+  void _sortProductsByUpdatedDate() {
+    _products.sort(
+      (a, b) => b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
+    );
+    debugPrint("Products sorted by updatedDate: $_products");
+  }
+
+  void addItem(Product newItem) {
+    _products.add(newItem);
+    debugPrint("New item added: $newItem");
+    _sortProductsByUpdatedDate();
+    notifyListeners();
   }
 
   Future<void> putInventoryItem({

@@ -31,6 +31,7 @@ class ChecklistProvider extends ChangeNotifier {
   bool _isAllSelected = false;
   bool _selectValue = false;
   bool _shopvalue = false;
+  bool _shopcreate = false;
 
   Shop? _selectedShop;
   final Set<Shop> _shops = {};
@@ -64,6 +65,9 @@ class ChecklistProvider extends ChangeNotifier {
   Set<String> get shopLoacations => _shopLoacations;
   bool get selectValue => _selectValue;
   bool get shopvalue => _shopvalue;
+
+  bool get shopcreate => _shopcreate;
+
   List<Map<String, dynamic>> get historylist => _historylist;
 
   int get currentTab => _currentTab;
@@ -182,8 +186,8 @@ class ChecklistProvider extends ChangeNotifier {
     if (_selectedCategoryFilters.isEmpty && _selectedItemFilter == null) {
       _filteredChecklist.addAll(_checklist);
 
+      _selectValue = true;
       notifyListeners();
-      _selectValue = false;
       return;
     }
 
@@ -232,7 +236,7 @@ class ChecklistProvider extends ChangeNotifier {
                 .categoryId),
       ),
     );
-    _selectValue = true;
+    _shopvalue = true;
     notifyListeners();
   }
 
@@ -251,7 +255,7 @@ class ChecklistProvider extends ChangeNotifier {
       _filteredShops.addAll(
           _shops.where((e) => _selectedShopFilter.contains(e.shopLocation)));
     }
-    _shopvalue = false;
+    _selectValue = true;
     notifyListeners();
   }
 

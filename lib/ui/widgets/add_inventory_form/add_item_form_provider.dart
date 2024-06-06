@@ -15,12 +15,14 @@ class AddItemFormProvider extends ChangeNotifier {
   AddItemFormProvider(this.service);
 
   bool _isLoading = false;
+  bool _setcategory = false;
   String? _selectedCategoryId;
   String _selectedInvType = 'low';
   XFile? _selectedFile;
   final List<CategoryModel> _categories = [];
 
   bool get isLoading => _isLoading;
+  bool get setcategory => _setcategory;
   String? get selectedCategoryId => _selectedCategoryId;
   String? get selectedInvType => _selectedInvType;
   XFile? get selectedFile => _selectedFile;
@@ -32,7 +34,8 @@ class AddItemFormProvider extends ChangeNotifier {
   }
 
   void changeSelectedCategory(String? newValue) {
-    _selectedCategoryId = newValue;
+    _selectedCategoryId = newValue ?? "";
+    print("selectedvaluw${_selectedCategoryId}");
     notifyListeners();
   }
 

@@ -305,10 +305,11 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           onSuccess: () async {
                             CustomToast.showSuccess(context,
                                 '${provider.selectedItemsCount} Products purchased.');
-                            context.read<HistoryProvider>().getHistoryItems();
                             context
                                 .read<ChecklistProvider>()
                                 .getChecklistItems();
+                            context.read<HistoryProvider>().getHistoryItems();
+
                             context.goNamed(
                               AppRoute.uploadInvoice.name,
                             );
