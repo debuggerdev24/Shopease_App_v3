@@ -1,3 +1,6 @@
+List<Product> productFromJson(List<dynamic> data) =>
+    List<Product>.from(data.map((x) => Product.fromJson(x)));
+
 class Product {
   String? itemId;
   String? productName;

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/auth/nick_name_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/shop_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/add_shop_form/add_shop_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -33,6 +34,8 @@ class SelectShopScreen extends StatefulWidget {
 class _SelectShopScreenState extends State<SelectShopScreen> {
   TextEditingController searchController = TextEditingController();
 
+  bool checkfilterValue = false;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +48,8 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ChecklistProvider>(builder: (context, provider, _) {
+      log("provider.shopcreate. ---0-> ${provider.shopcreate}");
+      log("provider.selectedShopFilter ---0--> ${provider.selectedShopFilter}");
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -94,7 +99,9 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                   IconButton(
                     onPressed: _showFilterSheet,
                     icon: SvgIcon(
-                      provider.selectedShopFilter.isEmpty
+                      // checkfilterValue
+                      (!provider.selectValue)
+                          // provider.selectValue
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                       size: 25.r,
@@ -200,9 +207,8 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   GlobalText('Filter', textStyle: textStyle18SemiBold),
-                  20.h.verticalSpace,
                   SizedBox(
-                    height: 210.h,
+                    height: 150.h,
                     child: ListView.builder(
                       itemCount: provider.shopLoacations.length,
                       shrinkWrap: true,
@@ -213,27 +219,26 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                                 provider.shopLoacations.toList()[index]);
                           },
                           child: Container(
-                            margin: EdgeInsets.all(3.dg),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30.r),
-                              color: AppColors.primaryColor.withOpacity(0.2),
+                              // color: AppColors.primaryColor.withOpacity(0.2),
                             ),
-                            height: 50.h,
+                            height: 40.h,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                if (provider.selectedShopFilter.contains(
+                                    provider.shopLoacations.toList()[index]))
+                                  Icon(
+                                    CupertinoIcons.checkmark,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                10.horizontalSpace,
                                 GlobalText(
-                                  textStyle: textStyle14,
+                                  textStyle: textStyle16,
                                   provider.shopLoacations.toList()[index],
                                   color: AppColors.primaryColor,
                                 ),
-                                if (provider.selectedShopFilter.contains(
-                                  provider.shopLoacations.toList()[index],
-                                ))
-                                  const Icon(
-                                    CupertinoIcons.checkmark,
-                                    color: AppColors.primaryColor,
-                                  )
                               ],
                             ),
                           ),
@@ -258,7 +263,10 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                       colorType: AppButtonColorType.primary,
                       onPressed: () {
                         provider.filterShops();
-                        context.pop();
+                        // context.pop();
+                        // setState(() {
+                        //   checkfilterValue = !checkfilterValue;
+                        // });
                       },
                       text: 'Apply'),
                   10.h.verticalSpace,
