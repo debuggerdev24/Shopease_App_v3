@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -29,6 +30,8 @@ class InventoryProvider extends ChangeNotifier {
   final List<Product> _selectedProducts = [];
   bool _selectValue = false;
 
+  DateTime currentTime = DateTime.timestamp();
+
   /// getters
   bool get isLoading => _isLoading;
   List<Product> get products => _products;
@@ -37,6 +40,7 @@ class InventoryProvider extends ChangeNotifier {
   List<Product> get filteredProducts => _filteredProducts;
   List<Product> get selectedProducts => _selectedProducts;
   bool get selectValue => _selectValue;
+
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -179,7 +183,10 @@ class InventoryProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _products.clear();
         _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
-        _sortProductsByUpdatedDate();
+
+        _products.sort((a, b) => b.updatedDate!.compareTo(a.updatedDate!));
+        print(
+            'Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
         filterProducts();
         notifyListeners();
         onSuccess?.call();

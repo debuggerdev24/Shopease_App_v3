@@ -86,7 +86,7 @@ class ChecklistSearchDelegate extends SearchDelegate {
                         products.remove(products[index]);
                       },
                       onSelectionChanges: (value) {
-                        provider.addProductToSelected(value, products[index]);
+                        provider.addToSelected(value, products[index]);
                       },
                     );
                   },

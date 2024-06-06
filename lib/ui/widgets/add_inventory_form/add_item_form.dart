@@ -149,6 +149,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       AppTextField(
+                        onChanged: (p0) {
+                          setState(() {});
+                        },
                         controller: _nameController,
                         name: "name",
                         labelText: "Name",
