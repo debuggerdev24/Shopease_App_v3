@@ -107,8 +107,8 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                 ],
                 onSuccess: () {
                   CustomToast.showSuccess(context, 'Items added to checklist!');
-                  
-                   context.read<ChecklistProvider>().getChecklistItems();
+
+                  context.read<ChecklistProvider>().getChecklistItems();
                   context.goNamed(AppRoute.checkList.name);
                 },
               );
@@ -217,9 +217,10 @@ class HistoryItemDetailTile extends StatelessWidget {
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 10.h),
-                  AppChip(
-                      text: historyItem.brand ??
-                          '') // Assuming 20.verticalSpace is a SizedBox
+                  if (historyItem.brand.toString().isNotEmpty)
+                    AppChip(
+                        text: historyItem.brand ??
+                            '') // Assuming 20.verticalSpace is a SizedBox
                 ],
               ),
             ),

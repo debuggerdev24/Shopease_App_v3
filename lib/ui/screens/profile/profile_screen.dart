@@ -21,6 +21,7 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -84,14 +85,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             },
                           ),
                         25.w.horizontalSpace,
-                        GestureDetector(
-                          onTap: _showAddMemberSheet,
-                          child: SvgIcon(
-                            AppAssets.add,
-                            color: AppColors.primaryColor,
-                            size: 20.sp,
+                        if (provider.profileData?.isAdmin == true)
+                          GestureDetector(
+                            onTap: _showAddMemberSheet,
+                            child: SvgIcon(
+                              AppAssets.add,
+                              color: AppColors.primaryColor,
+                              size: 20.sp,
+                            ),
                           ),
-                        ),
                         4.w.horizontalSpace,
                       ],
                     ),
@@ -137,7 +139,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   style: textStyle12.copyWith(
                                       decoration: TextDecoration.underline),
                                   recognizer: TapGestureRecognizer()
-                                    ..onTap = () {},
+                                    ..onTap = () async {
+                                      final Uri emailUri = Uri(
+                                        scheme: 'mailto',
+                                        path: 'support@ShopEaseApp.com',
+                                      );
+                                      if (await canLaunch(
+                                          emailUri.toString())) {
+                                        await launch(emailUri.toString());
+                                      } else {
+                                        throw 'Could not launch $emailUri';
+                                      }
+                                    },
                                 ),
                               ],
                               style: textStyle12.copyWith(
@@ -417,8 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ),
                   40.h.verticalSpace,
                   AppButton(
-                    colorType: (nameController.text.isNotEmpty &&
-                            fileFieldController.text.isNotEmpty)
+                    colorType: (nameController.text.isNotEmpty)
                         ? AppButtonColorType.primary
                         : AppButtonColorType.secondary,
                     isLoading: provider.editProfileLoading,
@@ -433,15 +445,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       //   return;
                       // }
 
-                      if (nameController.text.isNotEmpty &&
-                          fileFieldController.text.isNotEmpty) {
+                      if (nameController.text.isNotEmpty) {
                         provider.toggleSet(true);
                         await provider.editProfile(
                           data: [
                             {
                               'preferred_username': nameController.text,
-                              'profile_image': provider.selectedFile?.path ??
-                                  provider.profileData!.imageUrl,
+                              'profile_image': provider.selectedFile?.path
                             }
                           ],
                           isEdit: false,

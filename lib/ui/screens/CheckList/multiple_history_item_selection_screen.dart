@@ -219,9 +219,10 @@ class HistoryItemTileWithSelectionState
                       fontSize: 18, overflow: TextOverflow.ellipsis),
                 ),
                 SizedBox(height: 10.h),
-                AppChip(
-                    text: widget.historyItem.brand ??
-                        '') // Assuming 20.verticalSpace is a SizedBox
+                if (widget.historyItem.brand.toString().isNotEmpty)
+                  AppChip(
+                      text: widget.historyItem.brand ??
+                          '') // Assuming 20.verticalSpace is a SizedBox
               ],
             ),
           ),

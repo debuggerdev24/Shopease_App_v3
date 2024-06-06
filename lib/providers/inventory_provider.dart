@@ -28,6 +28,7 @@ class InventoryProvider extends ChangeNotifier {
   final List<String> _selectedCategoryFilters = [];
   String? _selectedInventoryLevelFilter;
   final List<Product> _selectedProducts = [];
+  bool _selectValue = false;
 
   DateTime currentTime = DateTime.timestamp();
 
@@ -38,7 +39,8 @@ class InventoryProvider extends ChangeNotifier {
   String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
   List<Product> get filteredProducts => _filteredProducts;
   List<Product> get selectedProducts => _selectedProducts;
-  DateTime get _currentTime => currentTime;
+  bool get selectValue => _selectValue;
+
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -51,6 +53,7 @@ class InventoryProvider extends ChangeNotifier {
     } else {
       _selectedCategoryFilters.add(categoryId);
     }
+
     notifyListeners();
   }
 
@@ -69,6 +72,7 @@ class InventoryProvider extends ChangeNotifier {
     if (_selectedCategoryFilters.isEmpty &&
         _selectedInventoryLevelFilter == null) {
       _filteredProducts.addAll(_products);
+      _selectValue = false;
       notifyListeners();
       return;
     }
@@ -79,6 +83,8 @@ class InventoryProvider extends ChangeNotifier {
           (element) => element.itemLevel == _selectedInventoryLevelFilter,
         ),
       );
+
+      _selectValue = true;
       notifyListeners();
       return;
     }
@@ -92,6 +98,8 @@ class InventoryProvider extends ChangeNotifier {
               .categoryId),
         ),
       );
+
+      _selectValue = true;
       notifyListeners();
 
       return;
@@ -108,6 +116,7 @@ class InventoryProvider extends ChangeNotifier {
       ),
     );
 
+    _selectValue = true;
     notifyListeners();
   }
 
@@ -178,7 +187,6 @@ class InventoryProvider extends ChangeNotifier {
         _products.sort((a, b) => b.updatedDate!.compareTo(a.updatedDate!));
         print(
             'Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
-
         filterProducts();
         notifyListeners();
         onSuccess?.call();
@@ -192,6 +200,20 @@ class InventoryProvider extends ChangeNotifier {
     } finally {
       setLoading(false);
     }
+  }
+
+  void _sortProductsByUpdatedDate() {
+    _products.sort(
+      (a, b) => b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
+    );
+    debugPrint("Products sorted by updatedDate: $_products");
+  }
+
+  void addItem(Product newItem) {
+    _products.add(newItem);
+    debugPrint("New item added: $newItem");
+    _sortProductsByUpdatedDate();
+    notifyListeners();
   }
 
   Future<void> putInventoryItem({

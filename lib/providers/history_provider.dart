@@ -15,6 +15,7 @@ class HistoryProvider extends ChangeNotifier {
   HistoryProvider(this.service);
 
   bool _isLoading = false;
+
   final List<History> _histories = [];
   final List<History> _filteredHistories = [];
   final List<int> _selectedFilterMonth = [];
@@ -23,6 +24,7 @@ class HistoryProvider extends ChangeNotifier {
   int _selectedValue = -1;
   XFile? _selectedFile;
   DateTime? _fromDate;
+  bool _selectValue = false;
   DateTime _toDate = DateTime.now();
 
   final List<String> _selectedShopFilter = [];
@@ -38,6 +40,7 @@ class HistoryProvider extends ChangeNotifier {
   XFile? get selectedFile => _selectedFile;
   DateTime? get fromDate => _fromDate;
   DateTime? get toDate => _toDate;
+  bool get selectValue => _selectValue;
 
   List<String> get selectedShopFilter => _selectedShopFilter;
 
@@ -119,17 +122,20 @@ class HistoryProvider extends ChangeNotifier {
         ),
       );
     }
+    _selectValue = false;
     notifyListeners();
   }
 
   void setFromDate(DateTime? newDate) {
     if (newDate == null) return;
     _fromDate = newDate;
+    _selectValue = true;
     notifyListeners();
   }
 
   void resetToData() {
     _toDate = DateTime.now();
+
     notifyListeners();
   }
 
@@ -139,6 +145,7 @@ class HistoryProvider extends ChangeNotifier {
         (_fromDate?.day ?? 0) <= newDate.day;
     if (isAcceptable) {
       _toDate = newDate;
+      _selectValue = true;
       notifyListeners();
     } else {
       onError?.call('Make sure To date is not before the From date');
