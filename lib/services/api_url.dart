@@ -25,6 +25,8 @@ class ApiUrl {
 
   static const String acceptinvite = '/acceptinvite';
 
+  static const String updateuser = '/updateuser';
+
   static const String scanItem = '/scanitem';
 
   static const String getInventoryItems = '/getinventoryitems';

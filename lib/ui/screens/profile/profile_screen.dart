@@ -206,30 +206,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!user.isAdmin) ...[
-                    SvgIcon(
-                      AppAssets.userEdit,
-                      size: 15.sp,
-                      color: AppColors.blackGreyColor,
+                    GestureDetector(
+                      onTap: () async {
+                        await provider.updateuser(
+                          data: {
+                            'user_id': user.userId,
+                          },
+                          onSuccess: () {
+                            CustomToast.showSuccess(
+                              context,
+                              'succesfully update user.',
+                            );
+                          },
+                        );
+                      },
+                      child: SvgIcon(
+                        AppAssets.userEdit,
+                        size: 15.sp,
+                        color: const Color.fromRGBO(49, 49, 49, 1),
+                      ),
                     ),
                     15.horizontalSpace
                   ],
-                  GestureDetector(
-                    onTap: () async {
-                      await provider.removeUserFromGroup(
-                        data: {'user_id': user.userId},
-                        onSuccess: () {
-                          CustomToast.showSuccess(
-                            context,
-                            'User removed successfully.',
-                          );
-                        },
-                      );
-                    },
-                    child: SvgIcon(
-                      AppAssets.delete,
-                      size: 16.sp,
-                    ),
-                  )
+                  provider.profileData?.isAdmin == true
+                      ? GestureDetector(
+                          onTap: () async {
+                            await provider.removeUserFromGroup(
+                              data: {'user_id': user.userId},
+                              onSuccess: () {
+                                CustomToast.showSuccess(
+                                  context,
+                                  'User removed successfully.',
+                                );
+                              },
+                            );
+                          },
+                          child: SvgIcon(
+                            AppAssets.delete,
+                            size: 16.sp,
+                          ),
+                        )
+                      : SizedBox()
                 ],
               )
             : const SizedBox.shrink();
