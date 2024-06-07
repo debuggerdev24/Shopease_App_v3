@@ -73,7 +73,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           textStyle: textStyle16,
                         ),
                         const Spacer(),
-                        if (provider.groupProfiles.isNotEmpty)
+                        if (provider.groupProfiles.isNotEmpty &&
+                            provider.profileData?.isAdmin == true)
                           GestureDetector(
                             child: GlobalText(
                               'Leave Group',
@@ -168,6 +169,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
+    log(" provider.profileData?.isAdmin ==>0==> ${provider.profileData?.isAdmin}");
+
     return user.isInvited == true
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,24 +182,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 textStyle: textStyle14,
               ),
               15.horizontalSpace,
-              GestureDetector(
-                onTap: () async {
-                  await provider.cancelinvite(
-                    data: {'user_id': user.userId},
-                    onSuccess: () {
-                      CustomToast.showSuccess(
-                        context,
-                        'Invitation canceled successfully.',
-                      );
-                      provider.removeGroupProfile(user);
-                    },
-                  );
-                },
-                child: SvgIcon(
-                  AppAssets.delete,
-                  size: 16.sp,
-                ),
-              )
+              if (provider.profileData?.isAdmin == true)
+                GestureDetector(
+                  onTap: () async {
+                    await provider.cancelinvite(
+                      data: {'user_id': user.userId},
+                      onSuccess: () {
+                        CustomToast.showSuccess(
+                          context,
+                          'Invitation canceled successfully.',
+                        );
+                        provider.removeGroupProfile(user);
+                      },
+                    );
+                  },
+                  child: SvgIcon(
+                    AppAssets.delete,
+                    size: 16.sp,
+                  ),
+                )
             ],
           )
         : provider.profileData?.isAdmin == true
@@ -206,10 +210,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (!user.isAdmin) ...[
-                    SvgIcon(
-                      AppAssets.userEdit,
-                      size: 15.sp,
-                      color: AppColors.blackGreyColor,
+                    GestureDetector(
+                      onTap: () async {
+                        await provider.adminUserGroup(data: {
+                          'user_id': user.userId,
+                          "is_admin": provider.profileData?.isAdmin
+                        });
+
+                        log("user.userId --- > ${user.userId} ,${provider.profileData?.isAdmin}");
+                      },
+                      child: SvgIcon(
+                        AppAssets.userEdit,
+                        size: 15.sp,
+                        color: AppColors.blackGreyColor,
+                      ),
                     ),
                     15.horizontalSpace
                   ],
