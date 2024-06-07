@@ -21,6 +21,8 @@ class ApiUrl {
 
   static const String removeUser = '/removeuserfromgroup';
 
+   static const String updateuser = '/updateuser';
+
   static const String getinvitesbyuser = '/getinvitesbyuser';
 
   static const String acceptinvite = '/acceptinvite';
