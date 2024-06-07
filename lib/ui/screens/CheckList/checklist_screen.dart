@@ -338,7 +338,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                 children: [
                   10.horizontalSpace,
                   Text(
-                    '${provider.histories.length} Items',
+                    '${provider.filteredHistories.length} Items',
                   ),
                   const Spacer(),
                   InkWell(
@@ -440,9 +440,10 @@ void _showHistoryFilterSheet(BuildContext context) {
                           },
                           child: _dateContainer(
                             title: 'To',
-                            value: provider.toDate != null
-                                ? provider.toDate!.toDDMonthYYYY
-                                : "",
+                            value:
+                               provider.toDate != null
+                                    ? provider.toDate!.toDDMonthYYYY
+                                    : "",
                           ),
                         ),
                       ),
@@ -458,7 +459,7 @@ void _showHistoryFilterSheet(BuildContext context) {
                         .indexed
                         .map((e) {
                       return AppChip(
-                        text: '${e.$2.shopName}, ${e.$2.shopLocation}',
+                        text: '${e.$2.shopName} ${e.$2.shopLocation}',
                         isSelected:
                             provider.selectedShopFilter.contains(e.$2.shopName),
                         onTap: () {

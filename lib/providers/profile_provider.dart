@@ -324,6 +324,35 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateuser({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.updateuser(data: data);
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while cancelinvite: $e");
+      debugPrint("Error while cancelinvite: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   final List<Map<String, dynamic>> userList = [
     {
       'img': AppAssets.lucy,
