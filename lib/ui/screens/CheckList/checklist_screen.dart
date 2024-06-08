@@ -344,7 +344,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                   InkWell(
                     onTap: () => _showHistoryFilterSheet(context),
                     child: SvgPicture.asset(
-                      !provider.selectValue
+                      !provider.selecthistory
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                     ),
@@ -398,6 +398,8 @@ void _showHistoryFilterSheet(BuildContext context) {
       isDismissible: false,
       builder: (context) {
         return Consumer<HistoryProvider>(builder: (context, provider, _) {
+          print(
+              "provider.selecthistory==============${provider.selecthistory}");
           return Container(
             width: double.infinity,
             // margin: EdgeInsets.symmetric(vertical: 10.sp),
@@ -440,10 +442,9 @@ void _showHistoryFilterSheet(BuildContext context) {
                           },
                           child: _dateContainer(
                             title: 'To',
-                            value:
-                               provider.toDate != null
-                                    ? provider.toDate!.toDDMonthYYYY
-                                    : "",
+                            value: provider.toDate != null
+                                ? provider.toDate!.toDDMonthYYYY
+                                : "",
                           ),
                         ),
                       ),

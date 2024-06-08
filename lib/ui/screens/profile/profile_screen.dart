@@ -219,11 +219,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         log("user.userId --- > ${user.userId} ,${provider.profileData?.isAdmin}");
 
+                        onSuccess:
+                        () {
+                          CustomToast.showSuccess(
+                            context,
+                            'New Admin has been assigned to the group',
+                          );
+                        };
                       },
                       child: SvgIcon(
                         AppAssets.userEdit,
                         size: 15.sp,
-
                         color: AppColors.blackGreyColor,
                       ),
                     ),
