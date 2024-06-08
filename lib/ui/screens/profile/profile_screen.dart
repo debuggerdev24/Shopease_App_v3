@@ -218,32 +218,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
 
                         log("user.userId --- > ${user.userId} ,${provider.profileData?.isAdmin}");
+
                       },
                       child: SvgIcon(
                         AppAssets.userEdit,
                         size: 15.sp,
+
                         color: AppColors.blackGreyColor,
                       ),
                     ),
                     15.horizontalSpace
                   ],
-                  GestureDetector(
-                    onTap: () async {
-                      await provider.removeUserFromGroup(
-                        data: {'user_id': user.userId},
-                        onSuccess: () {
-                          CustomToast.showSuccess(
-                            context,
-                            'User removed successfully.',
-                          );
-                        },
-                      );
-                    },
-                    child: SvgIcon(
-                      AppAssets.delete,
-                      size: 16.sp,
-                    ),
-                  )
+                  provider.profileData?.isAdmin == true
+                      ? GestureDetector(
+                          onTap: () async {
+                            await provider.removeUserFromGroup(
+                              data: {'user_id': user.userId},
+                              onSuccess: () {
+                                CustomToast.showSuccess(
+                                  context,
+                                  'User removed successfully.',
+                                );
+                              },
+                            );
+                          },
+                          child: SvgIcon(
+                            AppAssets.delete,
+                            size: 16.sp,
+                          ),
+                        )
+                      : SizedBox()
                 ],
               )
             : const SizedBox.shrink();

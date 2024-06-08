@@ -164,7 +164,7 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     'updated_date': DateTime.now().toIso8601String(),
                     'item_image': provider.selectedFile?.path,
                     // 'item_count': context
-                    //     .read<ChecklistProvider>()
+                    //     .read<Chec>klistProvider>()
                     //     .selectedChecklists
                     //     .length,
                   };

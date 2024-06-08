@@ -121,8 +121,9 @@ class HistoryProvider extends ChangeNotifier {
           },
         ),
       );
+      _selectValue = false;
     }
-    _selectValue = false;
+
     notifyListeners();
   }
 
@@ -135,7 +136,6 @@ class HistoryProvider extends ChangeNotifier {
 
   void resetToData() {
     _toDate = DateTime.now();
-
     notifyListeners();
   }
 

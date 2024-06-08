@@ -34,8 +34,6 @@ class SelectShopScreen extends StatefulWidget {
 class _SelectShopScreenState extends State<SelectShopScreen> {
   TextEditingController searchController = TextEditingController();
 
-  bool checkfilterValue = false;
-
   @override
   void initState() {
     super.initState();
@@ -48,7 +46,6 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ChecklistProvider>(builder: (context, provider, _) {
-      log("provider.shopcreate. ---0-> ${provider.shopcreate}");
       log("provider.selectedShopFilter ---0--> ${provider.selectedShopFilter}");
       return Scaffold(
         appBar: AppBar(
@@ -100,7 +97,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                     onPressed: _showFilterSheet,
                     icon: SvgIcon(
                       // checkfilterValue
-                      (!provider.selectValue)
+                      (!provider.shopvalue)
                           // provider.selectValue
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
@@ -263,7 +260,7 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
                       colorType: AppButtonColorType.primary,
                       onPressed: () {
                         provider.filterShops();
-                        // context.pop();
+                        context.pop();
                         // setState(() {
                         //   checkfilterValue = !checkfilterValue;
                         // });
