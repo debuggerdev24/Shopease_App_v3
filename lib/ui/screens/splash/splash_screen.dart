@@ -66,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   startTimer() {
     var duration = const Duration(milliseconds: 2000);
-    log("Version ${packageInfo.version}");
+    // log("Version ${packageInfo.version}");
     return Future.delayed(
       duration,
       () {

@@ -149,6 +149,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       AppTextField(
+                        onChanged: (p0) {
+                          setState(() {});
+                        },
                         controller: _nameController,
                         name: "name",
                         labelText: "Name",
@@ -157,8 +160,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter a valid name!';
-                          } else if (value.length > 10) {
-                            return 'Name cannot be more than 10 characters!';
                           }
                           return null;
                         },
@@ -176,12 +177,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             color: AppColors.mediumGreyColor,
                           ),
                         ),
-                        validator: (value) {
-                          if (value.length > 100) {
-                            return 'Description cannot be more than 45 characters!';
-                          }
-                          return null;
-                        },
+                        // validator: (value) {
+                        //   if (value.length > 100) {
+                        //     return 'Description cannot be more than 45 characters!';
+                        //   }
+                        //   return null;
+                        // },
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.r),
                           borderSide: const BorderSide(
@@ -251,7 +252,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                 border: Border.all(color: AppColors.blackColor),
                                 image: _fileFieldController.text.isEmpty
                                     ? null
-                                    : provider.selectedFile != null
+                                    : provider.selectedFile != null &&
+                                            File(_fileFieldController.text)
+                                                .existsSync()
                                         ? DecorationImage(
                                             image: FileImage(
                                               File(_fileFieldController.text),
@@ -262,11 +265,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                                 _fileFieldController.text),
                                           ),
                               ),
-                              child: SvgPicture.asset(
-                                provider.selectedFile == null
-                                    ? AppAssets.addInvoice
-                                    : AppAssets.zoomIcon,
-                              ),
+                              child: _fileFieldController.text.isEmpty
+                                  ? SvgPicture.asset(AppAssets.addInvoice)
+                                  : provider.selectedFile != null
+                                      ? SvgPicture.asset(AppAssets.zoomIcon)
+                                      : null,
                             ),
                           ),
                           IconButton(
@@ -278,9 +281,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               Icons.delete,
                               color: AppColors.redColor,
                             ),
-                          )
+                          ),
                         ],
                       ),
+
                       // AppTextField(
                       //   name: 'productImg',
                       //   controller: _fileFieldController,
@@ -335,8 +339,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       ),
                       30.h.verticalSpace,
                       AppButton(
-                        colorType: (_nameController.text.isNotEmpty &&
-                                provider.selectedCategoryId != null)
+                        colorType: (_nameController.text.isNotEmpty)
                             ? AppButtonColorType.primary
                             : AppButtonColorType.greyed,
                         isLoading: widget.isLoading,
@@ -354,7 +357,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                   .categoryName,
                               'item_storage': _storageController.text,
                               'is_in_checklist': false,
-                            };
+                            }; 
 
                             if (!widget.isEdit &&
                                 _fileFieldController.text.isNotEmpty) {

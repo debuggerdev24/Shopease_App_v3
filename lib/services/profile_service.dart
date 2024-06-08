@@ -28,6 +28,10 @@ abstract class BaseProfileService {
     required Map<String, dynamic> data,
   });
 
+  Future<Response<dynamic>?> userAdminGroup({
+    required Map<String, dynamic> data,
+  });
+
   Future<Response<dynamic>?> cancelinvite({
     required Map<String, dynamic> data,
   });
@@ -121,6 +125,22 @@ class ProfileService implements BaseProfileService {
 
     return await BaseRepository().post(
       ApiUrl.removeUser,
+      data: formData,
+    );
+  }
+
+  @override
+  Future<Response?> userAdminGroup({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'userAdminGroup');
+
+    return await BaseRepository().post(
+      ApiUrl.updateuser,
       data: formData,
     );
   }

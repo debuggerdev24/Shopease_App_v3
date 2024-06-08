@@ -263,6 +263,38 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+
+  Future<void> adminUserGroup({
+    required Map<String, dynamic> data,
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.userAdminGroup(data: data);
+
+      if (res == null) {
+        // _groupProfiles.removeWhere((e) => e.userId = data['user_id']);
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        getAllProfile();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while removeUserFromGroup: $e");
+      debugPrint("Error while removeUserFromGroup: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   Future<void> cancelinvite({
     required Map<String, dynamic> data,
     Function(String)? onError,

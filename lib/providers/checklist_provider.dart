@@ -29,6 +29,9 @@ class ChecklistProvider extends ChangeNotifier {
 
   final List<Product> _selectedChecklists = [];
   bool _isAllSelected = false;
+  bool _selectValue = false;
+  bool _shopvalue = false;
+  bool _shopcreate = false;
 
   Shop? _selectedShop;
   final Set<Shop> _shops = {};
@@ -60,6 +63,10 @@ class ChecklistProvider extends ChangeNotifier {
   List<Shop> get filteredShops => _filteredShops;
   List<String> get selectedShopFilter => _selectedShopFilter;
   Set<String> get shopLoacations => _shopLoacations;
+  bool get selectValue => _selectValue;
+  bool get shopvalue => _shopvalue;
+
+  bool get shopcreate => _shopcreate;
 
   List<Map<String, dynamic>> get historylist => _historylist;
 
@@ -99,6 +106,7 @@ class ChecklistProvider extends ChangeNotifier {
     } else {
       _selectedShopFilter.add(newFilter);
     }
+
     notifyListeners();
   }
 
@@ -154,28 +162,32 @@ class ChecklistProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addProductToSelected(bool? value, Product product) {
+  void addToSelected(bool? value, Product product) {
     log('product value: ${product.isSelectedForComplete}');
     log('tapped value: $value');
     log('product value - after change: ${product.isSelectedForComplete}');
     product.changeSelectedState(value ?? false);
     if (value == true) {
       _filteredChecklist.add(product);
-      _selectedChecklists.add(product);
+      // _selectedChecklists.add(product);
       _filteredChecklist.remove(product);
     } else {
-      _filteredChecklist.insert(0, product);
-      _selectedChecklists.remove(product);
       _filteredChecklist.remove(product);
+      // _selectedChecklists.remove(product);
+      _filteredChecklist.insert(0, product);
     }
+    _selectValue = true;
     notifyListeners();
   }
 
-  void filterChecklist() {
+  void filterChecklist({bool clearselected = true}) {
     _filteredChecklist.clear();
-    _selectedChecklists.clear();
+    if (clearselected) _selectedChecklists.clear();
+
     if (_selectedCategoryFilters.isEmpty && _selectedItemFilter == null) {
       _filteredChecklist.addAll(_checklist);
+
+      _selectValue = true;
       notifyListeners();
       return;
     }
@@ -194,6 +206,7 @@ class ChecklistProvider extends ChangeNotifier {
           ),
         );
       }
+      _selectValue = true;
       notifyListeners();
       return;
     }
@@ -207,6 +220,7 @@ class ChecklistProvider extends ChangeNotifier {
               .categoryId),
         ),
       );
+      _selectValue = true;
       notifyListeners();
 
       return;
@@ -223,12 +237,14 @@ class ChecklistProvider extends ChangeNotifier {
                 .categoryId),
       ),
     );
+    _shopvalue = true;
     notifyListeners();
   }
 
   void clearSelectedProducts() {
     _selectedChecklists.clear();
     getChecklistItems();
+
     notifyListeners();
   }
 
@@ -240,7 +256,7 @@ class ChecklistProvider extends ChangeNotifier {
       _filteredShops.addAll(
           _shops.where((e) => _selectedShopFilter.contains(e.shopLocation)));
     }
-
+    _selectValue = true;
     notifyListeners();
   }
 
@@ -266,7 +282,7 @@ class ChecklistProvider extends ChangeNotifier {
           (a, b) =>
               b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
         );
-        filterChecklist();
+        filterChecklist(clearselected: false);
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);

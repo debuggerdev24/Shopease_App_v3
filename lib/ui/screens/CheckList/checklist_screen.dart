@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,8 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
-import 'package:shopease_app_flutter/providers/inventory_provider.dart';
-import 'package:shopease_app_flutter/ui/screens/CheckList/multiple_checklist_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -183,8 +180,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     InkWell(
                       onTap: () => _showChecklistFilterSheet(context),
                       child: SvgPicture.asset(
-                        (provider.selectedCategoryFilters.isEmpty &&
-                                provider.selectedItemFilter == null)
+                        (!provider.selectValue)
                             ? AppAssets.filterIcon
                             : AppAssets.selectedFilterIcon,
                         width: 22.h,
@@ -268,8 +264,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                                   ],
                                   isEdit: true,
                                   onSuccess: () {
-                                    provider.addProductToSelected(
-                                        value, product);
+                                    provider.addToSelected(value, product);
                                   });
                             },
                           );
@@ -298,6 +293,12 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           return;
                         }
 
+                        for (Product product in provider.filteredChecklist) {
+                          if (product.isSelectedForComplete) {
+                            provider.selectedChecklists.add(product);
+                          }
+                        }
+
                         await provider.putInventoryFromChecklist(
                           itemIds: provider.filteredChecklist
                               .where((e) => e.isSelectedForComplete)
@@ -306,10 +307,11 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           onSuccess: () async {
                             CustomToast.showSuccess(context,
                                 '${provider.selectedItemsCount} Products purchased.');
-                            context.read<HistoryProvider>().getHistoryItems();
                             context
                                 .read<ChecklistProvider>()
                                 .getChecklistItems();
+                            context.read<HistoryProvider>().getHistoryItems();
+
                             context.goNamed(
                               AppRoute.uploadInvoice.name,
                             );
@@ -342,7 +344,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                   InkWell(
                     onTap: () => _showHistoryFilterSheet(context),
                     child: SvgPicture.asset(
-                      provider.fromDate == null
+                      !provider.selectValue
                           ? AppAssets.filterIcon
                           : AppAssets.selectedFilterIcon,
                     ),
@@ -537,29 +539,38 @@ _showChecklistFilterSheet(BuildContext context) async {
                   ],
                 ),
                 20.h.verticalSpace,
-                GlobalText(
-                  'Filter by category',
-                  textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                Padding(
+                  padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                  child: GlobalText(
+                    'Filter by category',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
                 ),
                 Wrap(
                   direction: Axis.horizontal,
                   children: Constants.categories
                       .map(
-                        (e) => AppChip(
-                          text: e.categoryName,
-                          isSelected: provider.selectedCategoryFilters
-                              .contains(e.categoryId),
-                          onTap: () {
-                            provider.changeFilterCategoty(e.categoryId);
-                          },
+                        (e) => Padding(
+                          padding: EdgeInsets.only(top: 11.h),
+                          child: AppChip(
+                            text: e.categoryName,
+                            isSelected: provider.selectedCategoryFilters
+                                .contains(e.categoryId),
+                            onTap: () {
+                              provider.changeFilterCategoty(e.categoryId);
+                            },
+                          ),
                         ),
                       )
                       .toList(),
                 ),
                 10.h.verticalSpace,
-                GlobalText(
-                  'Filter by Items',
-                  textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                Padding(
+                  padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                  child: GlobalText(
+                    'Filter by Items',
+                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  ),
                 ),
                 10.h.verticalSpace,
                 Row(
