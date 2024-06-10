@@ -24,7 +24,7 @@ class HistoryProvider extends ChangeNotifier {
   int _selectedValue = -1;
   XFile? _selectedFile;
   DateTime? _fromDate;
-  bool _selectValue = false;
+  bool _selecthistory = false;
   DateTime _toDate = DateTime.now();
 
   final List<String> _selectedShopFilter = [];
@@ -40,8 +40,7 @@ class HistoryProvider extends ChangeNotifier {
   XFile? get selectedFile => _selectedFile;
   DateTime? get fromDate => _fromDate;
   DateTime? get toDate => _toDate;
-  bool get selectValue => _selectValue;
-
+  bool get selecthistory => _selecthistory;
   List<String> get selectedShopFilter => _selectedShopFilter;
 
   void setLoading(bool newValue) {
@@ -65,6 +64,7 @@ class HistoryProvider extends ChangeNotifier {
     } else {
       _selectedShopFilter.add(newFilter);
     }
+
     notifyListeners();
   }
 
@@ -99,7 +99,7 @@ class HistoryProvider extends ChangeNotifier {
 
   void filterHistories() {
     _filteredHistories.clear();
-
+    _selecthistory = false;
     if (_fromDate == null || _toDate == DateTime.now()) {
       _filteredHistories.addAll(_histories);
     } else {
@@ -116,12 +116,11 @@ class HistoryProvider extends ChangeNotifier {
 
             final evaluateShopFilter =
                 _selectedShopFilter.contains(element.shopName);
-
             return evaluateShopFilter && evaluateDateFiler;
           },
         ),
       );
-      _selectValue = false;
+      _selecthistory = true;
     }
 
     notifyListeners();
@@ -130,7 +129,6 @@ class HistoryProvider extends ChangeNotifier {
   void setFromDate(DateTime? newDate) {
     if (newDate == null) return;
     _fromDate = newDate;
-    _selectValue = true;
     notifyListeners();
   }
 
@@ -145,7 +143,7 @@ class HistoryProvider extends ChangeNotifier {
         (_fromDate?.day ?? 0) <= newDate.day;
     if (isAcceptable) {
       _toDate = newDate;
-      _selectValue = true;
+
       notifyListeners();
     } else {
       onError?.call('Make sure To date is not before the From date');

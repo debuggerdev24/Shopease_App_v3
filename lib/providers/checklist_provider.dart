@@ -184,9 +184,8 @@ class ChecklistProvider extends ChangeNotifier {
     if (_selectedCategoryFilters.isEmpty && _selectedItemFilter == null) {
       _filteredChecklist.addAll(_checklist);
 
-      _selectValue = true;
       notifyListeners();
-
+      _selectValue = false;
       return;
     }
 
