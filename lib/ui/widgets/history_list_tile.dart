@@ -190,6 +190,20 @@ class _HistorylistTileState extends State<HistorylistTile>
         children: [
           AppSlidableaction(
             isRight: true,
+            icon: AppAssets.replace,
+            forgroundColor: AppColors.primaryColor,
+            onTap: () {
+              // _showReplaceBrandSheet();
+              // widget.onAddToChecklistTap();
+              _slideController.close();
+              context.pop();
+              // context.push(
+              //   AppAssets.
+              // );
+            },
+          ),
+          AppSlidableaction(
+            isRight: true,
             icon: AppAssets.addToCheck,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
@@ -197,16 +211,6 @@ class _HistorylistTileState extends State<HistorylistTile>
               _slideController.close();
             },
           ),
-          // AppSlidableaction(
-          //   isRight: true,
-          //   icon: AppAssets.replace,
-          //   forgroundColor: AppColors.primaryColor,
-          //   onTap: () {
-          //     _showReplaceBrandSheet();
-          //     // widget.onAddToChecklistTap();
-          //     _slideController.close();
-          //   },
-          // ),
         ],
       );
 
