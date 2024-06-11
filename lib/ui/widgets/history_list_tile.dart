@@ -186,22 +186,23 @@ class _HistorylistTileState extends State<HistorylistTile>
   ) =>
       ActionPane(
         motion: const DrawerMotion(),
-        extentRatio: 0.3,
+        extentRatio: widget.product.imageUrl!.isNotEmpty ? 0.4 : 0.2,
         children: [
-          AppSlidableaction(
-            isRight: true,
-            icon: AppAssets.replace,
-            forgroundColor: AppColors.primaryColor,
-            onTap: () {
-              // _showReplaceBrandSheet();
-              // widget.onAddToChecklistTap();
-              _slideController.close();
-              context.pop();
-              // context.push(
-              //   AppAssets.
-              // );
-            },
-          ),
+          if (widget.product.imageUrl!.isNotEmpty)
+            AppSlidableaction(
+              isRight: true,
+              icon: AppAssets.replace,
+              forgroundColor: AppColors.primaryColor,
+              onTap: () {
+                _showReplaceBrandSheet();
+                widget.onAddToChecklistTap();
+                _slideController.close();
+                context.pop();
+                // context.push(
+                //   AppAssets.
+                // );
+              },
+            ),
           AppSlidableaction(
             isRight: true,
             icon: AppAssets.addToCheck,

@@ -74,40 +74,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const Spacer(),
                         if (provider.groupProfiles.isNotEmpty)
-                          provider.profileData?.isAdmin == true
+                          provider.groupProfiles
+                                  .any((e) => e.isInvited == false)
                               ? GestureDetector(
-                                  child:
-                                      //  provider.profileData?.isAdmin == true
-                                      //     ?
-                                      GlobalText(
-                                    'Leave Group',
-                                    textStyle: textStyle12.copyWith(
-                                        decoration: TextDecoration.underline),
-                                  ),
-                                  onTap: () {
-                                    _showLeaveGroupSheet(provider);
-                                  },
-                                )
-                              : GestureDetector(
                                   child: GlobalText(
                                     'Leave Group',
                                     textStyle: textStyle12.copyWith(
                                         decoration: TextDecoration.underline),
                                   ),
                                   onTap: () {
-                                    _showUserLeaveSheet(provider);
+                                    if (provider.profileData?.isAdmin == true) {
+                                      _showLeaveGroupSheet(provider);
+                                    } else {
+                                      _showUserLeaveSheet(provider);
+                                    }
                                   },
-                                ),
+                                )
+                              : const SizedBox(),
+
                         25.w.horizontalSpace,
-                        if (provider.profileData?.isAdmin == true)
-                          GestureDetector(
-                            onTap: _showAddMemberSheet,
-                            child: SvgIcon(
-                              AppAssets.add,
-                              color: AppColors.primaryColor,
-                              size: 20.sp,
-                            ),
+                        // if (provider.profileData?.isAdmin == true)
+                        GestureDetector(
+                          onTap: _showAddMemberSheet,
+                          child: SvgIcon(
+                            AppAssets.add,
+                            color: AppColors.primaryColor,
+                            size: 20.sp,
                           ),
+                        ),
                         4.w.horizontalSpace,
                       ],
                     ),
@@ -118,6 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         ProfileData user = provider.groupProfiles[index];
                         log("usdert =====>${user.userId}");
+                        log("usdert leanght =====>${provider.groupProfiles.length}");
 
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
@@ -565,7 +560,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .entries
                               .map((entry) {
                             final ProfileData user = entry.value;
-
                             return user.isInvited == true
                                 ? const SizedBox()
                                 : Padding(
