@@ -83,8 +83,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         decoration: TextDecoration.underline),
                                   ),
                                   onTap: () {
-                                    if (provider.profileData?.isAdmin == true) {
-                                      _showLeaveGroupSheet(provider);
+                                    if (provider.profileData?.isAdmin == true &&
+                                        !provider.groupProfiles
+                                            .any((e) => e.isAdmin)) {
+                                      _showAssignAndLeaveGroupSheet(provider);
                                     } else {
                                       _showUserLeaveSheet(provider);
                                     }
@@ -525,7 +527,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLeaveGroupSheet(ProfileProvider profileProvider) {
+  void _showAssignAndLeaveGroupSheet(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");
     log("uninvitedUsers length: ${profileProvider.uninvitedUsers.length}");
@@ -548,7 +550,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      GlobalText('Do you really wish to leave the group?',
+                      GlobalText('Assign and Leave',
                           textStyle: textStyle18SemiBold),
                       20.h.verticalSpace,
                       Consumer<ProfileProvider>(
@@ -596,18 +598,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       }),
                       30.h.verticalSpace,
-                      // AppButton(
-                      //     colorType: profileProvider.selectedUserIndex == -1
-                      //         ? AppButtonColorType.greyed
-                      //         : AppButtonColorType.primary,
-                      //     onPressed: () {
-                      //       profileProvider.clearGroupProfiles();
-                      //       context.pop();
-                      //       CustomToast.showSuccess(context,
-                      //           'Successfully left the existing group.');
-                      //     },
-                      //     text: 'Assign & Leave'),
-
                       DeleteButton(
                           onPressed: () async {
                             // widget.onDelete?.call();
@@ -615,8 +605,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             context.pop();
                           },
-                          text: 'Leave & Delete the Group'),
-
+                          text: 'Assign and Leave'),
                       10.h.verticalSpace,
                       AppButton(
                           colorType: AppButtonColorType.greyed,

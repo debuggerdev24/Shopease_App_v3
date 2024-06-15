@@ -194,13 +194,18 @@ class _HistorylistTileState extends State<HistorylistTile>
               icon: AppAssets.replace,
               forgroundColor: AppColors.primaryColor,
               onTap: () {
-                _showReplaceBrandSheet();
-                widget.onAddToChecklistTap();
-                _slideController.close();
-                context.pop();
-                // context.push(
-                //   AppAssets.
-                // );
+                // _showReplaceBrandSheet();
+                // widget.onAddToChecklistTap();
+                // _slideController.close();
+                context.pushNamed(AppRoute.editInvoice.name,
+                                            extra: {
+                    'shop': widget.product.shopName,
+                    'histId': widget.product.histId,
+                  },
+                );
+             
+              
+
               },
             ),
           AppSlidableaction(
