@@ -15,6 +15,7 @@ import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
@@ -65,6 +66,7 @@ class _AddShopFormState extends State<AddShopForm> {
 
   @override
   Widget build(BuildContext context) {
+    log("_fileFieldController.text ---> ${_fileFieldController.text}");
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       child: Form(
