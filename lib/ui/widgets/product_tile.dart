@@ -102,8 +102,7 @@ class _ProductTileState extends State<ProductTile>
                   ),
                 ),
               ),
-              const SizedBox(
-                  width: 8), 
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,8 +119,8 @@ class _ProductTileState extends State<ProductTile>
                       ),
                     ),
                     SizedBox(height: 10.h),
-                    if (widget.product.brand.toString().isNotEmpty)
-                      AppChip(text: widget.product.brand ?? '')
+                    // if (widget.product.brand.toString().isNotEmpty)
+                    // AppChip(text: widget.product.brand ?? '')
                   ],
                 ),
               ),

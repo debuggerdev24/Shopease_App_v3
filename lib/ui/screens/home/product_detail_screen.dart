@@ -145,9 +145,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   children: [
                     10.horizontalSpace,
                     if (widget.product.brand.toString().isNotEmpty)
-                      AppChip(text: widget.product.brand.toString()),
+                      AppChip(text: widget.product.brand ?? ''),
                     10.horizontalSpace,
-                    
                     AppChip(text: widget.product.itemCategory!),
                     10.horizontalSpace,
                     if (widget.product.itemStorage.toString().isNotEmpty)
