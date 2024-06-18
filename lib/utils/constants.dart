@@ -13,6 +13,15 @@ class Constants {
 
   static const String commonAuthErrMsg = 'Authentication failed.';
 
+  static const String defaultShopImage =
+      'https://shopease-bucket-dev.s3.amazonaws.com/default/shops/shop_default.jpeg?';
+
+  static const String defaultItemImage =
+      'https://shopease-bucket-dev.s3.amazonaws.com/default/items/item_default.jpeg?';
+
+  static const String defaultUserImage =
+      'https://shopease-bucket-dev.s3.amazonaws.com/default/users/user_default.jpeg?';
+
   static const String placeholdeImg =
       'https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png';
 

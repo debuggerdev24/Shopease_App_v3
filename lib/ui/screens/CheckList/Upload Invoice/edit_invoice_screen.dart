@@ -15,15 +15,12 @@ import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class EditInvoiceScreen extends StatefulWidget {
-  const EditInvoiceScreen({
-    super.key,
-    this.shop,
-    this.histId,
-    /*required this.total*/
-  });
+  const EditInvoiceScreen(
+      {super.key, this.shop, this.histId, this.totalAmount});
+
   final String? shop;
   final String? histId;
-  // final int total;
+  final String? totalAmount;
   @override
   State<EditInvoiceScreen> createState() => _EditInvoiceScreenState();
 }
@@ -63,28 +60,14 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
                             extra: {
                               'shop': widget.shop,
                               'histId': widget.histId,
-                              'edit':true
-                              // 'total': 100,
+                              'edit': true,
+                              'total_amount': widget.totalAmount,
                             },
                           ),
                         );
                   },
                   text: 'Edit Invoice'),
               20.h.verticalSpace,
-              // AppButton(
-              //   onPressed: () async {
-              //     await provider.selectFileFromGallery(onSuccess: () {
-              //       context.pushNamed(AppRoute.saveInvoice.name, extra: {
-              //         'shop': widget.shop,
-              //         'histId': widget.histId,
-              //         // 'total': 100,
-              //       });
-              //     });
-              //   },
-              //   text: 'Upload from Gallery',
-              //   colorType: AppButtonColorType.secondary,
-              // ),
-              30.h.verticalSpace,
             ],
           ),
         ),
