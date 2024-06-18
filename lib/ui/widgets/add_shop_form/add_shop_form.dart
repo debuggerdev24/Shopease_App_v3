@@ -13,6 +13,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -103,9 +104,11 @@ class _AddShopFormState extends State<AddShopForm> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: _fileFieldController.text.isEmpty
+                    onTap: _fileFieldController.text.isEmpty ||
+                            _fileFieldController.text
+                                .startsWith(Constants.defaultShopImage)
                         ? onSelectFileTap
-                        : () {},
+                        : showZoomedImg,
                     child: Container(
                       height: 80,
                       width: 80,
@@ -132,16 +135,6 @@ class _AddShopFormState extends State<AddShopForm> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      _fileFieldController.clear();
-                      provider.clearFile();
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: AppColors.redColor,
-                    ),
-                  )
                 ],
               ),
               // AppTextField(
@@ -219,6 +212,18 @@ class _AddShopFormState extends State<AddShopForm> {
           );
         }),
       ),
+    );
+  }
+
+  showZoomedImg() {
+    showImageSheet(
+      context: context,
+      imgUrl: _fileFieldController.text,
+      onDelete: () {
+        _fileFieldController.clear();
+        context.read<AddShopFormProvider>().clearFile();
+        context.pop();
+      },
     );
   }
 

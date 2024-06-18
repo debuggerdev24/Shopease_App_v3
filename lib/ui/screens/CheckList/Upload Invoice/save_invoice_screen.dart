@@ -14,6 +14,7 @@ import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -24,14 +25,14 @@ class SaveInvoiceScreen extends StatefulWidget {
   const SaveInvoiceScreen({
     super.key,
     this.shop,
-    this.total,
+    this.totalAmount,
     this.histId,
     required this.edit,
   });
 
   final String? shop;
   final String? histId;
-  final int? total;
+  final String? totalAmount;
   final bool edit;
 
   @override
@@ -45,15 +46,17 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
   @override
   void initState() {
     super.initState();
-    _priceController.text = widget.total.toString();
-    _nameController.text = widget.shop ??
-        context.read<ChecklistProvider>().selectedShop?.shopName ??
-        '';
+    setState(() {
+      _priceController.text = widget.totalAmount.toString();
+      _nameController.text = widget.shop ??
+          context.read<ChecklistProvider>().selectedShop?.shopName ??
+          '';
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    log('shop:${widget.shop}:::total:${widget.histId}');
+    log('shop:${widget.shop}:::total:${widget.totalAmount}:::histId:${widget.histId}');
     return Consumer<HistoryProvider>(
       builder: (context, provider, _) {
         return Scaffold(
@@ -87,7 +90,12 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                       GestureDetector(
                         onTap: () {
                           if (provider.selectedFile != null) {
-                            _showImgSheet();
+                            showImageSheet(
+                                context: context,
+                                imgUrl: context
+                                    .read<HistoryProvider>()
+                                    .selectedFile!
+                                    .path);
                           } else {
                             provider.selectFileFromGallery();
                           }
@@ -197,35 +205,5 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
         );
       },
     );
-  }
-
-  Future<void> _showImgSheet() async {
-    return showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (context) {
-          return Container(
-            padding: EdgeInsets.all(10.h),
-            alignment: Alignment.topRight,
-            decoration: BoxDecoration(
-              color: AppColors.blackColor,
-              image: DecorationImage(
-                image: FileImage(
-                  File(
-                    context.read<HistoryProvider>().selectedFile!.path,
-                  ),
-                ),
-              ),
-            ),
-            child: IconButton.filled(
-              onPressed: context.pop,
-              style: IconButton.styleFrom(
-                backgroundColor: AppColors.lightGreyColor,
-              ),
-              icon: const Icon(Icons.clear),
-            ),
-          );
-        });
   }
 }

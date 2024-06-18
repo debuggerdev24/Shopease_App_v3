@@ -14,6 +14,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
@@ -93,18 +94,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   },
                                 )
                               : const SizedBox(),
-
                         25.w.horizontalSpace,
-                        // if (provider.profileData?.isAdmin == true)
-                        GestureDetector(
-                          onTap: _showAddMemberSheet,
-                          child: SvgIcon(
-                            AppAssets.add,
-                            color: AppColors.primaryColor,
-                            size: 20.sp,
+                        if (provider.profileData?.isAdmin == true) ...[
+                          GestureDetector(
+                            onTap: _showAddMemberSheet,
+                            child: SvgIcon(
+                              AppAssets.add,
+                              color: AppColors.primaryColor,
+                              size: 20.sp,
+                            ),
                           ),
-                        ),
-                        4.w.horizontalSpace,
+                          4.w.horizontalSpace,
+                        ],
                       ],
                     ),
                     ListView.builder(
@@ -361,6 +362,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
 
+    showZoomedImg() {
+      showImageSheet(
+        context: context,
+        imgUrl: fileFieldController.text,
+        onDelete: () {
+          fileFieldController.clear();
+          context.read<ProfileProvider>().clearFile();
+          context.pop();
+        },
+      );
+    }
+
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -399,7 +412,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: onSelectFileTap,
+                        onTap: fileFieldController.text.isEmpty ||
+                                fileFieldController.text
+                                    .startsWith(Constants.defaultUserImage)
+                            ? onSelectFileTap
+                            : showZoomedImg,
                         child: Container(
                           height: 80,
                           width: 80,
@@ -424,16 +441,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : null,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          fileFieldController.clear();
-                          provider.clearFile();
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          color: AppColors.redColor,
-                        ),
-                      )
                     ],
                   ),
                   // AppTextField(

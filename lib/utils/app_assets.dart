@@ -74,6 +74,8 @@ class AppAssets {
   static const String removeinviteuser = "assets/icons/deletinvitation.png";
   static const String support = "assets/icons/support.svg";
   static const String warning = "assets/icons/warning.svg";
+  static const String noConnectionBG = "assets/images/no_internet_bg.png";
+  static const String oops = "assets/images/oops.svg";
 }
 
 class SvgIcon extends StatelessWidget {

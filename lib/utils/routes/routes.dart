@@ -28,6 +28,7 @@ import 'package:shopease_app_flutter/ui/screens/scan/scan_not_found_screen.dart'
 import 'package:shopease_app_flutter/ui/screens/scan/scan_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/on_boarding/on_board_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/splash/splash_screen.dart';
+import 'package:shopease_app_flutter/ui/widgets/internet_connectivity_wrapper.dart';
 
 import '../../ui/screens/CheckList/Upload Invoice/edit_invoice_screen.dart';
 
@@ -100,21 +101,25 @@ class AppNavigator {
       GoRoute(
         path: AppRoute.splashScreen.path,
         name: AppRoute.splashScreen.name,
-        builder: (context, state) => const SplashScreen(),
+        builder: (context, state) =>
+            const InternetConnectivityWrapper(child: SplashScreen()),
       ),
       GoRoute(
         path: AppRoute.onBoardScreen.path,
         name: AppRoute.onBoardScreen.name,
-        builder: (context, state) => const OnBoardScreen(),
+        builder: (context, state) =>
+            const InternetConnectivityWrapper(child: OnBoardScreen()),
       ),
       GoRoute(
         path: AppRoute.mobileLoginScreen.path,
         name: AppRoute.mobileLoginScreen.name,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return MobileLoginscreen(
-            isEdit: extra['isEdit'],
-            nickName: extra['nickName'],
+          return InternetConnectivityWrapper(
+            child: MobileLoginscreen(
+              isEdit: extra['isEdit'],
+              nickName: extra['nickName'],
+            ),
           );
         },
       ),
@@ -124,21 +129,25 @@ class AppNavigator {
         name: AppRoute.otpScreen.name,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return OtpScreen(
-            isEdit: extra['isEdit'] as bool,
-            mobile: extra['mobile'] as String,
+          return InternetConnectivityWrapper(
+            child: OtpScreen(
+              isEdit: extra['isEdit'] as bool,
+              mobile: extra['mobile'] as String,
+            ),
           );
         },
       ),
       GoRoute(
         path: AppRoute.nickNameScreen.path,
         name: AppRoute.nickNameScreen.name,
-        builder: (context, state) => const NickNameScreen(),
+        builder: (context, state) =>
+            const InternetConnectivityWrapper(child: NickNameScreen()),
       ),
       GoRoute(
         path: AppRoute.congratulationsScreen.path,
         name: AppRoute.congratulationsScreen.name,
-        builder: (context, state) => const CongaratulationsScreen(),
+        builder: (context, state) =>
+            const InternetConnectivityWrapper(child: CongaratulationsScreen()),
       ),
       GoRoute(
         path: AppRoute.scanAndAddScreen.path,
@@ -146,11 +155,13 @@ class AppNavigator {
         builder: (context, state) {
           final extra =
               (state.extra ?? <String, dynamic>{}) as Map<String, dynamic>;
-          return ScanAndAddScreen(
-            // isInvoice: extra['isInvoice'] ?? false,
-            isReplace: extra['isReplace'] ?? false,
-            isFromChecklist: extra['isFromChecklist'] ?? false,
-            oldChecklistItemId: extra['oldId'],
+          return InternetConnectivityWrapper(
+            child: ScanAndAddScreen(
+              // isInvoice: extra['isInvoice'] ?? false,
+              isReplace: extra['isReplace'] ?? false,
+              isFromChecklist: extra['isFromChecklist'] ?? false,
+              oldChecklistItemId: extra['oldId'],
+            ),
           );
         },
       ),
@@ -159,11 +170,13 @@ class AppNavigator {
         name: AppRoute.scanScreen.name,
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>;
-          return ScanScreen(
-            // isInvoice: extra['isInvoice'] ?? false,
-            isReplace: extra['isReplace'] ?? false,
-            isFromChecklist: extra['isFromChecklist'] ?? false,
-            oldChecklistItemId: extra['oldId'],
+          return InternetConnectivityWrapper(
+            child: ScanScreen(
+              // isInvoice: extra['isInvoice'] ?? false,
+              isReplace: extra['isReplace'] ?? false,
+              isFromChecklist: extra['isFromChecklist'] ?? false,
+              oldChecklistItemId: extra['oldId'],
+            ),
           );
         },
       ),
@@ -173,19 +186,23 @@ class AppNavigator {
         builder: (BuildContext context, GoRouterState state) {
           final extra =
               (state.extra ?? <String, dynamic>{}) as Map<String, dynamic>;
-          return ScanNotFoundScreen(
-            isFromChecklist: extra['isFromChecklist'],
-            isReplace: extra['isReplace'],
-            oldChecklistItemId: extra['oldId'],
+          return InternetConnectivityWrapper(
+            child: ScanNotFoundScreen(
+              isFromChecklist: extra['isFromChecklist'],
+              isReplace: extra['isReplace'],
+              oldChecklistItemId: extra['oldId'],
+            ),
           );
         },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           indexedStackNavigationShell = navigationShell;
-          return TabScreen(
-            key: state.pageKey,
-            navigationShell: navigationShell,
+          return InternetConnectivityWrapper(
+            child: TabScreen(
+              key: state.pageKey,
+              navigationShell: navigationShell,
+            ),
           );
         },
         branches: <StatefulShellBranch>[
@@ -196,7 +213,7 @@ class AppNavigator {
                 path: AppRoute.home.path,
                 name: AppRoute.home.name,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const HomeScreen(),
+                    const InternetConnectivityWrapper(child: HomeScreen()),
                 routes: <RouteBase>[
                   GoRoute(
                     path: AppRoute.addInventoryForm.name,
@@ -204,10 +221,12 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra =
                           (state.extra ?? {}) as Map<dynamic, dynamic>;
-                      return AddInventoryScreen(
-                        isEdit: extra['isEdit'] ?? false,
-                        isFromScan: extra['isFromScan'] ?? false,
-                        product: extra['details'],
+                      return InternetConnectivityWrapper(
+                        child: AddInventoryScreen(
+                          isEdit: extra['isEdit'] ?? false,
+                          isFromScan: extra['isFromScan'] ?? false,
+                          product: extra['details'],
+                        ),
                       );
                     },
                   ),
@@ -217,10 +236,12 @@ class AppNavigator {
                     builder: (context, state) {
                       final Map<String, dynamic> extra =
                           state.extra as Map<String, dynamic>;
-                      return ProductDetailScreen(
-                        product: extra['product'] as Product,
-                        isFromChecklist:
-                            (extra['isFromChecklist'] ?? false) as bool,
+                      return InternetConnectivityWrapper(
+                        child: ProductDetailScreen(
+                          product: extra['product'] as Product,
+                          isFromChecklist:
+                              (extra['isFromChecklist'] ?? false) as bool,
+                        ),
                       );
                     },
                   ),
@@ -228,13 +249,15 @@ class AppNavigator {
                     path: AppRoute.fetchProduct.name,
                     name: AppRoute.fetchProduct.name,
                     builder: (BuildContext context, GoRouterState state) =>
-                        const FetchProductScreen(),
+                        const InternetConnectivityWrapper(
+                            child: FetchProductScreen()),
                   ),
                   GoRoute(
                     path: AppRoute.multipleInventorySelection.name,
                     name: AppRoute.multipleInventorySelection.name,
                     builder: (BuildContext context, GoRouterState state) =>
-                        const MultipleInventorySelectionScreen(),
+                        const InternetConnectivityWrapper(
+                            child: MultipleInventorySelectionScreen()),
                   ),
                 ],
               ),
@@ -247,12 +270,14 @@ class AppNavigator {
                 path: AppRoute.checkList.path,
                 name: AppRoute.checkList.name,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const ChecklistScreen(),
+                    const InternetConnectivityWrapper(child: ChecklistScreen()),
                 routes: <RouteBase>[
                   GoRoute(
                     path: AppRoute.selectShop.name,
                     name: AppRoute.selectShop.name,
-                    builder: (context, state) => const SelectShopScreen(),
+                    builder: (context, state) =>
+                        const InternetConnectivityWrapper(
+                            child: SelectShopScreen()),
                   ),
                   GoRoute(
                     path: AppRoute.addChecklistForm.name,
@@ -260,19 +285,23 @@ class AppNavigator {
                     builder: (BuildContext context, GoRouterState state) {
                       final extra = (state.extra ?? <String, dynamic>{})
                           as Map<String, dynamic>;
-                      return AddChecklistScreen(
-                        isEdit: extra['isEdit'] ?? false,
-                        isFromScan: extra['isFromScan'] ?? false,
-                        isReplace: extra['isReplace'] ?? false,
-                        product: extra['details'],
-                        oldChecklistItemId: extra['oldId'],
+                      return InternetConnectivityWrapper(
+                        child: AddChecklistScreen(
+                          isEdit: extra['isEdit'] ?? false,
+                          isFromScan: extra['isFromScan'] ?? false,
+                          isReplace: extra['isReplace'] ?? false,
+                          product: extra['details'],
+                          oldChecklistItemId: extra['oldId'],
+                        ),
                       );
                     },
                   ),
                   GoRoute(
                     path: AppRoute.uploadInvoice.name,
                     name: AppRoute.uploadInvoice.name,
-                    builder: (context, state) => const UploadInvoiceScreen(),
+                    builder: (context, state) =>
+                        const InternetConnectivityWrapper(
+                            child: UploadInvoiceScreen()),
                   ),
                   GoRoute(
                     path: AppRoute.addInvoice.name,
@@ -280,10 +309,12 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra = (state.extra ?? <String, dynamic>{})
                           as Map<String, dynamic>;
-                      return AddInvoiceScreen(
-                        shop: extra['shop'],
-                        histId: extra['histId'],
-                        // total: extra['total'] as int,
+                      return InternetConnectivityWrapper(
+                        child: AddInvoiceScreen(
+                          shop: extra['shop'],
+                          histId: extra['histId'],
+                          // total: extra['total'] as int,
+                        ),
                       );
                     },
                   ),
@@ -293,11 +324,13 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra = (state.extra ?? <String, dynamic>{})
                           as Map<String, dynamic>;
-                      return EditInvoiceScreen(
-                           shop: extra['shop'],
-                           histId: extra['histId'],
-                          // total: extra['total'] as int,
-                          );
+                      return InternetConnectivityWrapper(
+                        child: EditInvoiceScreen(
+                          shop: extra['shop'],
+                          histId: extra['histId'],
+                          totalAmount: extra['total_amount'],
+                        ),
+                      );
                     },
                   ),
                   GoRoute(
@@ -306,12 +339,13 @@ class AppNavigator {
                     builder: (context, state) {
                       final extra = (state.extra ?? <String, dynamic>{})
                           as Map<String, dynamic>;
-                      return SaveInvoiceScreen(
-                        shop: extra['shop'],
-                        total: extra['total'] ?? 0,
-                        histId: extra['histId'],
-                        edit: extra['edit'],
-                        
+                      return InternetConnectivityWrapper(
+                        child: SaveInvoiceScreen(
+                          shop: extra['shop'],
+                          totalAmount: extra['total_amount'] ?? 0,
+                          histId: extra['histId'],
+                          edit: extra['edit'],
+                        ),
                       );
                     },
                   ),
@@ -319,17 +353,20 @@ class AppNavigator {
                     path: AppRoute.historyDetail.name,
                     name: AppRoute.historyDetail.name,
                     builder: (context, state) {
-                      return HistoryDetailScreen(
-                        history: state.extra as History,
+                      return InternetConnectivityWrapper(
+                        child: HistoryDetailScreen(
+                          history: state.extra as History,
+                        ),
                       );
                     },
                   ),
                   GoRoute(
                     path: AppRoute.multipleHistoryItemSelection.name,
                     name: AppRoute.multipleHistoryItemSelection.name,
-                    builder: (context, state) =>
-                        MultipleHistoryItemSelectionScreen(
-                      history: state.extra as History,
+                    builder: (context, state) => InternetConnectivityWrapper(
+                      child: MultipleHistoryItemSelectionScreen(
+                        history: state.extra as History,
+                      ),
                     ),
                   ),
                 ],
@@ -343,7 +380,7 @@ class AppNavigator {
                 path: AppRoute.profile.path,
                 name: AppRoute.profile.name,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const ProfileScreen(),
+                    const InternetConnectivityWrapper(child: ProfileScreen()),
                 routes: const <RouteBase>[],
               ),
             ],
@@ -355,7 +392,8 @@ class AppNavigator {
                 path: AppRoute.notifications.path,
                 name: AppRoute.notifications.name,
                 builder: (BuildContext context, GoRouterState state) =>
-                    const NotificationScreen(),
+                    const InternetConnectivityWrapper(
+                        child: NotificationScreen()),
                 routes: const <RouteBase>[],
               ),
             ],

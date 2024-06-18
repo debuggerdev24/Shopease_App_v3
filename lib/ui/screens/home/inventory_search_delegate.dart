@@ -78,18 +78,26 @@ class ProductSearchDelegate extends SearchDelegate<String> {
                             extra: {'product': products[index]});
                       },
                       onAddToCart: () {
-                        context.read<ChecklistProvider>().putCheklistItems(
-                          data: [
-                            products[index]
-                                .copyWith(isInChecklist: true)
-                                .toJson()
-                          ],
-                          isEdit: true,
-                          onSuccess: () {
-                            provider.addToChecklist(
-                                [products[index]], context, false);
-                          },
-                        );
+                        if (products[index].isInChecklist == true) {
+                          context
+                              .read<ChecklistProvider>()
+                              .deleteChecklistItems(
+                                  itemIds: [products[index].itemId!],
+                                  onSuccess: () {
+                                    provider.addToChecklist(
+                                        [products[index]], context, false);
+                                  });
+                        } else {
+                          context
+                              .read<ChecklistProvider>()
+                              .putChecklistFromInventory(
+                            data: [products[index].itemId!],
+                            onSuccess: () {
+                              provider.addToChecklist(
+                                  [products[index]], context, false);
+                            },
+                          );
+                        }
                       },
                       onDelete: () {
                         provider.deletInventoryItems(

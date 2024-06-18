@@ -16,6 +16,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -88,7 +89,11 @@ class _HistorylistTileState extends State<HistorylistTile>
                             },
                           );
                         } else {
-                          _showImgSheet();
+                          showImageSheet(
+                            context: context,
+                            imgUrl: widget.product.imageUrl ??
+                                Constants.placeholdeImg,
+                          );
                         }
                       },
                       child: Container(
@@ -197,15 +202,14 @@ class _HistorylistTileState extends State<HistorylistTile>
                 // _showReplaceBrandSheet();
                 // widget.onAddToChecklistTap();
                 // _slideController.close();
-                context.pushNamed(AppRoute.editInvoice.name,
-                                            extra: {
+                context.pushNamed(
+                  AppRoute.editInvoice.name,
+                  extra: {
                     'shop': widget.product.shopName,
                     'histId': widget.product.histId,
+                    'total_amount': widget.product.totalPrice,
                   },
                 );
-             
-              
-
               },
             ),
           AppSlidableaction(
@@ -219,34 +223,6 @@ class _HistorylistTileState extends State<HistorylistTile>
           ),
         ],
       );
-
-  Future<void> _showImgSheet() async {
-    return showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (context) {
-          return Container(
-            padding: EdgeInsets.all(10.h),
-            alignment: Alignment.topRight,
-            decoration: BoxDecoration(
-              color: AppColors.blackColor,
-              image: DecorationImage(
-                image: NetworkImage(
-                  widget.product.imageUrl ?? Constants.placeholdeImg,
-                ),
-              ),
-            ),
-            child: IconButton.filled(
-              onPressed: context.pop,
-              style: IconButton.styleFrom(
-                backgroundColor: AppColors.lightGreyColor,
-              ),
-              icon: const Icon(Icons.clear),
-            ),
-          );
-        });
-  }
 
   _showReplaceBrandSheet() {
     showModalBottomSheet(
