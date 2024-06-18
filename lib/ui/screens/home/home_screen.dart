@@ -156,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen>
               context.goNamed(
                 AppRoute.multipleInventorySelection.name,
               );
+              // context.pop();
             },
             product: provider.filteredProducts[index],
             onTap: () {
@@ -279,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen>
         builder: (context) {
           return Consumer<InventoryProvider>(builder: (context, provider, _) {
             return Padding(
-              padding: EdgeInsets.only(left: 14),
+              padding: const EdgeInsets.only(left: 14),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,

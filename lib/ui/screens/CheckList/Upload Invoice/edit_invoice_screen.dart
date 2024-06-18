@@ -14,8 +14,8 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class AddInvoiceScreen extends StatefulWidget {
-  const AddInvoiceScreen({
+class EditInvoiceScreen extends StatefulWidget {
+  const EditInvoiceScreen({
     super.key,
     this.shop,
     this.histId,
@@ -25,10 +25,10 @@ class AddInvoiceScreen extends StatefulWidget {
   final String? histId;
   // final int total;
   @override
-  State<AddInvoiceScreen> createState() => _AddInvoiceScreenState();
+  State<EditInvoiceScreen> createState() => _EditInvoiceScreenState();
 }
 
-class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
+class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
     // log("shop:${widget.shop}:::::total${widget.total}");
@@ -38,7 +38,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           automaticallyImplyLeading: true,
           iconTheme: IconThemeData(color: AppColors.blackColor, size: 30.sp),
           title: GlobalText(
-            "Add Invoice",
+            "Edit Invoice",
             textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
@@ -63,13 +63,13 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             extra: {
                               'shop': widget.shop,
                               'histId': widget.histId,
-                              'edit':false,
+                              'edit':true
                               // 'total': 100,
                             },
                           ),
                         );
                   },
-                  text: 'Add Invoice'),
+                  text: 'Edit Invoice'),
               20.h.verticalSpace,
               // AppButton(
               //   onPressed: () async {

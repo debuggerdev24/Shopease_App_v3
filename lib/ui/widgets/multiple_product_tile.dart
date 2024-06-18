@@ -87,7 +87,8 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  AppChip(text: widget.product.brand ?? ''),
+                  if (widget.product.brand.toString().isNotEmpty)
+                    AppChip(text: widget.product.brand ?? ''),
                 ],
               ),
             ),

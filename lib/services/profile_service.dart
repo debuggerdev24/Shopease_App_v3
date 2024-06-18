@@ -39,6 +39,10 @@ abstract class BaseProfileService {
   Future<Response<dynamic>?> updateuser({
     required Map<String, dynamic> data,
   });
+
+  Future<Response<dynamic>?> userleavegroup({
+    required Map<String, dynamic> data,
+  });
 }
 
 class ProfileService implements BaseProfileService {
@@ -177,6 +181,23 @@ class ProfileService implements BaseProfileService {
 
     return await BaseRepository().post(
       ApiUrl.updateuser,
+      data: formData,
+    );
+  }
+
+  @override
+  Future<Response?> userleavegroup({
+    required Map<String, dynamic> data,
+  }) async {
+    final Map<String, dynamic> formData = {'records': []};
+
+    (formData['records'] as List).add(data);
+
+    log('form data: ${formData.toString()}', name: 'userleavegroup');
+
+    return await BaseRepository().post(
+      ApiUrl.removeuserfromgroup,
+      
       data: formData,
     );
   }

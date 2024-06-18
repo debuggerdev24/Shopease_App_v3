@@ -248,7 +248,7 @@ class _ChecklistTileState extends State<ChecklistTile>
               'Are you sure want to delete from\nChecklist?',
               style: textStyle18SemiBold,
               textAlign: TextAlign.center,
-            ),
+            ),  
             20.verticalSpace,
             DeleteButton(
                 onPressed: () {

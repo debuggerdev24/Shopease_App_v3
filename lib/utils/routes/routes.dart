@@ -29,6 +29,8 @@ import 'package:shopease_app_flutter/ui/screens/scan/scan_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/on_boarding/on_board_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/splash/splash_screen.dart';
 
+import '../../ui/screens/CheckList/Upload Invoice/edit_invoice_screen.dart';
+
 enum AppRoute {
   splashScreen,
   onBoardScreen,
@@ -57,6 +59,7 @@ enum AppRoute {
   saveInvoice,
   historyDetail,
   multipleHistoryItemSelection,
+  editInvoice,
 
   ////////// BRANCH 3 //////////
   profile,
@@ -285,6 +288,19 @@ class AppNavigator {
                     },
                   ),
                   GoRoute(
+                    path: AppRoute.editInvoice.name,
+                    name: AppRoute.editInvoice.name,
+                    builder: (context, state) {
+                      final extra = (state.extra ?? <String, dynamic>{})
+                          as Map<String, dynamic>;
+                      return EditInvoiceScreen(
+                           shop: extra['shop'],
+                           histId: extra['histId'],
+                          // total: extra['total'] as int,
+                          );
+                    },
+                  ),
+                  GoRoute(
                     path: AppRoute.saveInvoice.name,
                     name: AppRoute.saveInvoice.name,
                     builder: (context, state) {
@@ -294,6 +310,8 @@ class AppNavigator {
                         shop: extra['shop'],
                         total: extra['total'] ?? 0,
                         histId: extra['histId'],
+                        edit: extra['edit'],
+                        
                       );
                     },
                   ),

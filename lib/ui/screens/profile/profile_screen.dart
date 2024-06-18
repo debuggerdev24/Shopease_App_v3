@@ -73,28 +73,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           textStyle: textStyle16,
                         ),
                         const Spacer(),
-                        if (provider.groupProfiles.isNotEmpty &&
-                            provider.profileData?.isAdmin == true)
-                          GestureDetector(
-                            child: GlobalText(
-                              'Leave Group',
-                              textStyle: textStyle12.copyWith(
-                                  decoration: TextDecoration.underline),
-                            ),
-                            onTap: () {
-                              _showLeaveGroupSheet(provider);
-                            },
-                          ),
+                        if (provider.groupProfiles.isNotEmpty)
+                          provider.groupProfiles
+                                  .any((e) => e.isInvited == false)
+                              ? GestureDetector(
+                                  child: GlobalText(
+                                    'Leave Group',
+                                    textStyle: textStyle12.copyWith(
+                                        decoration: TextDecoration.underline),
+                                  ),
+                                  onTap: () {
+                                    if (provider.profileData?.isAdmin == true &&
+                                        !provider.groupProfiles
+                                            .any((e) => e.isAdmin)) {
+                                      _showAssignAndLeaveGroupSheet(provider);
+                                    } else {
+                                      _showUserLeaveSheet(provider);
+                                    }
+                                  },
+                                )
+                              : const SizedBox(),
+
                         25.w.horizontalSpace,
-                        if (provider.profileData?.isAdmin == true)
-                          GestureDetector(
-                            onTap: _showAddMemberSheet,
-                            child: SvgIcon(
-                              AppAssets.add,
-                              color: AppColors.primaryColor,
-                              size: 20.sp,
-                            ),
+                        // if (provider.profileData?.isAdmin == true)
+                        GestureDetector(
+                          onTap: _showAddMemberSheet,
+                          child: SvgIcon(
+                            AppAssets.add,
+                            color: AppColors.primaryColor,
+                            size: 20.sp,
                           ),
+                        ),
                         4.w.horizontalSpace,
                       ],
                     ),
@@ -105,6 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         ProfileData user = provider.groupProfiles[index];
                         log("usdert =====>${user.userId}");
+                        log("usdert leanght =====>${provider.groupProfiles.length}");
 
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
@@ -169,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
-    log(" provider.profileData?.isAdmin ==>0==> ${provider.profileData?.isAdmin}");
+    log(" provider.profileData?.isAdmin ==>0==> ${user.userId}");
 
     return user.isInvited == true
         ? Row(
@@ -517,7 +527,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLeaveGroupSheet(ProfileProvider profileProvider) {
+  void _showAssignAndLeaveGroupSheet(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");
     log("uninvitedUsers length: ${profileProvider.uninvitedUsers.length}");
@@ -540,60 +550,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      GlobalText('Assign & Leave',
+                      GlobalText('Assign and Leave',
                           textStyle: textStyle18SemiBold),
                       20.h.verticalSpace,
                       Consumer<ProfileProvider>(
                           builder: (context, provider, _) {
+                        print(" ${provider.inviteduser.isEmpty}");
                         return Column(
                           children: profileProvider.groupProfiles
                               .asMap()
                               .entries
                               .map((entry) {
                             final ProfileData user = entry.value;
-
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  profileProvider.changeSelectedUser(entry.key);
-                                  rebuild(() {});
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    profileProvider.selectedUserIndex ==
-                                            entry.key
-                                        ? const SvgIcon(
-                                            AppAssets.check,
-                                            color: AppColors.primaryColor,
-                                          )
-                                        : const SizedBox.shrink(),
-                                    20.horizontalSpace,
-                                    GlobalText(
-                                      user.preferredUsername,
-                                      fontSize: 15.sp,
+                            return user.isInvited == true
+                                ? const SizedBox()
+                                : Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        profileProvider
+                                            .changeSelectedUser(entry.key);
+                                        rebuild(() {});
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          profileProvider.selectedUserIndex ==
+                                                  entry.key
+                                              ? const SvgIcon(
+                                                  AppAssets.check,
+                                                  color: AppColors.primaryColor,
+                                                )
+                                              : const SizedBox.shrink(),
+                                          20.horizontalSpace,
+                                          GlobalText(
+                                            user.preferredUsername,
+                                            fontSize: 15.sp,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            );
+                                  );
                           }).toList(),
                         );
                       }),
                       30.h.verticalSpace,
-                      AppButton(
-                          colorType: profileProvider.selectedUserIndex == -1
-                              ? AppButtonColorType.greyed
-                              : AppButtonColorType.primary,
-                          onPressed: () {
-                            profileProvider.clearGroupProfiles();
+                      DeleteButton(
+                          onPressed: () async {
+                            // widget.onDelete?.call();
+                            // _slideController.close();
+
                             context.pop();
-                            CustomToast.showSuccess(context,
-                                'Successfully left the existing group.');
                           },
-                          text: 'Assign & Leave'),
+                          text: 'Assign and Leave'),
                       10.h.verticalSpace,
                       AppButton(
                           colorType: AppButtonColorType.greyed,
@@ -704,6 +716,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
       ],
+    );
+  }
+
+  _showUserLeaveSheet(ProfileProvider profileProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => BounceInUp(
+        child: Container(
+          padding: EdgeInsets.all(20.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  'Do you really wish to leave the group? ',
+                  style: textStyle18SemiBold,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              20.verticalSpace,
+              DeleteButton(
+                  onPressed: () async {
+                    // widget.onDelete?.call();
+                    // _slideController.close();
+
+                    context.pop();
+                    await context.read<ProfileProvider>().leaveusergroup(
+                        data: {
+                          'user_id': profileProvider.profileData?.userId,
+                        },
+                        onSuccess: () {
+                          profileProvider.getAllProfile();
+                        });
+                  },
+                  text: 'Yes, sure'),
+              10.verticalSpace,
+              AppButton(
+                onPressed: () {
+                  // _slideController.close();
+                  context.pop();
+                },
+                text: 'Cancel',
+                colorType: AppButtonColorType.greyed,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

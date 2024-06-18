@@ -26,11 +26,13 @@ class SaveInvoiceScreen extends StatefulWidget {
     this.shop,
     this.total,
     this.histId,
+    required this.edit,
   });
 
   final String? shop;
   final String? histId;
   final int? total;
+  final bool edit;
 
   @override
   State<SaveInvoiceScreen> createState() => _SaveInvoiceScreenState();
@@ -51,17 +53,22 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // log('shop:${widget.shop}:::total:${widget.total}');
+    log('shop:${widget.shop}:::total:${widget.histId}');
     return Consumer<HistoryProvider>(
       builder: (context, provider, _) {
         return Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: true,
             iconTheme: IconThemeData(color: AppColors.blackColor, size: 30.sp),
-            title: GlobalText(
-              "Scan & Add Invoice",
-              textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
-            ),
+            title: widget.edit
+                ? GlobalText(
+                    "Scan & Edit Invoice",
+                    textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
+                  )
+                : GlobalText(
+                    "Scan & Add Invoice",
+                    textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
+                  ),
           ),
           body: Container(
             padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 15.sp),
@@ -130,20 +137,21 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                         fontWeight: FontWeight.w400),
                   ),
                   10.h.verticalSpace,
-                  AppTextField(
-                    name: "Shop Name",
-                    enabled: false,
-                    controller: _nameController,
-                    labelText: 'Shop Name',
-                    hintText: 'Enter shop name',
-                    hintStyle: textStyle16.copyWith(
-                        color: AppColors.blackColor,
-                        fontWeight: FontWeight.w400),
-                    // labelText: "  Product name",
-                    labelStyle: textStyle16.copyWith(
-                        color: AppColors.blackColor,
-                        fontWeight: FontWeight.w400),
-                  ),
+                  if (!widget.edit)
+                    AppTextField(
+                      name: "Shop Name",
+                      enabled: false,
+                      controller: _nameController,
+                      labelText: 'Shop Name',
+                      hintText: 'Enter shop name',
+                      hintStyle: textStyle16.copyWith(
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w400),
+                      // labelText: "  Product name",
+                      labelStyle: textStyle16.copyWith(
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w400),
+                    ),
                   20.verticalSpace,
                 ],
               ),
@@ -173,7 +181,9 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     data: [newData],
                     isEdit: false,
                     onSuccess: () {
-                      CustomToast.showSuccess(context, 'Invoice added.');
+                      widget.edit
+                          ? CustomToast.showSuccess(context, 'Invoice edited.')
+                          : CustomToast.showSuccess(context, 'Invoice added.');
                       context.goNamed(AppRoute.checkList.name);
                       context.read<ChecklistProvider>().clearSelectedProducts();
                       provider.getHistoryItems();
