@@ -342,7 +342,7 @@ class AppNavigator {
                       return InternetConnectivityWrapper(
                         child: SaveInvoiceScreen(
                           shop: extra['shop'],
-                          totalAmount: extra['total_amount'] ?? 0,
+                          totalAmount: extra['total_amount'] ?? '0',
                           histId: extra['histId'],
                           edit: extra['edit'],
                         ),

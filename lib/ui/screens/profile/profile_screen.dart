@@ -362,17 +362,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
 
-    showZoomedImg() {
-      showImageSheet(
-        context: context,
-        imgUrl: fileFieldController.text,
-        onDelete: () {
-          fileFieldController.clear();
-          context.read<ProfileProvider>().clearFile();
-          context.pop();
-        },
-      );
-    }
+    // showZoomedImg() {
+    //   showImageSheet(
+    //     context: context,
+    //     imgUrl: fileFieldController.text,
+    //     onDelete: () {
+    //       fileFieldController.clear();
+    //       context.read<ProfileProvider>().clearFile();
+    //       context.pop();
+    //     },
+    //   );
+    // }
 
     showModalBottomSheet(
       context: context,
@@ -412,11 +412,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: fileFieldController.text.isEmpty ||
-                                fileFieldController.text
-                                    .startsWith(Constants.defaultUserImage)
+                        onTap: fileFieldController.text.isEmpty
                             ? onSelectFileTap
-                            : showZoomedImg,
+                            : () {},
                         child: Container(
                           height: 80,
                           width: 80,
@@ -439,6 +437,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: provider.selectedFile == null
                               ? SvgPicture.asset(AppAssets.addInvoice)
                               : null,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          fileFieldController.clear();
+                          context.read<ProfileProvider>().clearFile();
+                        },
+                        icon: const Icon(
+                          Icons.delete,
+                          color: AppColors.redColor,
                         ),
                       ),
                     ],

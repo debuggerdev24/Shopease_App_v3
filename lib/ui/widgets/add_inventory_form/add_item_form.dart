@@ -245,37 +245,51 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: _fileFieldController.text.isEmpty ||
-                                    _fileFieldController.text
-                                        .startsWith(Constants.defaultItemImage)
+                            onTap: _fileFieldController.text.isEmpty
                                 ? onSelectFileTap
-                                : showZoomedImg,
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: AppColors.blackColor),
-                                image: _fileFieldController.text.isEmpty
-                                    ? null
-                                    : provider.selectedFile != null &&
-                                            File(_fileFieldController.text)
-                                                .existsSync()
-                                        ? DecorationImage(
-                                            image: FileImage(
-                                              File(_fileFieldController.text),
-                                            ),
-                                          )
-                                        : DecorationImage(
-                                            image: NetworkImage(
-                                                _fileFieldController.text),
-                                          ),
-                              ),
-                              child: _fileFieldController.text.isEmpty
-                                  ? SvgPicture.asset(AppAssets.addInvoice)
-                                  : provider.selectedFile != null
-                                      ? SvgPicture.asset(AppAssets.zoomIcon)
-                                      : null,
+                                : () {},
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 80,
+                                  width: 80,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: AppColors.blackColor),
+                                    image: _fileFieldController.text.isEmpty
+                                        ? null
+                                        : provider.selectedFile != null &&
+                                                File(_fileFieldController.text)
+                                                    .existsSync()
+                                            ? DecorationImage(
+                                                image: FileImage(
+                                                  File(_fileFieldController
+                                                      .text),
+                                                ),
+                                              )
+                                            : DecorationImage(
+                                                image: NetworkImage(
+                                                    _fileFieldController.text),
+                                              ),
+                                  ),
+                                  child: _fileFieldController.text.isEmpty
+                                      ? SvgPicture.asset(AppAssets.addInvoice)
+                                      : provider.selectedFile != null
+                                          ? SvgPicture.asset(AppAssets.zoomIcon)
+                                          : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              _fileFieldController.clear();
+                              provider.clearFile();
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                              color: AppColors.redColor,
                             ),
                           ),
                         ],

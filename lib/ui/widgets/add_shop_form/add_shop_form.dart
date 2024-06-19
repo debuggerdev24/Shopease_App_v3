@@ -104,11 +104,9 @@ class _AddShopFormState extends State<AddShopForm> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: _fileFieldController.text.isEmpty ||
-                            _fileFieldController.text
-                                .startsWith(Constants.defaultShopImage)
+                    onTap: _fileFieldController.text.isEmpty
                         ? onSelectFileTap
-                        : showZoomedImg,
+                        : () {},
                     child: Container(
                       height: 80,
                       width: 80,
@@ -133,6 +131,16 @@ class _AddShopFormState extends State<AddShopForm> {
                             ? AppAssets.addInvoice
                             : AppAssets.zoomIcon,
                       ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      _fileFieldController.clear();
+                      provider.clearFile();
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: AppColors.redColor,
                     ),
                   ),
                 ],

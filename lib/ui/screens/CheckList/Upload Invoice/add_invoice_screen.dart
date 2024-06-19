@@ -63,7 +63,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             extra: {
                               'shop': widget.shop,
                               'histId': widget.histId,
-                              'edit':false,
+                              'edit': false,
                               // 'total': 100,
                             },
                           ),
