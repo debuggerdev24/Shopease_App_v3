@@ -282,16 +282,17 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               ],
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              _fileFieldController.clear();
-                              provider.clearFile();
-                            },
-                            icon: const Icon(
-                              Icons.delete,
-                              color: AppColors.redColor,
+                          if (_fileFieldController.text.isNotEmpty)
+                            IconButton(
+                              onPressed: () {
+                                _fileFieldController.clear();
+                                provider.clearFile();
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: AppColors.redColor,
+                              ),
                             ),
-                          ),
                         ],
                       ),
 

@@ -46,6 +46,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
       builder: (context, provider, _) {
+        print("test data ${provider.groupProfiles}");
+
         return provider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -95,7 +97,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 )
                               : const SizedBox(),
                         25.w.horizontalSpace,
-                        if (provider.profileData?.isAdmin == true) ...[
+                        if (provider.profileData?.isAdmin == true ||
+                            provider.groupProfiles.isEmpty) ...[
                           GestureDetector(
                             onTap: _showAddMemberSheet,
                             child: SvgIcon(
@@ -439,16 +442,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : null,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          fileFieldController.clear();
-                          context.read<ProfileProvider>().clearFile();
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          color: AppColors.redColor,
+                      if (fileFieldController.text.isNotEmpty)
+                        IconButton(
+                          onPressed: () {
+                            fileFieldController.clear();
+                            context.read<ProfileProvider>().clearFile();
+                          },
+                          icon: const Icon(
+                            Icons.delete,
+                            color: AppColors.redColor,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   // AppTextField(

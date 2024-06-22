@@ -133,16 +133,17 @@ class _AddShopFormState extends State<AddShopForm> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      _fileFieldController.clear();
-                      provider.clearFile();
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: AppColors.redColor,
+                  if (_fileFieldController.text.isNotEmpty)
+                    IconButton(
+                      onPressed: () {
+                        _fileFieldController.clear();
+                        provider.clearFile();
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: AppColors.redColor,
+                      ),
                     ),
-                  ),
                 ],
               ),
               // AppTextField(

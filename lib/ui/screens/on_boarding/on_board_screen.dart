@@ -23,7 +23,7 @@ class OnBoardScreen extends StatefulWidget {
 class _OnBoardScreenState extends State<OnBoardScreen> {
   final List<Map<String, String>> onBoardList = [
     {
-      'image': AppAssets.onBoard1,
+      'image': AppAssets.onBoard3,
       'title': 'Share the Shopping Share the Love',
       'subTitle':
           'Create & share lists instantly,track shopping \n progress, and link the items to top stores',
@@ -35,7 +35,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
           'Track your fridge contents,never miss \n ites,organize your way , and use scan & go',
     },
     {
-      'image': AppAssets.onBoard3,
+      'image': AppAssets.onBoard1,
       'title': 'Keep Your Receipts in Check',
       'subTitle':
           'Organize receipts with easy photos.\nTrack budget quickly & find purchases \n with ease',

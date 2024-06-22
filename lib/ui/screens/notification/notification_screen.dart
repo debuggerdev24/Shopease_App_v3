@@ -130,7 +130,6 @@ class _NotificationScreenState extends State<NotificationScreen>
                     ),
                   10.h.verticalSpace,
                   ListView.separated(
-                    reverse: true,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: provider.notifications.length,

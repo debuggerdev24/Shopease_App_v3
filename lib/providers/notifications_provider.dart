@@ -54,11 +54,21 @@ class NotificationProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         _notifications.clear();
 
-        _notifications.sort((a, b) =>
-            b.recievedDate?.compareTo(a.recievedDate ?? DateTime(0)) ?? -1);
-
         _notifications.addAll(
             (res.data as List).map((e) => NotificationModel.fromJson(e)));
+
+        _notifications.sort((a, b) {
+          if (b.recievedDate == null && a.recievedDate == null) {
+            return 0;
+          } else if (b.recievedDate == null) {
+            return -1;
+          } else if (a.recievedDate == null) {
+            return 1;
+          } else {
+            return b.recievedDate!.compareTo(a.recievedDate!);
+          }
+        });
+
         notifyListeners();
         onSuccess?.call();
       } else {
