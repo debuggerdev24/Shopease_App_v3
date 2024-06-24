@@ -22,6 +22,7 @@ class AppThemes {
 
   static final darkTheme = ThemeData(
     fontFamily: 'Figtree',
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(),
     primaryColor: AppColors.orangeColor,
     appBarTheme: const AppBarTheme(color: AppColors.whiteColor),
     dialogTheme: const DialogTheme(backgroundColor: AppColors.blackGreyColor),

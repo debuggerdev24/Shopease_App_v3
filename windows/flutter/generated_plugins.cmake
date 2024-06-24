@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  connectivity_plus
   file_selector_windows
   flutter_barcode_sdk
   smart_auth

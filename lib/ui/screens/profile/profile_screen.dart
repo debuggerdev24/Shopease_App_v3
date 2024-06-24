@@ -14,6 +14,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
@@ -45,6 +46,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
       builder: (context, provider, _) {
+        print("test data ${provider.groupProfiles}");
+
         return provider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -74,32 +77,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const Spacer(),
                         if (provider.groupProfiles.isNotEmpty)
-                          provider.profileData?.isAdmin == true
+                          provider.groupProfiles
+                                  .any((e) => e.isInvited == false)
                               ? GestureDetector(
-                                  child:
-                                      //  provider.profileData?.isAdmin == true
-                                      //     ?
-                                      GlobalText(
-                                    'Leave Group',
-                                    textStyle: textStyle12.copyWith(
-                                        decoration: TextDecoration.underline),
-                                  ),
-                                  onTap: () {
-                                    _showLeaveGroupSheet(provider);
-                                  },
-                                )
-                              : GestureDetector(
                                   child: GlobalText(
                                     'Leave Group',
                                     textStyle: textStyle12.copyWith(
                                         decoration: TextDecoration.underline),
                                   ),
                                   onTap: () {
-                                    _showUserLeaveSheet(provider);
+                                    if (provider.profileData?.isAdmin == true &&
+                                        !provider.groupProfiles
+                                            .any((e) => e.isAdmin)) {
+                                      _showAssignAndLeaveGroupSheet(provider);
+                                    } else {
+                                      _showUserLeaveSheet(provider);
+                                    }
                                   },
-                                ),
+                                )
+                              : const SizedBox(),
                         25.w.horizontalSpace,
-                        if (provider.profileData?.isAdmin == true)
+                        if (provider.profileData?.isAdmin == true ||
+                            provider.groupProfiles.isEmpty) ...[
                           GestureDetector(
                             onTap: _showAddMemberSheet,
                             child: SvgIcon(
@@ -108,7 +107,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               size: 20.sp,
                             ),
                           ),
-                        4.w.horizontalSpace,
+                          4.w.horizontalSpace,
+                        ],
                       ],
                     ),
                     ListView.builder(
@@ -118,6 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         ProfileData user = provider.groupProfiles[index];
                         log("usdert =====>${user.userId}");
+                        log("usdert leanght =====>${provider.groupProfiles.length}");
 
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
@@ -364,6 +365,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
 
+    // showZoomedImg() {
+    //   showImageSheet(
+    //     context: context,
+    //     imgUrl: fileFieldController.text,
+    //     onDelete: () {
+    //       fileFieldController.clear();
+    //       context.read<ProfileProvider>().clearFile();
+    //       context.pop();
+    //     },
+    //   );
+    // }
+
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -402,7 +415,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: onSelectFileTap,
+                        onTap: fileFieldController.text.isEmpty
+                            ? onSelectFileTap
+                            : () {},
                         child: Container(
                           height: 80,
                           width: 80,
@@ -427,16 +442,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : null,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          fileFieldController.clear();
-                          provider.clearFile();
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          color: AppColors.redColor,
+                      if (fileFieldController.text.isNotEmpty)
+                        IconButton(
+                          onPressed: () {
+                            fileFieldController.clear();
+                            context.read<ProfileProvider>().clearFile();
+                          },
+                          icon: const Icon(
+                            Icons.delete,
+                            color: AppColors.redColor,
+                          ),
                         ),
-                      )
                     ],
                   ),
                   // AppTextField(
@@ -530,7 +546,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showLeaveGroupSheet(ProfileProvider profileProvider) {
+  void _showAssignAndLeaveGroupSheet(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");
     log("uninvitedUsers length: ${profileProvider.uninvitedUsers.length}");
@@ -553,7 +569,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      GlobalText('Do you really wish to leave the group?',
+                      GlobalText('Assign and Leave',
                           textStyle: textStyle18SemiBold),
                       20.h.verticalSpace,
                       Consumer<ProfileProvider>(
@@ -565,7 +581,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .entries
                               .map((entry) {
                             final ProfileData user = entry.value;
-
                             return user.isInvited == true
                                 ? const SizedBox()
                                 : Padding(
@@ -602,18 +617,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       }),
                       30.h.verticalSpace,
-                      // AppButton(
-                      //     colorType: profileProvider.selectedUserIndex == -1
-                      //         ? AppButtonColorType.greyed
-                      //         : AppButtonColorType.primary,
-                      //     onPressed: () {
-                      //       profileProvider.clearGroupProfiles();
-                      //       context.pop();
-                      //       CustomToast.showSuccess(context,
-                      //           'Successfully left the existing group.');
-                      //     },
-                      //     text: 'Assign & Leave'),
-
                       DeleteButton(
                           onPressed: () async {
                             // widget.onDelete?.call();
@@ -621,8 +624,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             context.pop();
                           },
-                          text: 'Leave & Delete the Group'),
-
+                          text: 'Assign and Leave'),
                       10.h.verticalSpace,
                       AppButton(
                           colorType: AppButtonColorType.greyed,

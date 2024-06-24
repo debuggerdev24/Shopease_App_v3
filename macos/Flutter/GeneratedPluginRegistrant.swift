@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import connectivity_plus
 import file_selector_macos
 import flutter_barcode_sdk
 import mobile_scanner
@@ -15,6 +16,7 @@ import smart_auth
 import url_launcher_macos
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
   FlutterBarcodeSdkPlugin.register(with: registry.registrar(forPlugin: "FlutterBarcodeSdkPlugin"))
   MobileScannerPlugin.register(with: registry.registrar(forPlugin: "MobileScannerPlugin"))

@@ -17,6 +17,7 @@ import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -62,6 +63,7 @@ class _MultipleInventorySelectionScreenState
                       onSuccess: () {
                         provider.addToChecklist(
                             provider.selectedProducts, context, false);
+                        CustomToast.showSuccess(context, 'Added successfully.');
                         context.pop();
                       },
                     );
@@ -131,13 +133,11 @@ class _MultipleInventorySelectionScreenState
         context: context,
         isScrollControlled: true,
         builder: (context) {
-          return Container(
-            alignment: Alignment.center,
-            height: 480.h,
-            padding: EdgeInsets.symmetric(horizontal: 13.sp, vertical: 5.sp),
-            child: SingleChildScrollView(
+          return Consumer<InventoryProvider>(builder: (context, provider, _) {
+            return Padding(
+              padding: EdgeInsets.only(left: 14),
               child: Column(
-                mainAxisSize: MainAxisSize.max,
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -146,37 +146,57 @@ class _MultipleInventorySelectionScreenState
                         GlobalText('Filters', textStyle: textStyle20SemiBold),
                   ),
                   20.h.verticalSpace,
-                  GlobalText(
-                    'Filter by category',
-                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                    child: GlobalText(
+                      'Filter by category',
+                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                    ),
                   ),
-                  const Wrap(
-                    direction: Axis.horizontal,
-                    children: [
-                      AppChip(text: 'Fresh Fruits'),
-                      AppChip(text: 'Category', isSelected: true),
-                      AppChip(text: 'Fresh Vegetables'),
-                      AppChip(text: 'Other Category'),
-                    ],
-                  ),
-                  10.h.verticalSpace,
-                  GlobalText(
-                    'Filter by Inventory Level',
-                    textStyle: textStyle16.copyWith(fontSize: 15.sp),
-                  ),
-                  10.h.verticalSpace,
                   Wrap(
+                    direction: Axis.horizontal,
+                    children: Constants.categories
+                        .map(
+                          (e) => Padding(
+                            padding: EdgeInsets.only(top: 12.h),
+                            child: AppChip(
+                              isnotselected: true,
+                              text: e.categoryName,
+                              isSelected: provider.selectedCategoryFilters
+                                  .contains(e.categoryId),
+                              onTap: () {
+                                provider.changeFilterCategoty(e.categoryId);
+                              },
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  10.h.verticalSpace,
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                    child: GlobalText(
+                      'Filter by Inventory Level',
+                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                    ),
+                  ),
+                  10.h.verticalSpace,
+                  Row(
                     children: [
-                      buildInventoryContainer('High', AppAssets.inventoryHigh),
-                      buildInventoryContainer('Medium', AppAssets.inventoryMid),
-                      buildInventoryContainer('Low', AppAssets.inventoryLow),
+                      buildInventoryContainer(
+                          'High', AppAssets.inventoryHigh, provider),
+                      buildInventoryContainer(
+                          'Medium', AppAssets.inventoryMid, provider),
+                      buildInventoryContainer(
+                          'Low', AppAssets.inventoryLow, provider),
                     ],
                   ),
-                  50.h.verticalSpace,
+                  25.h.verticalSpace,
                   Center(
                     child: AppButton(
-                        colorType: AppButtonColorType.secondary,
+                        colorType: AppButtonColorType.primary,
                         onPressed: () {
+                          provider.filterProducts();
                           context.pop();
                         },
                         text: 'Apply'),
@@ -192,31 +212,152 @@ class _MultipleInventorySelectionScreenState
                   ),
                 ],
               ),
-            ),
-          );
+            );
+          });
         });
   }
+
+  // showFilterSheet() async {
+  //   return showModalBottomSheet(
+  //       showDragHandle: true,
+  //       enableDrag: true,
+  //       context: context,
+  //       isScrollControlled: true,
+  //       builder: (context) {
+  //         return Consumer<InventoryProvider>(builder: (context, provider, _) {
+  //           return Container(
+  //             alignment: Alignment.center,
+  //             height: 480.h,
+  //             padding: EdgeInsets.symmetric(horizontal: 13.sp, vertical: 5.sp),
+  //             child: SingleChildScrollView(
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.max,
+  //                 mainAxisAlignment: MainAxisAlignment.start,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Center(
+  //                     child:
+  //                         GlobalText('Filters', textStyle: textStyle20SemiBold),
+  //                   ),
+  //                   20.h.verticalSpace,
+  //                   GlobalText(
+  //                     'Filter by category',
+  //                     textStyle: textStyle16.copyWith(fontSize: 15.sp),
+  //                   ),
+
+  //                   Wrap(
+  //                     direction: Axis.horizontal,
+  //                     children: Constants.categories
+  //                         .map(
+  //                           (e) => Padding(
+  //                             padding: EdgeInsets.only(top: 12.h),
+  //                             child: AppChip(
+  //                               isnotselected: true,
+  //                               text: e.categoryName,
+  //                               isSelected: provider.selectedCategoryFilters
+  //                                   .contains(e.categoryId),
+  //                               onTap: () {
+  //                                 provider.changeFilterCategoty(e.categoryId);
+  //                               },
+  //                             ),
+  //                           ),
+  //                         )
+  //                         .toList(),
+  //                   ),
+
+  //                   // const Wrap(
+  //                   //   direction: Axis.horizontal,
+  //                   //   children: [
+  //                   //     AppChip(text: 'Fresh Fruits'),
+  //                   //     AppChip(text: 'Category', isSelected: true),
+  //                   //     AppChip(text: 'Fresh Vegetables'),
+  //                   //     AppChip(text: 'Other Category'),
+  //                   //   ],
+  //                   // ),
+  //                   10.h.verticalSpace,
+  //                   GlobalText(
+  //                     'Filter by Inventory Level',
+  //                     textStyle: textStyle16.copyWith(fontSize: 15.sp),
+  //                   ),
+  //                   10.h.verticalSpace,
+  //                   Row(
+  //                     children: [
+  //                       buildInventoryContainer(
+  //                           'High', AppAssets.inventoryHigh, provider),
+  //                       buildInventoryContainer(
+  //                           'Medium', AppAssets.inventoryMid, provider),
+  //                       buildInventoryContainer(
+  //                           'Low', AppAssets.inventoryLow, provider),
+  //                     ],
+  //                   ),
+  //                   // Wrap(
+  //                   //   children: [
+  //                   //     buildInventoryContainer('High', AppAssets.inventoryHigh),
+  //                   //     buildInventoryContainer('Medium', AppAssets.inventoryMid),
+  //                   //     buildInventoryContainer('Low', AppAssets.inventoryLow),
+  //                   //   ],
+  //                   // ),
+  //                   50.h.verticalSpace,
+  //                   Center(
+  //                     child: AppButton(
+  //                         colorType: AppButtonColorType.primary,
+  //                         onPressed: () {
+  //                           provider.filterProducts();
+  //                           context.pop();
+  //                         },
+  //                         text: 'Apply'),
+  //                   ),
+  //                   10.h.verticalSpace,
+  //                   Center(
+  //                     child: AppButton(
+  //                         colorType: AppButtonColorType.greyed,
+  //                         onPressed: () {
+  //                           context.pop();
+  //                         },
+  //                         text: 'Cancel'),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         });
+  //       });
+  // }
 }
 
-Widget buildInventoryContainer(String text, String level) {
-  return Container(
-    width: 100.w,
-    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
-    decoration: BoxDecoration(
-      color: AppColors.lightGreyColor.withOpacity(0.2),
-      borderRadius: BorderRadius.circular(1),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SvgPicture.asset(level),
-        10.horizontalSpace,
-        Text(
-          text,
-          style: textStyle14.copyWith(color: AppColors.primaryColor),
-        ),
-      ],
+Widget buildInventoryContainer(
+    String text, String level, InventoryProvider provider) {
+  return GestureDetector(
+    onTap: () {
+      provider.changeFilterInventoryLevel(text.toLowerCase());
+    },
+    child: Container(
+      width: 100.w,
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
+      decoration: BoxDecoration(
+        color: AppColors.lightGreyColor.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(1),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(level),
+          10.horizontalSpace,
+          Text(
+            text,
+            style: textStyle14.copyWith(color: AppColors.primaryColor),
+          ),
+          if (provider.selectedInventoryLevelFilter == text.toLowerCase()) ...[
+            10.horizontalSpace,
+            SvgIcon(
+              AppAssets.check,
+              color: AppColors.primaryColor,
+              size: 10.h,
+            ),
+          ],
+        ],
+      ),
     ),
   );
 }

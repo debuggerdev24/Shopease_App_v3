@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
@@ -14,6 +15,7 @@ import 'package:shopease_app_flutter/ui/widgets/back_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/card_drop_down.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
@@ -243,45 +245,54 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: onSelectFileTap,
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: AppColors.blackColor),
-                                image: _fileFieldController.text.isEmpty
-                                    ? null
-                                    : provider.selectedFile != null &&
-                                            File(_fileFieldController.text)
-                                                .existsSync()
-                                        ? DecorationImage(
-                                            image: FileImage(
-                                              File(_fileFieldController.text),
-                                            ),
-                                          )
-                                        : DecorationImage(
-                                            image: NetworkImage(
-                                                _fileFieldController.text),
-                                          ),
+                            onTap: _fileFieldController.text.isEmpty
+                                ? onSelectFileTap
+                                : () {},
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 80,
+                                  width: 80,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: AppColors.blackColor),
+                                    image: _fileFieldController.text.isEmpty
+                                        ? null
+                                        : provider.selectedFile != null &&
+                                                File(_fileFieldController.text)
+                                                    .existsSync()
+                                            ? DecorationImage(
+                                                image: FileImage(
+                                                  File(_fileFieldController
+                                                      .text),
+                                                ),
+                                              )
+                                            : DecorationImage(
+                                                image: NetworkImage(
+                                                    _fileFieldController.text),
+                                              ),
+                                  ),
+                                  child: _fileFieldController.text.isEmpty
+                                      ? SvgPicture.asset(AppAssets.addInvoice)
+                                      : provider.selectedFile != null
+                                          ? SvgPicture.asset(AppAssets.zoomIcon)
+                                          : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (_fileFieldController.text.isNotEmpty)
+                            IconButton(
+                              onPressed: () {
+                                _fileFieldController.clear();
+                                provider.clearFile();
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: AppColors.redColor,
                               ),
-                              child: _fileFieldController.text.isEmpty
-                                  ? SvgPicture.asset(AppAssets.addInvoice)
-                                  : provider.selectedFile != null
-                                      ? SvgPicture.asset(AppAssets.zoomIcon)
-                                      : null,
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              _fileFieldController.clear();
-                              provider.clearFile();
-                            },
-                            icon: const Icon(
-                              Icons.delete,
-                              color: AppColors.redColor,
-                            ),
-                          ),
                         ],
                       ),
 
@@ -357,7 +368,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                   .categoryName,
                               'item_storage': _storageController.text,
                               'is_in_checklist': false,
-                            }; 
+                            };
 
                             if (!widget.isEdit &&
                                 _fileFieldController.text.isNotEmpty) {
@@ -407,6 +418,18 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                 ),
               );
       }),
+    );
+  }
+
+  showZoomedImg() {
+    showImageSheet(
+      context: context,
+      imgUrl: _fileFieldController.text,
+      onDelete: () {
+        _fileFieldController.clear();
+        context.read<AddItemFormProvider>().clearFile();
+        context.pop();
+      },
     );
   }
 

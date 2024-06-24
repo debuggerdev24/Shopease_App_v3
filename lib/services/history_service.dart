@@ -64,7 +64,6 @@ class Historyservice implements BaseHistoryService {
   @override
   Future<Response?> getHistoryItemDetails(
       {required List<String> histIds}) async {
-    
     return await BaseRepository().post(ApiUrl.getPurchaseHistoryDetails, data: {
       'records': histIds.map((e) => {"hist_id": e}).toList()
     });

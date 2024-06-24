@@ -14,21 +14,18 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class AddInvoiceScreen extends StatefulWidget {
-  const AddInvoiceScreen({
-    super.key,
-    this.shop,
-    this.histId,
-    /*required this.total*/
-  });
+class EditInvoiceScreen extends StatefulWidget {
+  const EditInvoiceScreen(
+      {super.key, this.shop, this.histId, this.totalAmount});
+
   final String? shop;
   final String? histId;
-  // final int total;
+  final String? totalAmount;
   @override
-  State<AddInvoiceScreen> createState() => _AddInvoiceScreenState();
+  State<EditInvoiceScreen> createState() => _EditInvoiceScreenState();
 }
 
-class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
+class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
     // log("shop:${widget.shop}:::::total${widget.total}");
@@ -38,7 +35,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
           automaticallyImplyLeading: true,
           iconTheme: IconThemeData(color: AppColors.blackColor, size: 30.sp),
           title: GlobalText(
-            "Add Invoice",
+            "Edit Invoice",
             textStyle: textStyle20SemiBold.copyWith(fontSize: 24),
           ),
         ),
@@ -63,28 +60,14 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                             extra: {
                               'shop': widget.shop,
                               'histId': widget.histId,
-                              'edit': false,
-                              // 'total': 100,
+                              'edit': true,
+                              'total_amount': widget.totalAmount,
                             },
                           ),
                         );
                   },
-                  text: 'Add Invoice'),
+                  text: 'Edit Invoice'),
               20.h.verticalSpace,
-              // AppButton(
-              //   onPressed: () async {
-              //     await provider.selectFileFromGallery(onSuccess: () {
-              //       context.pushNamed(AppRoute.saveInvoice.name, extra: {
-              //         'shop': widget.shop,
-              //         'histId': widget.histId,
-              //         // 'total': 100,
-              //       });
-              //     });
-              //   },
-              //   text: 'Upload from Gallery',
-              //   colorType: AppButtonColorType.secondary,
-              // ),
-              30.h.verticalSpace,
             ],
           ),
         ),

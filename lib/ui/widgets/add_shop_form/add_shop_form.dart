@@ -13,8 +13,10 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
+import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
@@ -65,6 +67,7 @@ class _AddShopFormState extends State<AddShopForm> {
 
   @override
   Widget build(BuildContext context) {
+    log("_fileFieldController.text ---> ${_fileFieldController.text}");
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       child: Form(
@@ -130,16 +133,17 @@ class _AddShopFormState extends State<AddShopForm> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      _fileFieldController.clear();
-                      provider.clearFile();
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: AppColors.redColor,
+                  if (_fileFieldController.text.isNotEmpty)
+                    IconButton(
+                      onPressed: () {
+                        _fileFieldController.clear();
+                        provider.clearFile();
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        color: AppColors.redColor,
+                      ),
                     ),
-                  )
                 ],
               ),
               // AppTextField(
@@ -217,6 +221,18 @@ class _AddShopFormState extends State<AddShopForm> {
           );
         }),
       ),
+    );
+  }
+
+  showZoomedImg() {
+    showImageSheet(
+      context: context,
+      imgUrl: _fileFieldController.text,
+      onDelete: () {
+        _fileFieldController.clear();
+        context.read<AddShopFormProvider>().clearFile();
+        context.pop();
+      },
     );
   }
 

@@ -263,7 +263,6 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> adminUserGroup({
     required Map<String, dynamic> data,
     Function(String)? onError,
@@ -353,7 +352,7 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-   Future<void> leaveusergroup({
+  Future<void> leaveusergroup({
     required Map<String, dynamic> data,
     Function(String)? onError,
     VoidCallback? onSuccess,
