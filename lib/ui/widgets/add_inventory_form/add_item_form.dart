@@ -245,7 +245,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: _fileFieldController.text.isEmpty
+                            onTap: _fileFieldController.text.isEmpty ||
+                                    _fileFieldController.text
+                                        .startsWith(Constants.defaultItemImage)
                                 ? onSelectFileTap
                                 : () {},
                             child: Row(
@@ -282,7 +284,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               ],
                             ),
                           ),
-                          if (_fileFieldController.text.isNotEmpty)
+                          if (_fileFieldController.text.isNotEmpty ||
+                              _fileFieldController.text
+                                  .startsWith(Constants.defaultItemImage))
                             IconButton(
                               onPressed: () {
                                 _fileFieldController.clear();

@@ -502,7 +502,7 @@ void _showHistoryFilterSheet(BuildContext context) {
 }
 
 _showChecklistFilterSheet(BuildContext context) async {
-  return showModalBottomSheet(  
+  return showModalBottomSheet(
       showDragHandle: true,
       enableDrag: true,
       context: context,

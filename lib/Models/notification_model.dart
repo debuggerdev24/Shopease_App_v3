@@ -5,7 +5,6 @@ class NotificationModel {
   String? imageUrl;
   DateTime? recievedDate;
 
-
   NotificationModel({
     required this.notificationId,
     required this.isMessageRead,

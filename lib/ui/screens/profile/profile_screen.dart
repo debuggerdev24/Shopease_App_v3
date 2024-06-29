@@ -32,6 +32,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? another_user_id;
   @override
   void initState() {
     super.initState();
@@ -86,7 +87,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         decoration: TextDecoration.underline),
                                   ),
                                   onTap: () {
+                                    // if (provider.profileData?.isAdmin == true ||
+                                    //     provider.groupProfiles.any((e) =>
+                                    //         e.isAdmin ||
+                                    //         provider.groupProfiles.length <
+                                    //             0)) {
+
                                     if (provider.profileData?.isAdmin == true &&
+                                        provider.groupProfiles.length > 1 &&
+                                        !provider.groupProfiles
+                                            .any((e) => e.isInvited) &&
                                         !provider.groupProfiles
                                             .any((e) => e.isAdmin)) {
                                       _showAssignAndLeaveGroupSheet(provider);
@@ -119,6 +129,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ProfileData user = provider.groupProfiles[index];
                         log("usdert =====>${user.userId}");
                         log("usdert leanght =====>${provider.groupProfiles.length}");
+
+                        another_user_id = user.userId;
 
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
@@ -267,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: 16.sp,
                           ),
                         )
-                      : SizedBox()
+                      : const SizedBox()
                 ],
               )
             : const SizedBox.shrink();
@@ -386,6 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           padding: EdgeInsets.symmetric(horizontal: 14.w),
           child: Consumer<ProfileProvider>(
             builder: (context, provider, child) {
+              log("image object ==>0<== ${fileFieldController.text}");
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -415,7 +428,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: fileFieldController.text.isEmpty
+                        onTap: fileFieldController.text.isEmpty ||
+                                fileFieldController.text
+                                    .startsWith(Constants.defaultUserImage)
                             ? onSelectFileTap
                             : () {},
                         child: Container(
@@ -442,7 +457,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : null,
                         ),
                       ),
-                      if (fileFieldController.text.isNotEmpty)
+                      if (fileFieldController.text.isNotEmpty &&
+                          !fileFieldController.text
+                              .startsWith(Constants.defaultUserImage))
                         IconButton(
                           onPressed: () {
                             fileFieldController.clear();
@@ -623,6 +640,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             // _slideController.close();
 
                             context.pop();
+
+                            await profileProvider.adminUserGroup(
+                                data: {
+                                  'user_id': profileProvider
+                                      .groupProfiles[
+                                          profileProvider.selectedUserIndex]
+                                      .userId,
+                                  "is_admin": true
+                                },
+                                onSuccess: () async {
+                                  await profileProvider.leaveusergroup(
+                                      data: {
+                                        'user_id':
+                                            profileProvider.profileData?.userId,
+                                      },
+                                      onSuccess: () {
+                                        profileProvider.getAllProfile();
+                                      });
+                                });
                           },
                           text: 'Assign and Leave'),
                       10.h.verticalSpace,
@@ -750,7 +786,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Center(
                 child: Text(
-                  'Do you really wish to leave the group? ',
+                  'Do you really wish to leave the group?',
                   style: textStyle18SemiBold,
                   textAlign: TextAlign.center,
                 ),

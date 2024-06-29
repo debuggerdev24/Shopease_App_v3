@@ -20,9 +20,11 @@ import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddShopFormWidget extends StatelessWidget {
-  const AddShopFormWidget({super.key, required this.onSubmit, this.shop});
+  const AddShopFormWidget(
+      {super.key, required this.onSubmit, this.shop, this.onNameChange});
 
   final Function(Map<String, dynamic>) onSubmit;
+  final VoidCallback? onNameChange;
   final Shop? shop;
 
   @override
@@ -31,6 +33,7 @@ class AddShopFormWidget extends StatelessWidget {
       create: (context) => AddShopFormProvider(),
       builder: (context, _) => AddShopForm(
         onSubmit: onSubmit,
+        onNameChange: onNameChange,
         shop: shop,
       ),
     );
@@ -42,9 +45,12 @@ class AddShopForm extends StatefulWidget {
     super.key,
     required this.onSubmit,
     required this.shop,
+    this.onNameChange,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
+
+  final VoidCallback? onNameChange;
   final Shop? shop;
 
   @override
@@ -86,6 +92,9 @@ class _AddShopFormState extends State<AddShopForm> {
                 isRequired: true,
                 controller: _nameController,
                 maxLength: 10,
+                onChanged: (p0) {
+                  widget.onNameChange?.call();
+                },
               ),
               20.h.verticalSpace,
               AppTextField(
@@ -104,7 +113,9 @@ class _AddShopFormState extends State<AddShopForm> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: _fileFieldController.text.isEmpty
+                    onTap: _fileFieldController.text.isEmpty ||
+                            _fileFieldController.text
+                                .startsWith(Constants.defaultShopImage)
                         ? onSelectFileTap
                         : () {},
                     child: Container(
@@ -133,7 +144,9 @@ class _AddShopFormState extends State<AddShopForm> {
                       ),
                     ),
                   ),
-                  if (_fileFieldController.text.isNotEmpty)
+                  if (_fileFieldController.text.isNotEmpty ||
+                      _fileFieldController.text
+                          .startsWith(Constants.defaultUserImage))
                     IconButton(
                       onPressed: () {
                         _fileFieldController.clear();

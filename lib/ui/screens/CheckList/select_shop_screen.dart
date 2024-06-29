@@ -152,9 +152,18 @@ class _SelectShopScreenState extends State<SelectShopScreen> {
       context: context,
       isScrollControlled: true,
       isDismissible: false,
-      builder: (context) => AddShopFormWidget(onSubmit: (data) {
-        submitShopForm(data, false);
-      }),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AddShopFormWidget(
+            onSubmit: (data) {
+              submitShopForm(data, false);
+            },
+            onNameChange: () {
+              setState(() {});
+            },
+          );
+        },
+      ),
     );
   }
 
