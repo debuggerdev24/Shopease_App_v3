@@ -42,8 +42,6 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (context, provider, _) {
         return Scaffold(
           appBar: AppBar(
-            // toolbarHeight: 150,
-
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
             title: GlobalText(
@@ -156,7 +154,6 @@ class _HomeScreenState extends State<HomeScreen>
               context.goNamed(
                 AppRoute.multipleInventorySelection.name,
               );
-              // context.pop();
             },
             product: provider.filteredProducts[index],
             onTap: () {
@@ -185,7 +182,6 @@ class _HomeScreenState extends State<HomeScreen>
               provider.deletInventoryItems(
                   itemIds: [provider.filteredProducts[index].itemId!],
                   onSuccess: () {
-                    // provider.getInventoryItems();
                     CustomToast.showSuccess(context, 'Successfully deleted');
                   });
             },
