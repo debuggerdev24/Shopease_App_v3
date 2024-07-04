@@ -32,7 +32,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
       'image': AppAssets.onBoard2,
       'title': 'Keep Track Of Your Fridge',
       'subTitle':
-          'Track your fridge contents,never miss \n items,organize your way , and use scan & go',
+          'Track your fridge contents, never miss \n items, organize your way and use scan & go',
     },
     {
       'image': AppAssets.onBoard1,

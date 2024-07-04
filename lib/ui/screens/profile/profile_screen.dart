@@ -638,7 +638,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPressed: () async {
                             // widget.onDelete?.call();
                             // _slideController.close();
-
+                            if (profileProvider.selectedUserIndex == -1) {
+                              CustomToast.showError(
+                                  context, "Please selcte admin");
+                              return;
+                            }
                             context.pop();
 
                             await profileProvider.adminUserGroup(

@@ -177,7 +177,7 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                         context.read<ChecklistProvider>().currentHistId,
                     'shop_name': _nameController.text,
                     'total_price': _priceController.text,
-                    'updated_date': DateTime.now().toIso8601String(),
+                    'updated_date': DateTime.now().toUtc(),
                     'item_image': provider.selectedFile?.path,
                     // 'item_count': context
                     //     .read<Chec>klistProvider>()

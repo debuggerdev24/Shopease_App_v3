@@ -161,7 +161,7 @@ class _HistorylistTileState extends State<HistorylistTile>
                   children: [
                     const SizedBox(height: 10),
                     GlobalText(
-                      widget.product.updatedDate?.toMonthDD ?? '',
+                      widget.product.updatedDate?.toLocal().toMonthDD ?? '',
                       textStyle: textStyle16.copyWith(
                           fontSize: 12, overflow: TextOverflow.ellipsis),
                     ),
