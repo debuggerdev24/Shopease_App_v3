@@ -89,8 +89,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         onSuccess: () {
                           widget.isEdit
                               ? context.goNamed(AppRoute.profile.name)
-                              : context.pushNamed(
-                                  AppRoute.congratulationsScreen.name);
+                              : context
+                                  .goNamed(AppRoute.congratulationsScreen.name);
                           CustomToast.showSuccess(
                             context,
                             widget.isEdit

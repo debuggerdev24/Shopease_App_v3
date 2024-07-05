@@ -275,13 +275,14 @@ class _TabScreenState extends State<TabScreen> {
   }
 
   void goToBranch(int index) {
-    if (index == 1) {
-      context.goNamed(AppRoute.checkList.name);
-      return;
-    }
-
+    // if (index == 1) {
+    //   context.goNamed(AppRoute.checkList.name);
+    //   return;
+    // }
+    print(" ==> GOTO ==> $index");
     widget.navigationShell.goBranch(
       index,
+      initialLocation: index == 1
     );
   }
 

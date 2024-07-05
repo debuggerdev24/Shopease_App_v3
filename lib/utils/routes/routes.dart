@@ -210,7 +210,7 @@ class AppNavigator {
             navigatorKey: _shellNavigatorHome,
             routes: <RouteBase>[
               GoRoute(
-                path: AppRoute.home.path,
+                path: '/',
                 name: AppRoute.home.name,
                 builder: (BuildContext context, GoRouterState state) =>
                     const InternetConnectivityWrapper(child: HomeScreen()),

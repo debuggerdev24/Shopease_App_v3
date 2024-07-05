@@ -94,7 +94,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     //             0)) {
 
                                     if (provider.profileData?.isAdmin == true &&
-                                        provider.groupProfiles.length > 1 &&
                                         !provider.groupProfiles
                                             .any((e) => e.isInvited) &&
                                         !provider.groupProfiles

@@ -61,7 +61,7 @@ class _CongaratulationsScreenState extends State<CongaratulationsScreen> {
   startTimer() {
     var duration = const Duration(milliseconds: 1500);
     return Future.delayed(duration, () {
-      context.pushNamed(AppRoute.home.name);
+      context.goNamed(AppRoute.home.name);
     });
   }
 }

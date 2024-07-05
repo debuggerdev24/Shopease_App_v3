@@ -282,6 +282,12 @@ class ChecklistProvider extends ChangeNotifier {
               b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,
         );
         filterChecklist(clearselected: false);
+        for (Product product in _checklist) {
+          if (product.isSelectedForComplete) {
+            _filteredChecklist.remove(product);
+            _filteredChecklist.add(product);
+          }
+        }
         onSuccess?.call();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
