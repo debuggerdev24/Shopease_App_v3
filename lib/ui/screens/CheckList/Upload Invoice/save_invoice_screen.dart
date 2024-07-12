@@ -133,7 +133,8 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                   AppTextField(
                     name: "invoicePrice",
                     labelText: 'Enter Amount',
-                    keyboardType: TextInputType.number,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     controller: _priceController,
                     prefixText: '\$',
                     hintText: 'Enter invoice price',
@@ -172,12 +173,13 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                 isLoading: provider.isLoading,
                 onPressed: () async {
                   /// Add History
+                  print("DateTime.now().toUtc() ==> ${DateTime.now().toUtc()}");
                   Map<String, dynamic> newData = {
                     'hist_id': widget.histId ??
                         context.read<ChecklistProvider>().currentHistId,
                     'shop_name': _nameController.text,
                     'total_price': _priceController.text,
-                    'updated_date': DateTime.now().toUtc(),
+                    'updated_date': DateTime.now().toUtc().toString(),
                     'item_image': provider.selectedFile?.path,
                     // 'item_count': context
                     //     .read<Chec>klistProvider>()
