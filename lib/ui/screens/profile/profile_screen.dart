@@ -161,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   text: 'If you have any queries, write to ',
                                 ),
                                 TextSpan(
-                                  text: 'support@ShopEaseApp.com',
+                                  text: 'support@shopeaseapp.com',
                                   style: textStyle12.copyWith(
                                       decoration: TextDecoration.underline),
                                   recognizer: TapGestureRecognizer()

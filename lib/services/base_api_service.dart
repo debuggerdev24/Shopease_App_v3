@@ -22,10 +22,10 @@ class BaseRepository {
     if (SharedPrefs().idToken != null) {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.devBaseURL,
+          baseUrl: ApiUrl.prodBaseURL,
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": 'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0',
+            "x-api-key": 'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD',
             "Authorization": "${SharedPrefs().idToken}"
           },
         ),
@@ -33,9 +33,9 @@ class BaseRepository {
     } else {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.devBaseURL,
+          baseUrl: ApiUrl.prodBaseURL,
           headers: {
-            "x-api-key": 'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0',
+            "x-api-key": 'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD',
           },
         ),
       );
@@ -49,7 +49,7 @@ class BaseRepository {
   void addToken(String idToken) {
     _dio.options = _dio.options.copyWith(headers: {
       'Authorization': idToken,
-      'x-api-key': 'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0'
+      'x-api-key': 'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD'
     });
   }
 

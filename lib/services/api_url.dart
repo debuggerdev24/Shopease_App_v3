@@ -27,7 +27,6 @@ class ApiUrl {
 
   static const String acceptinvite = '/acceptinvite';
 
-
   static const String scanItem = '/scanitem';
 
   static const String getInventoryItems = '/getinventoryitems';
@@ -65,6 +64,6 @@ class ApiUrl {
   static const String cancelinvite = '/cancelinvite';
 
   static const String rejectinvite = '/rejectinvite';
-  
+
   static const String removeuserfromgroup = '/removeuserfromgroup';
 }
