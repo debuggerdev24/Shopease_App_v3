@@ -117,7 +117,8 @@ class _AddShopFormState extends State<AddShopForm> {
                             _fileFieldController.text
                                 .startsWith(Constants.defaultShopImage)
                         ? onSelectFileTap
-                        : () {},
+                        : onSelectFileTap,
+                    // : () {},
                     child: Container(
                       height: 80,
                       width: 80,

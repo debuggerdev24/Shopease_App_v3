@@ -425,7 +425,7 @@ void _showHistoryFilterSheet(BuildContext context) {
                           child: _dateContainer(
                             title: 'From',
                             value: provider.fromDate != null
-                                ? provider.fromDate!.toDDMonthYYYY
+                                ? provider.fromDate!.toLocal().toDDMonthYYYY
                                 : "Select a date",
                           ),
                         ),
@@ -443,7 +443,7 @@ void _showHistoryFilterSheet(BuildContext context) {
                           child: _dateContainer(
                             title: 'To',
                             value: provider.toDate != null
-                                ? provider.toDate!.toDDMonthYYYY
+                                ? provider.toDate!.toLocal().toDDMonthYYYY
                                 : "",
                           ),
                         ),

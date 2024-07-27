@@ -249,7 +249,8 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     _fileFieldController.text
                                         .startsWith(Constants.defaultItemImage)
                                 ? onSelectFileTap
-                                : () {},
+                                : onSelectFileTap,
+                            // : () {},
                             child: Row(
                               children: [
                                 Container(

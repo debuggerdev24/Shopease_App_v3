@@ -58,7 +58,7 @@ class _HistoryDetailScreenState
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: GlobalText(
-                    widget.history.updatedDate?.toMonthDD ?? '',
+                    widget.history.updatedDate?.toLocal().toMonthDD ?? '',
                     textStyle: textStyle16.copyWith(
                         fontSize: 14, overflow: TextOverflow.ellipsis),
                   ),

@@ -226,7 +226,7 @@ class _NotificationScreenState extends State<NotificationScreen>
       ),
       title: GlobalText(notification.message),
       trailing: GlobalText(
-        notification.recievedDate?.toMonthDD ?? '',
+        notification.recievedDate?.toLocal().toMonthDD ?? '',
         textStyle: textStyle12.copyWith(color: AppColors.blackColor),
       ),
     );
@@ -269,7 +269,7 @@ class _NotificationScreenState extends State<NotificationScreen>
               textStyle14.copyWith(color: AppColors.greyColor, fontSize: 17),
         ),
         trailing: GlobalText(
-          inviteduser.lastUpdatedDate.toMonthDD,
+          inviteduser.lastUpdatedDate.toLocal().toMonthDD,
           textStyle: textStyle12.copyWith(color: AppColors.greyColor),
         ),
       ),

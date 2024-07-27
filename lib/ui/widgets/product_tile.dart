@@ -2,6 +2,8 @@
 // import 'dart:developer';
 // import 'dart:io';
 
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -67,7 +69,6 @@ class _ProductTileState extends State<ProductTile>
   @override
   Widget build(BuildContext context) {
     print("widget.product.isInChecklist --> ${widget.product.isInChecklist} ");
-
     return Slidable(
       controller: _slideController,
       endActionPane: !widget.isSlideEnabled
@@ -119,8 +120,8 @@ class _ProductTileState extends State<ProductTile>
                       ),
                     ),
                     SizedBox(height: 10.h),
-                    // if (widget.product.brand.toString().isNotEmpty)
-                    // AppChip(text: widget.product.brand ?? '')
+                    if (widget.product.brand.toString().isNotEmpty)
+                      AppChip(text: widget.product.brand ?? '')
                   ],
                 ),
               ),

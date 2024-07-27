@@ -67,7 +67,7 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
                         child: GlobalText(
-                          widget.history.updatedDate?.toMonthDD ?? '',
+                          widget.history.updatedDate?.toLocal().toMonthDD ?? '',
                           textStyle: textStyle16.copyWith(
                               fontSize: 14, overflow: TextOverflow.ellipsis),
                         ),
@@ -119,7 +119,6 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   Widget _buildCurrentListView(HistoryProvider provider) {
     return ListView.separated(
       shrinkWrap: true,
-    
       itemBuilder: (context, index) => HistoryItemDetailTile(
         historyItem: provider.historyItemDetails[index],
         onLongPress: () {
