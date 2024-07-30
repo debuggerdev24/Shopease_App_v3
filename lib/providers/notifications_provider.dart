@@ -132,7 +132,6 @@ class NotificationProvider extends ChangeNotifier {
       }
 
       if (res.statusCode == 200) {
-        print("0res.data ========== ${res}");
         settingInviteduser(inviteduserFromJson(res.data));
         onSuccess?.call();
       } else {

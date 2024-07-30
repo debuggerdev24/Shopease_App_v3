@@ -226,6 +226,8 @@
 //   }
 // }
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -239,7 +241,6 @@ import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
-import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class TabScreen extends StatefulWidget {
@@ -262,6 +263,7 @@ class _TabScreenState extends State<TabScreen> {
     super.initState();
     context.read<ChecklistProvider>().getChecklistItems();
     context.read<NotificationProvider>().getNotifications();
+    context.read<NotificationProvider>().getinvitations();
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {
         await Constants.getCategories();
@@ -279,11 +281,7 @@ class _TabScreenState extends State<TabScreen> {
     //   context.goNamed(AppRoute.checkList.name);
     //   return;
     // }
-    print(" ==> GOTO ==> $index");
-    widget.navigationShell.goBranch(
-      index,
-      initialLocation: index == 1
-    );
+    widget.navigationShell.goBranch(index, initialLocation: index == 1);
   }
 
   @override
@@ -315,11 +313,9 @@ class _TabScreenState extends State<TabScreen> {
           });
         }
 
-        if (index == 3) {
-          context.read<NotificationProvider>().getNotifications();
-
-          context.read<NotificationProvider>().getinvitations();
-        }
+        // Saroj wants to call this APIs on every tab click.
+        context.read<NotificationProvider>().getNotifications();
+        context.read<NotificationProvider>().getinvitations();
 
         goToBranch(index);
       },
@@ -349,6 +345,8 @@ class _TabScreenState extends State<TabScreen> {
           svgIcon: AppAssets.person,
         ),
         Consumer<NotificationProvider>(builder: (context, provider, _) {
+          log('invites => ${provider.invitations}');
+          log('any with unread => ${provider.invitations.any((e) => !e.isMessageRead)}');
           return KBottomNavItem(
             isSelected: widget.navigationShell.currentIndex == 3,
             svgIcon: AppAssets.notification,

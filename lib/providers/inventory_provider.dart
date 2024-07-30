@@ -17,8 +17,13 @@ class InventoryProvider extends ChangeNotifier {
   final List<Product> _products = [];
   final List<Product> _serchresult = [];
   final List<Product> _filteredProducts = [];
+
   final List<String> _selectedCategoryFilters = [];
+  final List<String> _sheetSeelctedCatFilters = [];
+
   String? _selectedInventoryLevelFilter;
+  String? _sheetSelectedInvLvlFilter;
+
   final List<Product> _selectedProducts = [];
   bool _selectValue = false;
 
@@ -27,12 +32,16 @@ class InventoryProvider extends ChangeNotifier {
   /// getters
   bool get isLoading => _isLoading;
   List<Product> get products => _products;
+
   List<String> get selectedCategoryFilters => _selectedCategoryFilters;
+  List<String> get sheetSeelctedCatFilters => _sheetSeelctedCatFilters;
+
   String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
+  String? get sheetSelectedInvLvlFilter => _sheetSelectedInvLvlFilter;
+
   List<Product> get filteredProducts => _filteredProducts;
   List<Product> get selectedProducts => _selectedProducts;
   bool get selectValue => _selectValue;
-
 
   void setLoading(bool newValue) {
     _isLoading = newValue;

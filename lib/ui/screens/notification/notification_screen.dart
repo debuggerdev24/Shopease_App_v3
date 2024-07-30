@@ -43,154 +43,178 @@ class _NotificationScreenState extends State<NotificationScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 20.h,
-        bottom: TabBar(
-          indicatorPadding: EdgeInsets.zero,
-          controller: _tabsController,
-          indicatorColor: AppColors.orangeColor,
-          labelColor: AppColors.orangeColor,
-          automaticIndicatorColorAdjustment: true,
-          indicatorSize: TabBarIndicatorSize.tab,
-          onTap: (value) {
-            if (value == 0) {
-              context.read<NotificationProvider>().getNotifications();
-            }
+    return Consumer<NotificationProvider>(builder: (context, provider, _) {
+      return Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 20.h,
+          bottom: TabBar(
+            indicatorPadding: EdgeInsets.zero,
+            controller: _tabsController,
+            indicatorColor: AppColors.orangeColor,
+            labelColor: AppColors.orangeColor,
+            automaticIndicatorColorAdjustment: true,
+            indicatorSize: TabBarIndicatorSize.tab,
+            onTap: (value) {
+              if (value == 0) {
+                context.read<NotificationProvider>().getNotifications();
+              }
 
-            if (value == 1) {
-              context.read<NotificationProvider>().getinvitations();
-            }
-          },
-          tabs: [
-            Tab(
-              child: Text(
+              if (value == 1) {
+                context.read<NotificationProvider>().getinvitations();
+              }
+            },
+            tabs: [
+              _buildTab(
                 'Notifications',
-                style: textStyle20SemiBold,
+                provider.notifications.any((e) => !e.isMessageRead),
               ),
-            ),
-            Tab(
-              child: Text(
+              _buildTab(
                 'Invitations',
-                style: textStyle20SemiBold,
+                provider.invitations.any((e) => !e.isMessageRead),
               ),
-            ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          controller: _tabsController,
+          children: [
+            _buildNotificationsList(provider),
+            _buildInvitationsView(provider),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabsController,
+      );
+    });
+  }
+
+  _buildTab(String title, bool showBedge) {
+    return Tab(
+      child: Stack(
         children: [
-          _buildNotificationsList(),
-          _buildInvitationsView(),
+          Container(
+            padding: const EdgeInsets.all(10),
+            child: Text(
+              title,
+              style: textStyle20SemiBold,
+            ),
+          ),
+          if (showBedge)
+            Positioned(
+              top: 0,
+              right: -12,
+              child: Container(
+                height: 18.h,
+                width: 19.h,
+                alignment: Alignment.bottomLeft,
+                child: CircleAvatar(
+                  radius: 3.r,
+                  backgroundColor: AppColors.redColor,
+                ),
+              ),
+            )
         ],
       ),
     );
   }
 
-  Widget _buildNotificationsList() {
-    return Consumer<NotificationProvider>(builder: (context, provider, _) {
-      return provider.notifications.isEmpty
-          ? Center(
-              child: GlobalText(
-                'Not have any notifications!',
-                textStyle: textStyle16,
-              ),
-            )
-          : SingleChildScrollView(
-              padding: EdgeInsets.symmetric(vertical: 10.h),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (provider.notifications
-                      .any((element) => !element.isMessageRead))
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: TextButton(
-                        onPressed: () {
-                          provider.updateNotifications(
-                              data: provider.notifications
-                                  .map((e) => {
-                                        'is_message_read': true,
-                                        'notification_id': e.notificationId
-                                      })
-                                  .toList());
-                        },
-                        child: GlobalText(
+  Widget _buildNotificationsList(NotificationProvider provider) {
+    return provider.notifications.isEmpty
+        ? Center(
+            child: GlobalText(
+              'Not have any notifications!',
+              textStyle: textStyle16,
+            ),
+          )
+        : SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: 10.h),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (provider.notifications
+                    .any((element) => !element.isMessageRead))
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: TextButton(
+                      onPressed: () {
+                        provider.updateNotifications(
+                            data: provider.notifications
+                                .map((e) => {
+                                      'is_message_read': true,
+                                      'notification_id': e.notificationId
+                                    })
+                                .toList());
+                      },
+                      child: GlobalText(
+                        color: AppColors.orangeColor,
+                        'Mark as all read',
+                        textStyle: textStyle14.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.orangeColor,
                           color: AppColors.orangeColor,
-                          'Mark as all read',
-                          textStyle: textStyle14.copyWith(
-                            decoration: TextDecoration.underline,
-                            decorationColor: AppColors.orangeColor,
-                            color: AppColors.orangeColor,
-                          ),
                         ),
                       ),
                     ),
-                  10.h.verticalSpace,
+                  ),
+                10.h.verticalSpace,
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: provider.notifications.length,
+                  separatorBuilder: (context, index) => 10.verticalSpace,
+                  itemBuilder: (context, index) =>
+                      _buildNotificationTile(provider.notifications[index]),
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _buildInvitationsView(NotificationProvider provider) {
+    return provider.isLoading
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : provider.invitations.isEmpty
+            ? Center(
+                child: GlobalText(
+                  'Not have any invitations!',
+                  textStyle: textStyle16,
+                ),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: 57.h,
+                    color: AppColors.lightYellowColor,
+                    child: Row(
+                      children: [
+                        10.horizontalSpace,
+                        const SvgIcon(
+                          AppAssets.warning,
+                          size: 23,
+                        ),
+                        10.horizontalSpace,
+                        GlobalText(
+                          "Joining a group will replace your personal lists with \n the group's list",
+                          textStyle: textStyle14.copyWith(
+                              fontSize: 13.sp, color: AppColors.blackColor),
+                        ),
+                      ],
+                    ),
+                  ),
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: provider.notifications.length,
+                    itemCount: provider.invitations.length,
                     separatorBuilder: (context, index) => 10.verticalSpace,
-                    itemBuilder: (context, index) =>
-                        _buildNotificationTile(provider.notifications[index]),
+                    itemBuilder: (context, index) => _buildInvitationTile(
+                        provider, provider.invitations[index]),
                   ),
                 ],
-              ),
-            );
-    });
-  }
-
-  Widget _buildInvitationsView() {
-    return Consumer<NotificationProvider>(builder: (context, provider, _) {
-      return provider.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : provider.invitations.isEmpty
-              ? Center(
-                  child: GlobalText(
-                    'Not have any invitations!',
-                    textStyle: textStyle16,
-                  ),
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 57.h,
-                      color: AppColors.lightYellowColor,
-                      child: Row(
-                        children: [
-                          10.horizontalSpace,
-                          const SvgIcon(
-                            AppAssets.warning,
-                            size: 23,
-                          ),
-                          10.horizontalSpace,
-                          GlobalText(
-                            "Joining a group will replace your personal lists with \n the group's list",
-                            textStyle: textStyle14.copyWith(
-                                fontSize: 13.sp, color: AppColors.blackColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: provider.invitations.length,
-                      separatorBuilder: (context, index) => 10.verticalSpace,
-                      itemBuilder: (context, index) => _buildInvitationTile(
-                          provider, provider.invitations[index]),
-                    ),
-                  ],
-                );
-    });
+              );
   }
 
   Widget _buildNotificationTile(NotificationModel notification) {

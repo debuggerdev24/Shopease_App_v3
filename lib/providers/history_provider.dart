@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/history_item_detail_model.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
-import 'package:shopease_app_flutter/models/shop_model.dart';
 import 'package:shopease_app_flutter/services/history_service.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 
