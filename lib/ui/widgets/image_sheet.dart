@@ -13,6 +13,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/extensions/context_ext.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<void> showImageSheet({
   required BuildContext context,
@@ -70,13 +71,18 @@ Future<void> showImageSheet({
                         IconButton.filled(
                           onPressed: () async {
                             debugPrint("URL: - $imgUrl");
-                            await _saveNetworkImage(imgUrl, context);
+                            // await _saveNetworkImage(imgUrl, context);
                             // if (await canLaunchUrlString(imgUrl)) {
                             //   bool isDone = await launchUrlString(imgUrl);
                             //   if (isDone && context.mounted) {
                             //     context.showSuccessMessage("Downloaded");
                             //   }
                             // }
+
+                            bool isDone = await launchUrl(Uri.parse(imgUrl));
+                            if (isDone && context.mounted) {
+                              context.showSuccessMessage("Downloaded");
+                            }
                           },
                           style: IconButton.styleFrom(
                             backgroundColor: AppColors.lightGreyColor,
