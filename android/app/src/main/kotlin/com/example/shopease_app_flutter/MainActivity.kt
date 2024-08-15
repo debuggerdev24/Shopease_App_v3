@@ -1,4 +1,4 @@
-package com.example.shopease_app_flutter
+package com.shopease.app
 
 import io.flutter.embedding.android.FlutterActivity
 
