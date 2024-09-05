@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -376,17 +377,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
 
-    // showZoomedImg() {
-    //   showImageSheet(
-    //     context: context,
-    //     imgUrl: fileFieldController.text,
-    //     onDelete: () {
-    //       fileFieldController.clear();
-    //       context.read<ProfileProvider>().clearFile();
-    //       context.pop();
-    //     },
-    //   );
-    // }
+    showZoomedImg() {
+      showImageSheet(
+        context: context,
+        imgUrl: fileFieldController.text,
+        onDelete: () {
+          fileFieldController.clear();
+          context.read<ProfileProvider>().clearFile();
+          context.pop();
+        },
+      );
+    }
 
     showModalBottomSheet(
       context: context,
@@ -447,7 +448,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       )
                                     : DecorationImage(
-                                        image: NetworkImage(
+                                        image: CachedNetworkImageProvider(
                                             fileFieldController.text),
                                       ),
                           ),
@@ -762,7 +763,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundImage: NetworkImage(url),
+          backgroundImage: CachedNetworkImageProvider(url),
         ),
         if (isAdmin)
           Positioned(

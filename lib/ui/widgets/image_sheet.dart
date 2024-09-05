@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +24,7 @@ Future<void> showImageSheet({
         decoration: const BoxDecoration(
           color: AppColors.blackColor,
           // image: imgUrl.startsWith('https://')
-          //     ? DecorationImage(image: NetworkImage(imgUrl))
+          //     ? DecorationImage(image: CachedNetworkImageProvider(imgUrl))
           //     : DecorationImage(image: FileImage(File(imgUrl))),
         ),
         child: Stack(
@@ -32,7 +33,7 @@ Future<void> showImageSheet({
               alignment: Alignment.center,
               child: PhotoView(
                 imageProvider: imgUrl.startsWith('https://')
-                    ? NetworkImage(imgUrl)
+                    ? CachedNetworkImageProvider(imgUrl)
                     : FileImage(File(imgUrl)) as ImageProvider,
                 minScale: 0.1,
               ),

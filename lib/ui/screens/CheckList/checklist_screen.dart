@@ -19,6 +19,7 @@ import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/routes/routes.dart';
@@ -550,7 +551,7 @@ _showChecklistFilterSheet(BuildContext context) async {
                 ),
                 Wrap(
                   direction: Axis.horizontal,
-                  children: Constants.categories
+                  children: Utils.categories
                       .map(
                         (e) => Padding(
                           padding: EdgeInsets.only(top: 11.h),

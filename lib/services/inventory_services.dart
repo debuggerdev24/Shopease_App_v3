@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
-import 'package:shopease_app_flutter/utils/utilas.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 abstract class BaseInventoryService {
   Future<Response<dynamic>?> getInventoryItems();
@@ -40,7 +40,8 @@ class InventoryService implements BaseInventoryService {
     for (Map<String, dynamic> record in data) {
       if ((record['item_image'] != null) &&
           !record['item_image'].toString().startsWith('http')) {
-        record['item_image'] = Utils.getBse64String(record['item_image']);
+        record['item_image'] =
+           await Utils.getCompressedBse64String(record['item_image']);
       } else if (isEdit) {
         record.remove('item_image');
       }

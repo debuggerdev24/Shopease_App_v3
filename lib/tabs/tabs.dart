@@ -242,6 +242,7 @@ import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 class TabScreen extends StatefulWidget {
   const TabScreen({
@@ -266,7 +267,7 @@ class _TabScreenState extends State<TabScreen> {
     context.read<NotificationProvider>().getinvitations();
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {
-        await Constants.getCategories();
+        await Utils.getCategories();
       },
     );
   }

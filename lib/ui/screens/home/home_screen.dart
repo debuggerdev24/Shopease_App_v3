@@ -18,6 +18,7 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -296,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   Wrap(
                     direction: Axis.horizontal,
-                    children: Constants.categories
+                    children: Utils.categories
                         .map(
                           (e) => Padding(
                             padding: EdgeInsets.only(top: 12.h),

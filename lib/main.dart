@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         builder: (context, child) =>
             Consumer<ThemeProvider>(builder: (context, provider, _) {
           return MaterialApp.router(
-            title: 'Your App Name',
+            title: 'Shopease App',
             theme: AppThemes.lightTheme,
             darkTheme: AppThemes.darkTheme,
             routerConfig: AppNavigator.router,

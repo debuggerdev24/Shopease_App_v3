@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -40,18 +39,20 @@ class CardDropDownField extends StatelessWidget {
               margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
               alignment: Alignment.centerLeft,
               child: RichText(
-                text: TextSpan(children: [
-                  TextSpan(
-                    text: labelText,
-                    style: labelStyle ??
-                        textStyle16.copyWith(color: AppColors.blackColor),
-                  ),
-                  if (isRequired)
+                text: TextSpan(
+                  children: [
                     TextSpan(
-                      text: ' *',
-                      style: textStyle16.copyWith(color: AppColors.redColor),
+                      text: labelText,
+                      style: labelStyle ??
+                          textStyle16.copyWith(color: AppColors.blackColor),
                     ),
-                ]),
+                    if (isRequired)
+                      TextSpan(
+                        text: ' *',
+                        style: textStyle16.copyWith(color: AppColors.redColor),
+                      ),
+                  ],
+                ),
               ),
             )
           : const SizedBox.shrink(),

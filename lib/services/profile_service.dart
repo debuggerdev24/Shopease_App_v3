@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
-import 'package:shopease_app_flutter/utils/utilas.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 import 'base_api_service.dart';
 
@@ -64,7 +64,8 @@ class ProfileService implements BaseProfileService {
     for (Map<String, dynamic> record in data) {
       if ((record['profile_image'] != null) &&
           !record['profile_image'].toString().startsWith('http')) {
-        record['profile_image'] = Utils.getBse64String(record['profile_image']);
+        record['profile_image'] =
+            await Utils.getCompressedBse64String(record['profile_image']);
       } else {
         record.remove('profile_image');
       }
@@ -197,7 +198,6 @@ class ProfileService implements BaseProfileService {
 
     return await BaseRepository().post(
       ApiUrl.removeuserfromgroup,
-      
       data: formData,
     );
   }

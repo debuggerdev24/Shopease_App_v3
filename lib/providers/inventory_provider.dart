@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 class InventoryProvider extends ChangeNotifier {
   final BaseInventoryService services;
@@ -93,7 +93,7 @@ class InventoryProvider extends ChangeNotifier {
     if (_selectedInventoryLevelFilter == null) {
       _filteredProducts.addAll(
         _products.where(
-          (product) => _selectedCategoryFilters.contains(Constants.categories
+          (product) => _selectedCategoryFilters.contains(Utils.categories
               .firstWhere(
                   (category) => category.categoryName == product.itemCategory)
               .categoryId),
@@ -110,7 +110,7 @@ class InventoryProvider extends ChangeNotifier {
       _products.where(
         (product) =>
             product.itemLevel == _selectedInventoryLevelFilter &&
-            _selectedCategoryFilters.contains(Constants.categories
+            _selectedCategoryFilters.contains(Utils.categories
                 .firstWhere(
                     (category) => category.categoryName == product.itemCategory)
                 .categoryId),

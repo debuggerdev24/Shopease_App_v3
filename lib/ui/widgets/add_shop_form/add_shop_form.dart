@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -135,7 +136,7 @@ class _AddShopFormState extends State<AddShopForm> {
                                   )
                                 : DecorationImage(
                                     image:
-                                        NetworkImage(_fileFieldController.text),
+                                        CachedNetworkImageProvider(_fileFieldController.text),
                                   ),
                       ),
                       child: SvgPicture.asset(

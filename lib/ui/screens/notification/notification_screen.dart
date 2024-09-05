@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -243,8 +244,9 @@ class _NotificationScreenState extends State<NotificationScreen>
           radius: 38.0,
           backgroundColor: AppColors.primaryColor,
           child: ClipOval(
-            child:
-                Image.network(notification.imageUrl ?? Constants.placeholdeImg),
+            child: CachedNetworkImage(
+              imageUrl: notification.imageUrl ?? Constants.placeholdeImg,
+            ),
           ),
         ),
       ),
@@ -278,8 +280,8 @@ class _NotificationScreenState extends State<NotificationScreen>
             radius: 8.0,
             backgroundColor: AppColors.primaryColor,
             child: ClipOval(
-              child: Image.network(
-                (profileProvider.profileData?.imageUrl == null ||
+              child: CachedNetworkImage(
+                imageUrl: (profileProvider.profileData?.imageUrl == null ||
                         profileProvider.profileData?.imageUrl.isEmpty == true)
                     ? Constants.placeholdeImg
                     : profileProvider.profileData?.imageUrl ?? '',

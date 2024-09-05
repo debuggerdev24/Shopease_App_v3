@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -106,7 +107,7 @@ class _HistorylistTileState extends State<HistorylistTile>
                                   widget.product.imageUrl!.isEmpty
                               ? null
                               : DecorationImage(
-                                  image: NetworkImage(widget.product.imageUrl!),
+                                  image: CachedNetworkImageProvider(widget.product.imageUrl!),
                                   fit: BoxFit.fill,
                                 ),
                         ),

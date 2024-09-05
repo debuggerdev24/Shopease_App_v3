@@ -20,6 +20,7 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 class MultipleInventorySelectionScreen extends StatefulWidget {
   const MultipleInventorySelectionScreen({super.key});
@@ -155,7 +156,7 @@ class _MultipleInventorySelectionScreenState
                   ),
                   Wrap(
                     direction: Axis.horizontal,
-                    children: Constants.categories
+                    children: Utils.categories
                         .map(
                           (e) => Padding(
                             padding: EdgeInsets.only(top: 12.h),

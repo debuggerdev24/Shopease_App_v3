@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -197,7 +198,7 @@ class HistoryItemTileWithSelectionState
               width: 100.h,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(
+                  image: CachedNetworkImageProvider(
                     widget.historyItem.imageUrl ?? Constants.placeholdeImg,
                   ),
                   fit: BoxFit.contain,

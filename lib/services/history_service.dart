@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
-import 'package:shopease_app_flutter/utils/utilas.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 abstract class BaseHistoryService {
   Future<Response<dynamic>?> getHistoryItems();
@@ -32,7 +32,8 @@ class Historyservice implements BaseHistoryService {
 
     for (Map<String, dynamic> record in data) {
       if (!isEdit && record.containsKey('item_image')) {
-        record['item_image'] = Utils.getBse64String(record['item_image']);
+        record['item_image'] =
+           await Utils.getCompressedBse64String(record['item_image']);
       }
       if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add(record);

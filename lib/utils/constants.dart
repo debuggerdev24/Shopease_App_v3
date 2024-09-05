@@ -38,36 +38,4 @@ class Constants {
     "display_name_no_e164_cc": "Australia (AU)",
     "e164_key": "61-AU-0"
   };
-
-  /// PRODUCT CATEGORIES ///
-  static final List<CategoryModel> _categories = [];
-
-  static List<CategoryModel> get categories => _categories;
-
-  static Future<void> getCategories({
-    Function(String)? onError,
-    VoidCallback? onSuccess,
-  }) async {
-    try {
-      final res = await InventoryService().getCategories();
-
-      if (res == null) {
-        onError?.call(Constants.tokenExpiredMessage);
-        return;
-      }
-
-      if (res.statusCode == 200) {
-        _categories.clear();
-        _categories.addAll(
-            (res.data as List).map((e) => CategoryModel.fromJson(e)).toList());
-        onSuccess?.call();
-      } else {
-        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      }
-    } on DioException {
-      rethrow;
-    } catch (e) {
-      debugPrint("Error while getCategories: $e");
-    }
-  }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -88,7 +89,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               width: 2.8)),
                       color: Colors.white,
                       image: DecorationImage(
-                          image: NetworkImage(widget.product.itemImage ??
+                          image: CachedNetworkImageProvider(widget.product.itemImage ??
                               Constants.placeholdeImg),
                           fit: BoxFit.cover),
                     ),

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -71,7 +72,7 @@ class _ShopTileState extends State<ShopTile>
                   width: 100.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage((widget.shop.itemImage == null ||
+                      image: CachedNetworkImageProvider((widget.shop.itemImage == null ||
                               widget.shop.itemImage?.isEmpty == true)
                           ? Constants.placeholdeImg
                           : widget.shop.itemImage ?? ''),

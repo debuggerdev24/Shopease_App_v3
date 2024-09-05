@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
 import 'package:shopease_app_flutter/services/base_api_service.dart';
-import 'package:shopease_app_flutter/utils/utilas.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 abstract class BaseChecklistService {
   /// Checklist
@@ -48,7 +48,8 @@ class ChecklistService implements BaseChecklistService {
     for (Map<String, dynamic> record in data) {
       if ((record['item_image'] != null) &&
           !record['item_image'].toString().startsWith('http')) {
-        record['item_image'] = Utils.getBse64String(record['item_image']);
+        record['item_image'] =
+            await Utils.getCompressedBse64String(record['item_image']);
       }
       if (isEdit) record.removeWhere((key, value) => value == null);
       (formData['records'] as List).add({'item_details': record});
@@ -85,7 +86,8 @@ class ChecklistService implements BaseChecklistService {
       // }
       if ((record['shop_image'] != null) &&
           !record['shop_image'].toString().startsWith('http')) {
-        record['shop_image'] = Utils.getBse64String(record['shop_image']);
+        record['shop_image'] =
+            await Utils.getCompressedBse64String(record['shop_image']);
       } else {
         record.remove('shop_image');
       }

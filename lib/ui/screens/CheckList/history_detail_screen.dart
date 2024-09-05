@@ -18,6 +18,7 @@ import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HistoryDetailScreen extends StatefulWidget {
   const HistoryDetailScreen({super.key, required this.history});
@@ -190,16 +191,16 @@ class HistoryItemDetailTile extends StatelessWidget {
                 width: 100.h,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(
-                      historyItem.imageUrl ?? Constants.placeholdeImg,
-                    ),
+                    image: CachedNetworkImageProvider(
+                        historyItem.imageUrl ?? Constants.placeholdeImg,
+                        cacheManager:
+                            CachedNetworkImageProvider.defaultCacheManager),
                     fit: BoxFit.contain,
                   ),
                 ),
               ),
             ),
-            const SizedBox(
-                width: 8), // Assuming 8.horizontalSpace is a SizedBox
+            8.horizontalSpace,
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -215,8 +216,8 @@ class HistoryItemDetailTile extends StatelessWidget {
                   SizedBox(height: 10.h),
                   if (historyItem.brand.toString().isNotEmpty)
                     AppChip(
-                        text: historyItem.brand ??
-                            '') // Assuming 20.verticalSpace is a SizedBox
+                      text: historyItem.brand ?? '',
+                    ) // Assuming 20.verticalSpace is a SizedBox
                 ],
               ),
             ),

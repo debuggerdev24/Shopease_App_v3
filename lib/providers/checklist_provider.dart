@@ -8,6 +8,7 @@ import 'package:shopease_app_flutter/services/checklist_service.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
+import 'package:shopease_app_flutter/utils/utils.dart';
 
 class ChecklistProvider extends ChangeNotifier {
   final BaseChecklistService service;
@@ -206,7 +207,7 @@ class ChecklistProvider extends ChangeNotifier {
     if (_selectedItemFilter == null) {
       _filteredChecklist.addAll(
         _checklist.where(
-          (product) => _selectedCategoryFilters.contains(Constants.categories
+          (product) => _selectedCategoryFilters.contains(Utils.categories
               .firstWhere(
                   (category) => category.categoryName == product.itemCategory)
               .categoryId),
@@ -223,7 +224,7 @@ class ChecklistProvider extends ChangeNotifier {
             (_selectedItemFilter == 'selected'
                 ? product.isSelectedForComplete
                 : !product.isSelectedForComplete) &&
-            _selectedCategoryFilters.contains(Constants.categories
+            _selectedCategoryFilters.contains(Utils.categories
                 .firstWhere(
                     (category) => category.categoryName == product.itemCategory)
                 .categoryId),
