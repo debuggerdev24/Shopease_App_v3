@@ -14,7 +14,7 @@ class Utils {
 
     final bytes = await FlutterImageCompress.compressWithFile(
       filePath,
-      quality: 90,
+      quality: 30,
     );
     log('file compressed');
     Timeline.finishSync();
