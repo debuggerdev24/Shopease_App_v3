@@ -43,6 +43,8 @@ abstract class BaseProfileService {
   Future<Response<dynamic>?> userleavegroup({
     required Map<String, dynamic> data,
   });
+
+  Future<Response<dynamic>?> getFaqs();
 }
 
 class ProfileService implements BaseProfileService {
@@ -200,5 +202,10 @@ class ProfileService implements BaseProfileService {
       ApiUrl.removeuserfromgroup,
       data: formData,
     );
+  }
+
+  @override
+  Future<Response?> getFaqs() async {
+    return await BaseRepository().get(ApiUrl.removeuserfromgroup);
   }
 }

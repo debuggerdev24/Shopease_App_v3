@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shopease_app_flutter/Models/faq_model.dart';
 import 'package:shopease_app_flutter/models/invitation_model.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/services/profile_service.dart';
@@ -22,6 +23,7 @@ class ProfileProvider extends ChangeNotifier {
   ProfileData? _profileData;
   XFile? _selectedFile;
   List<ProfileData> _groupProfiles = [];
+  List<FaqModel> _faqs = [];
   List<Invitation> _userInvitation = [];
 
   bool get set => _set;
@@ -33,6 +35,7 @@ class ProfileProvider extends ChangeNotifier {
   bool get editProfileLoading => _editProfileLoading;
   ProfileData? get profileData => _profileData;
   List<ProfileData> get groupProfiles => _groupProfiles;
+  List<FaqModel> get faqs => _faqs;
   XFile? get selectedFile => _selectedFile;
   List<Invitation> get inviteduser => _userInvitation;
 
@@ -83,6 +86,11 @@ class ProfileProvider extends ChangeNotifier {
 
   void settingInviteduser(List<Invitation> value) {
     _userInvitation = value;
+    notifyListeners();
+  }
+
+  void changeFaqs(List<FaqModel> value) {
+    _faqs = value;
     notifyListeners();
   }
 
@@ -375,6 +383,41 @@ class ProfileProvider extends ChangeNotifier {
     } catch (e, s) {
       debugPrint("Error while cancelinvite: $e");
       debugPrint("Error while cancelinvite: $s");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getFaqs({
+    VoidCallback? onSuccess,
+    Function(String)? onError,
+  }) async {
+    try {
+      setLoading(true);
+
+      await Future.delayed(const Duration(seconds: 1));
+      changeFaqs(dummyFaqs);
+
+      // TODO : change this dummy data
+      // final res = await services.getFaqs();
+
+      // if (res == null) {
+      //   onError?.call(Constants.tokenExpiredMessage);
+      //   return;
+      // }
+
+      // if (res.statusCode == 200) {
+      //   changeFaqs(
+      //       (res.data as List).map((e) => FaqModel.fromJson(e)).toList());
+      //   onSuccess?.call();
+      // } else {
+      //   onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      // }
+    } on DioException {
+      rethrow;
+    } catch (e, s) {
+      debugPrint("Error while getFaqs: $e");
+      debugPrint("Error while getFaqs: $s");
     } finally {
       setLoading(false);
     }

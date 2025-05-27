@@ -11,6 +11,7 @@ import 'package:shopease_app_flutter/ui/screens/checkList/upload%20Invoice/uploa
 import 'package:shopease_app_flutter/ui/screens/checkList/add_checklist_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_detail_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/notification/notification_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/profile/faq_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/profile/profile_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/select_shop_screen.dart';
@@ -64,6 +65,7 @@ enum AppRoute {
 
   ////////// BRANCH 3 //////////
   profile,
+  faqScreen,
 
   ////////// BRANCH 4 //////////
   notifications,
@@ -381,7 +383,16 @@ class AppNavigator {
                 name: AppRoute.profile.name,
                 builder: (BuildContext context, GoRouterState state) =>
                     const InternetConnectivityWrapper(child: ProfileScreen()),
-                routes: const <RouteBase>[],
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: AppRoute.faqScreen.name,
+                    name: AppRoute.faqScreen.name,
+                    builder: (context, state) =>
+                        const InternetConnectivityWrapper(
+                      child: FaqScreen(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

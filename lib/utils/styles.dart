@@ -37,12 +37,26 @@ final textStyle12 = TextStyle(
   fontSize: 12.sp,
 );
 
+final textStyle18 = TextStyle(
+  fontFamily: 'Figtree',
+  fontSize: 18.sp,
+);
+
 final textStyle18SemiBold = TextStyle(
-    fontFamily: 'Figtree', fontSize: 18.sp, fontWeight: FontWeight.w600);
+  fontFamily: 'Figtree',
+  fontSize: 18.sp,
+  fontWeight: FontWeight.w600,
+);
 
 final textStyle20SemiBold = TextStyle(
   fontFamily: 'Figtree',
   fontSize: 20.sp,
+  fontWeight: FontWeight.w600,
+);
+
+final textStyle24SemiBold = TextStyle(
+  fontFamily: 'Figtree',
+  fontSize: 24.sp,
   fontWeight: FontWeight.w600,
 );
 

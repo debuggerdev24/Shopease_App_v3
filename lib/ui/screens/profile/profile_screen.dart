@@ -18,9 +18,11 @@ import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
+import 'package:shopease_app_flutter/ui/widgets/video_player_widget.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
+import 'package:shopease_app_flutter/utils/extensions/context_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,7 +35,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String? another_user_id;
+  String? anotherUserId;
   @override
   void initState() {
     super.initState();
@@ -42,6 +44,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context.read<ProfileProvider>().getAllProfile();
       });
     });
+  }
+
+  void onMailTapCallback() async {
+    final Uri emailUri = Uri(scheme: 'mailto', path: 'support@ShopEaseApp.com');
+
+    if (!await launchUrl(emailUri)) {
+      if (!mounted) return;
+      context.showErrorMessage("Something went wrong.");
+    }
   }
 
   @override
@@ -130,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         log("usdert =====>${user.userId}");
                         log("usdert leanght =====>${provider.groupProfiles.length}");
 
-                        another_user_id = user.userId;
+                        anotherUserId = user.userId;
 
                         return ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.sp),
@@ -145,6 +156,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      onTap: () => context.pushNamed(AppRoute.faqScreen.name),
+                      title: GlobalText(
+                        'FAQ',
+                        textStyle:
+                            textStyle16.copyWith(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      onTap: () => showProductTourOverlay(context),
+                      title: GlobalText(
+                        'Product Tour',
+                        textStyle:
+                            textStyle16.copyWith(fontWeight: FontWeight.w500),
+                      ),
+                    ),
                     ExpansionTile(
                       childrenPadding: const EdgeInsets.symmetric(vertical: 8),
                       tilePadding: EdgeInsets.zero,
@@ -157,32 +186,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         RichText(
                           text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: 'If you have any queries, write to ',
+                            children: [
+                              const TextSpan(
+                                text: 'If you have any queries, write to ',
+                              ),
+                              TextSpan(
+                                text: 'support@shopeaseapp.com',
+                                style: textStyle12.copyWith(
+                                  decoration: TextDecoration.underline,
                                 ),
-                                TextSpan(
-                                  text: 'support@shopeaseapp.com',
-                                  style: textStyle12.copyWith(
-                                      decoration: TextDecoration.underline),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () async {
-                                      final Uri emailUri = Uri(
-                                        scheme: 'mailto',
-                                        path: 'support@ShopEaseApp.com',
-                                      );
-                                      if (await canLaunch(
-                                          emailUri.toString())) {
-                                        await launch(emailUri.toString());
-                                      } else {
-                                        throw 'Could not launch $emailUri';
-                                      }
-                                    },
-                                ),
-                              ],
-                              style: textStyle12.copyWith(
-                                color: AppColors.blackColor,
-                              )),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = onMailTapCallback,
+                              ),
+                            ],
+                            style: textStyle12.copyWith(
+                              color: AppColors.blackColor,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -194,95 +214,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
-    log(" provider.profileData?.isAdmin ==>0==> ${user.userId}");
+  void showProductTourOverlay(BuildContext context) {
+    OverlayState overlayState = Overlay.of(context);
+    late OverlayEntry overlayEntry;
 
-    return user.isInvited == true
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GlobalText(
-                'Invited',
-                textStyle: textStyle14,
-              ),
-              15.horizontalSpace,
-              if (provider.profileData?.isAdmin == true)
-                GestureDetector(
-                  onTap: () async {
-                    await provider.cancelinvite(
-                      data: {'user_id': user.userId},
-                      onSuccess: () {
-                        CustomToast.showSuccess(
-                          context,
-                          'Invitation canceled successfully.',
-                        );
-                        provider.removeGroupProfile(user);
-                      },
-                    );
-                  },
-                  child: SvgIcon(
-                    AppAssets.delete,
-                    size: 16.sp,
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Positioned(
+          // left: MediaQuery.of(context).size.width * 0.2,
+          top: 40,
+          child: Container(
+            width: 1.sw,
+            padding: const EdgeInsets.all(10),
+            color: AppColors.blackColor,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: () => overlayEntry.remove(),
+                    icon: const Icon(
+                      Icons.clear,
+                      color: AppColors.whiteColor,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 1.sw,
+                  child: const CustomVideoPlayer(
+                    videoUrl:
+                        'https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+                    aspectRatio: 1.4,
                   ),
                 )
-            ],
-          )
-        : provider.profileData?.isAdmin == true
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!user.isAdmin) ...[
-                    GestureDetector(
-                      onTap: () async {
-                        await provider.adminUserGroup(data: {
-                          'user_id': user.userId,
-                          "is_admin": provider.profileData?.isAdmin
-                        });
+              ],
+            ),
+          ),
+        );
+      },
+    );
 
-                        log("user.userId --- > ${user.userId} ,${provider.profileData?.isAdmin}");
-
-                        onSuccess:
-                        () {
-                          CustomToast.showSuccess(
-                            context,
-                            'New Admin has been assigned to the group',
-                          );
-                        };
-                      },
-                      child: SvgIcon(
-                        AppAssets.userEdit,
-                        size: 15.sp,
-                        color: AppColors.blackGreyColor,
-                      ),
-                    ),
-                    15.horizontalSpace
-                  ],
-                  provider.profileData?.isAdmin == true
-                      ? GestureDetector(
-                          onTap: () async {
-                            await provider.removeUserFromGroup(
-                              data: {'user_id': user.userId},
-                              onSuccess: () {
-                                CustomToast.showSuccess(
-                                  context,
-                                  'User removed successfully.',
-                                );
-                              },
-                            );
-                          },
-                          child: SvgIcon(
-                            AppAssets.delete,
-                            size: 16.sp,
-                          ),
-                        )
-                      : const SizedBox()
-                ],
-              )
-            : const SizedBox.shrink();
+    // Inserting the OverlayEntry into the Overlay
+    overlayState.insert(overlayEntry);
   }
 
   void _showAddMemberSheet() {
@@ -681,6 +655,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
+  void _showUserLeaveSheet(ProfileProvider profileProvider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => BounceInUp(
+        child: Container(
+          padding: EdgeInsets.all(20.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  'Do you really wish to leave the group?',
+                  style: textStyle18SemiBold,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              20.verticalSpace,
+              DeleteButton(
+                  onPressed: () async {
+                    // widget.onDelete?.call();
+                    // _slideController.close();
+
+                    context.pop();
+                    await context.read<ProfileProvider>().leaveusergroup(
+                        data: {
+                          'user_id': profileProvider.profileData?.userId,
+                        },
+                        onSuccess: () {
+                          profileProvider.getAllProfile();
+                        });
+                  },
+                  text: 'Yes, sure'),
+              10.verticalSpace,
+              AppButton(
+                onPressed: () {
+                  // _slideController.close();
+                  context.pop();
+                },
+                text: 'Cancel',
+                colorType: AppButtonColorType.greyed,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget buildTextLabel(String name) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -700,7 +723,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  buildProfileRow(String str1, String str2, VoidCallback ontap) {
+  Widget buildProfileRow(String str1, String str2, VoidCallback ontap) {
     return Row(
       children: [
         GlobalText(
@@ -758,7 +781,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  _buildProfilePicture(bool isAdmin, String url) {
+  Widget _buildProfilePicture(bool isAdmin, String url) {
     return Stack(
       children: [
         CircleAvatar(
@@ -778,52 +801,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  _showUserLeaveSheet(ProfileProvider profileProvider) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => BounceInUp(
-        child: Container(
-          padding: EdgeInsets.all(20.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: Text(
-                  'Do you really wish to leave the group?',
-                  style: textStyle18SemiBold,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              20.verticalSpace,
-              DeleteButton(
-                  onPressed: () async {
-                    // widget.onDelete?.call();
-                    // _slideController.close();
+  Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
+    log(" provider.profileData?.isAdmin ==>0==> ${user.userId}");
 
-                    context.pop();
-                    await context.read<ProfileProvider>().leaveusergroup(
-                        data: {
-                          'user_id': profileProvider.profileData?.userId,
-                        },
-                        onSuccess: () {
-                          profileProvider.getAllProfile();
-                        });
-                  },
-                  text: 'Yes, sure'),
-              10.verticalSpace,
-              AppButton(
-                onPressed: () {
-                  // _slideController.close();
-                  context.pop();
-                },
-                text: 'Cancel',
-                colorType: AppButtonColorType.greyed,
+    return user.isInvited == true
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GlobalText(
+                'Invited',
+                textStyle: textStyle14,
               ),
+              15.horizontalSpace,
+              if (provider.profileData?.isAdmin == true)
+                GestureDetector(
+                  onTap: () async {
+                    await provider.cancelinvite(
+                      data: {'user_id': user.userId},
+                      onSuccess: () {
+                        CustomToast.showSuccess(
+                          context,
+                          'Invitation canceled successfully.',
+                        );
+                        provider.removeGroupProfile(user);
+                      },
+                    );
+                  },
+                  child: SvgIcon(
+                    AppAssets.delete,
+                    size: 16.sp,
+                  ),
+                )
             ],
-          ),
-        ),
-      ),
-    );
+          )
+        : provider.profileData?.isAdmin == true
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!user.isAdmin) ...[
+                    GestureDetector(
+                      onTap: () async {
+                        await provider.adminUserGroup(data: {
+                          'user_id': user.userId,
+                          "is_admin": provider.profileData?.isAdmin
+                        });
+
+                        log("user.userId --- > ${user.userId} ,${provider.profileData?.isAdmin}");
+
+                        onSuccess:
+                        () {
+                          CustomToast.showSuccess(
+                            context,
+                            'New Admin has been assigned to the group',
+                          );
+                        };
+                      },
+                      child: SvgIcon(
+                        AppAssets.userEdit,
+                        size: 15.sp,
+                        color: AppColors.blackGreyColor,
+                      ),
+                    ),
+                    15.horizontalSpace
+                  ],
+                  provider.profileData?.isAdmin == true
+                      ? GestureDetector(
+                          onTap: () async {
+                            await provider.removeUserFromGroup(
+                              data: {'user_id': user.userId},
+                              onSuccess: () {
+                                CustomToast.showSuccess(
+                                  context,
+                                  'User removed successfully.',
+                                );
+                              },
+                            );
+                          },
+                          child: SvgIcon(
+                            AppAssets.delete,
+                            size: 16.sp,
+                          ),
+                        )
+                      : const SizedBox()
+                ],
+              )
+            : const SizedBox.shrink();
   }
 }
