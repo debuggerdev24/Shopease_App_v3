@@ -16,6 +16,8 @@ abstract class BaseAuthService {
   });
 
   Future<Response<dynamic>?> refreshAuth();
+
+  Future<Response<dynamic>?> deleteMyAccount();
 }
 
 class AuthService implements BaseAuthService {
@@ -58,5 +60,10 @@ class AuthService implements BaseAuthService {
     return await BaseRepository().post(ApiUrl.refreshAuth, data: {
       'refresh_token': SharedPrefs().refreshToken ?? "",
     });
+  }
+
+  @override
+  Future<Response<dynamic>?> deleteMyAccount() async {
+    return await BaseRepository().delete(ApiUrl.deleteMyAcocunt);
   }
 }

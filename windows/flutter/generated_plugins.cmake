@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   file_selector_windows
   flutter_barcode_sdk
+  flutter_inappwebview_windows
   smart_auth
   url_launcher_windows
 )

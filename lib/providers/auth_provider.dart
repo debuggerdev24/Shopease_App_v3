@@ -144,4 +144,34 @@ class AuthProvider extends ChangeNotifier {
       setLoading(false);
     }
   }
+
+  Future<void> deleteMyAcocunt({
+    Function(String)? onError,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      setLoading(true);
+      final res = await services.deleteMyAccount();
+
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
+
+      if (res.statusCode == 200) {
+        BaseRepository().removeToken();
+        SharedPrefs().clear();
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+        setNeedToResendOTP(true);
+      }
+    } on DioException {
+      rethrow;
+    } catch (e) {
+      debugPrint("Error while deleteMyAcocunt: $e");
+    } finally {
+      setLoading(false);
+    }
+  }
 }

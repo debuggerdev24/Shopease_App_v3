@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
@@ -15,7 +16,6 @@ import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
@@ -53,9 +53,12 @@ class _HomeScreenState extends State<HomeScreen>
             actions: [
               IconButton(
                 onPressed: () {
-                  showSearch(
-                      context: context,
-                      delegate: ProductSearchDelegate(provider.products));
+                  // show tutorial
+                  getTutorial().show(context: context);
+
+                  // showSearch(
+                  //     context: context,
+                  //     delegate: ProductSearchDelegate(provider.products));
                 },
                 icon: SvgIcon(
                   AppAssets.search,
@@ -66,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen>
               Padding(
                 padding: const EdgeInsets.only(left: 5),
                 child: AppIconButton(
+                    key: scanInvButtonKey,
                     onTap: () {
                       context.pushNamed(AppRoute.scanAndAddScreen.name);
                     },
@@ -78,17 +82,19 @@ class _HomeScreenState extends State<HomeScreen>
               Padding(
                 padding: const EdgeInsets.only(left: 5, right: 10),
                 child: AppIconButton(
-                    onTap: () {
-                      context.pushNamed(
-                        AppRoute.addInventoryForm.name,
-                        extra: {'isEdit': false},
-                      );
-                    },
-                    child: const SvgIcon(
-                      AppAssets.add,
-                      size: 20,
-                      color: AppColors.orangeColor,
-                    )),
+                  key: addInvButtonKey,
+                  onTap: () {
+                    context.pushNamed(
+                      AppRoute.addInventoryForm.name,
+                      extra: {'isEdit': false},
+                    );
+                  },
+                  child: const SvgIcon(
+                    AppAssets.add,
+                    size: 20,
+                    color: AppColors.orangeColor,
+                  ),
+                ),
               ),
             ],
           ),

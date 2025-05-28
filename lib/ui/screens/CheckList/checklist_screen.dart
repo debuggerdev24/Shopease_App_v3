@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/checklist_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/screens/checkList/history_search_delegate.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -191,6 +192,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                     Text('${provider.filteredChecklist.length} Products'),
                     const Spacer(),
                     TextButton(
+                      key: selectShopButtonKey,
                       onPressed: () {
                         context.pushNamed(AppRoute.selectShop.name);
                       },

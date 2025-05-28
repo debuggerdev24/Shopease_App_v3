@@ -53,6 +53,11 @@ class BaseRepository {
     });
   }
 
+  void removeToken() {
+    _dio.options.headers.remove('Authorization');
+    _dio.options.headers.remove('x-api-key');
+  }
+
   Future<Response<dynamic>?> get(String path, {dynamic data}) async {
     try {
       final res = await _dio.get(path, data: data);

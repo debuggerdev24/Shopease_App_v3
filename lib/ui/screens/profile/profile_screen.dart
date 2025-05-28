@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
+import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -18,7 +19,6 @@ import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/ui/widgets/mobile_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
-import 'package:shopease_app_flutter/ui/widgets/video_player_widget.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -26,6 +26,7 @@ import 'package:shopease_app_flutter/utils/extensions/context_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -121,6 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         if (provider.profileData?.isAdmin == true ||
                             provider.groupProfiles.isEmpty) ...[
                           GestureDetector(
+                            key: addMemberButtonKey,
                             onTap: _showAddMemberSheet,
                             child: SvgIcon(
                               AppAssets.add,
@@ -206,57 +208,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      onTap: () => showDeleteMyAccountSheet(),
+                      title: GlobalText(
+                        'Delete My Account',
+                        textStyle: textStyle16.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.redColor,
+                        ),
+                      ),
+                    ),
                     20.h.verticalSpace,
                   ],
                 ),
               );
       },
     );
-  }
-
-  void showProductTourOverlay(BuildContext context) {
-    OverlayState overlayState = Overlay.of(context);
-    late OverlayEntry overlayEntry;
-
-    overlayEntry = OverlayEntry(
-      builder: (context) {
-        return Positioned(
-          // left: MediaQuery.of(context).size.width * 0.2,
-          top: 40,
-          child: Container(
-            width: 1.sw,
-            padding: const EdgeInsets.all(10),
-            color: AppColors.blackColor,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    onPressed: () => overlayEntry.remove(),
-                    icon: const Icon(
-                      Icons.clear,
-                      color: AppColors.whiteColor,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 1.sw,
-                  child: const CustomVideoPlayer(
-                    videoUrl:
-                        'https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
-                    aspectRatio: 1.4,
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    // Inserting the OverlayEntry into the Overlay
-    overlayState.insert(overlayEntry);
   }
 
   void _showAddMemberSheet() {
@@ -695,6 +663,152 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context.pop();
                 },
                 text: 'Cancel',
+                colorType: AppButtonColorType.greyed,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showProductTourOverlay(BuildContext context) {
+    OverlayState overlayState = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    YoutubePlayerController youtubeController = YoutubePlayerController(
+      initialVideoId: YoutubePlayer.convertUrlToId(
+              'https://youtu.be/BERHyRyCsqU?si=9qMSOiTigmIoLww-') ??
+          "",
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+        enableCaption: false,
+        loop: true,
+      ),
+    );
+
+    final ValueNotifier<Offset> overlayPositionListenable =
+        ValueNotifier(const Offset(0, 40));
+
+    overlayEntry = OverlayEntry(
+      builder: (context) {
+        return ValueListenableBuilder(
+          valueListenable: overlayPositionListenable,
+          builder: (context, position, _) {
+            return Positioned(
+              top: position.dy,
+              left: position.dx,
+              child: Container(
+                width: .98.sw,
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.all(5),
+                color: AppColors.blackColor,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.blackGreyColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const SizedBox(width: 40),
+                          GestureDetector(
+                            onPanUpdate: (position) {
+                              overlayPositionListenable.value += position.delta;
+                            },
+                            child: SizedBox(
+                              height: 20,
+                              width: 60,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: ColoredBox(
+                                  color:
+                                      AppColors.lightYellowColor.withAlpha(100),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              onPressed: () => overlayEntry.remove(),
+                              icon: const Icon(
+                                Icons.clear,
+                                color: AppColors.whiteColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 1.sw,
+                        child: YoutubePlayer(
+                          controller: youtubeController,
+                          showVideoProgressIndicator: true,
+                          onEnded: (_) => overlayEntry.remove(),
+                        ),
+                      ),
+                      const SizedBox(height: 20)
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    // Inserting the OverlayEntry into the Overlay
+    overlayState.insert(overlayEntry);
+  }
+
+  void showDeleteMyAccountSheet() {
+    final ValueNotifier<bool> btnLoadingListenable = ValueNotifier(false);
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 20,
+            children: [
+              GlobalText(
+                "Permanently delete your account?\nAll data will be lost",
+                textAlign: TextAlign.center,
+                textStyle: textStyle18.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              ValueListenableBuilder(
+                  valueListenable: btnLoadingListenable,
+                  builder: (context, isLoading, _) {
+                    return AppButton(
+                      onPressed: () async {
+                        btnLoadingListenable.value = true;
+                        await context.read<AuthProvider>().deleteMyAcocunt(
+                              onError: context.showErrorMessage,
+                              onSuccess: () => context
+                                  .goNamed(AppRoute.mobileLoginScreen.name),
+                            );
+                        btnLoadingListenable.value = false;
+                      },
+                      text: "Confirm",
+                      isLoading: isLoading,
+                      foregroundColor: AppColors.redColor,
+                      colorType: AppButtonColorType.secondary,
+                    );
+                  }),
+              AppButton(
+                onPressed: context.pop,
+                text: "Not Now",
                 colorType: AppButtonColorType.greyed,
               ),
             ],
