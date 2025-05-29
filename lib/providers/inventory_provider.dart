@@ -152,6 +152,15 @@ class InventoryProvider extends ChangeNotifier {
         isEdit: true);
   }
 
+  Future<void> changeInStockQuantity(String itemId, String quantity) async {
+    final product = _products.firstWhere((e) => e.itemId == itemId);
+    product.inStockQuantity = quantity;
+    await putInventoryItem(
+      data: [product.copyWith(inStockQuantity: quantity).toJson()],
+      isEdit: true,
+    );
+  }
+
   void addToChecklist(
       List<Product> products, BuildContext context, bool isFromMulti) async {
     for (Product product in products) {

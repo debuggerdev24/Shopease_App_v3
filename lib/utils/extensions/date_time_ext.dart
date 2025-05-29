@@ -11,6 +11,11 @@ extension DateTimeToString on DateTime {
     return formatter.format(this);
   }
 
+  String get toMMDDYYYY {
+    final formatter = DateFormat('MM/dd/yyyy', 'en_US');
+    return formatter.format(this);
+  }
+
   String get toMonthDD {
     final formatter = DateFormat('MMM dd', 'en_US');
     return formatter.format(this);

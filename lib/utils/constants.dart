@@ -1,8 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:shopease_app_flutter/models/category_model.dart';
-import 'package:shopease_app_flutter/services/inventory_services.dart';
-
 class Constants {
   Constants._();
 
@@ -12,6 +7,9 @@ class Constants {
   static const String commonErrMsg = 'Something went wrong.';
 
   static const String commonAuthErrMsg = 'Authentication failed.';
+
+  static const String apiKey = 'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0' ??
+      'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD';
 
   static const String defaultShopImage =
       'https://shopease-bucket-prod.s3.amazonaws.com/default/shops/shop_default.jpeg?';

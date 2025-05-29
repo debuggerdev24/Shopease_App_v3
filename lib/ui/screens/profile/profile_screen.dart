@@ -24,6 +24,7 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/context_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -40,11 +41,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await context.read<ProfileProvider>().getProfile(onSuccess: () {
-        context.read<ProfileProvider>().getAllProfile();
-      });
-    });
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        await context.read<ProfileProvider>().getProfile(
+          onSuccess: () {
+            if (SharedPrefs().appTour != false) showProfileTour();
+            context.read<ProfileProvider>().getAllProfile();
+          },
+        );
+      },
+    );
+  }
+
+  void showProfileTour() {
+    return getProfileTutorial(
+      onFinish: () => SharedPrefs().setAppTour(true),
+    ).show(
+      context: AppNavigator.shellNavigatorProfile.currentContext ?? context,
+    );
   }
 
   void onMailTapCallback() async {
@@ -788,24 +803,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               ValueListenableBuilder(
-                  valueListenable: btnLoadingListenable,
-                  builder: (context, isLoading, _) {
-                    return AppButton(
-                      onPressed: () async {
-                        btnLoadingListenable.value = true;
-                        await context.read<AuthProvider>().deleteMyAcocunt(
-                              onError: context.showErrorMessage,
-                              onSuccess: () => context
-                                  .goNamed(AppRoute.mobileLoginScreen.name),
-                            );
-                        btnLoadingListenable.value = false;
-                      },
-                      text: "Confirm",
-                      isLoading: isLoading,
-                      foregroundColor: AppColors.redColor,
-                      colorType: AppButtonColorType.secondary,
-                    );
-                  }),
+                valueListenable: btnLoadingListenable,
+                builder: (context, isLoading, _) {
+                  return AppButton(
+                    onPressed: () async {
+                      btnLoadingListenable.value = true;
+                      await context.read<AuthProvider>().deleteMyAcocunt(
+                            userId: context
+                                    .read<ProfileProvider>()
+                                    .profileData
+                                    ?.userId ??
+                                '',
+                            onError: context.showErrorMessage,
+                            onSuccess: () =>
+                                context.goNamed(AppRoute.nickNameScreen.name),
+                          );
+                      btnLoadingListenable.value = false;
+                    },
+                    text: "Confirm",
+                    isLoading: isLoading,
+                    foregroundColor: AppColors.redColor,
+                    colorType: AppButtonColorType.secondary,
+                  );
+                },
+              ),
               AppButton(
                 onPressed: context.pop,
                 text: "Not Now",

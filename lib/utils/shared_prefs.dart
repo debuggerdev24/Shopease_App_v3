@@ -22,12 +22,17 @@ class SharedPrefs {
   final String _phoneKey = "phone";
   final String _userNameKey = "name";
   final String _theme = 'theme';
+  final String _appTour = 'appTour';
+  final String _invTour = 'invTour';
+  final String _checklistTour = 'invTour';
+  final String _profileTour = 'profileTour';
 
   /// initializer
   init() async {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  /// Clears the preference storge.
   clear() async => await _prefs.clear();
 
   /// SESSION ID ///
@@ -100,4 +105,35 @@ class SharedPrefs {
   Future<bool> setTheme(String theme) => _prefs.setString(_theme, theme);
 
   Future<void> removeTheme() async => await _prefs.remove(_theme);
+
+  // App Tour //
+  bool? get appTour => _prefs.getBool(_appTour);
+
+  Future<bool> setAppTour(bool appTour) => _prefs.setBool(_appTour, appTour);
+
+  Future<void> removeAppTour() async => await _prefs.remove(_appTour);
+
+  // Inventory Tour //
+  bool? get invTour => _prefs.getBool(_invTour);
+
+  Future<bool> setInvTour(bool invTour) => _prefs.setBool(_invTour, invTour);
+
+  Future<void> removeInvTour() async => await _prefs.remove(_invTour);
+
+  // Checklist Tour //
+  bool? get checklistTour => _prefs.getBool(_checklistTour);
+
+  Future<bool> setChecklistTour(bool checklistTour) =>
+      _prefs.setBool(_checklistTour, checklistTour);
+
+  Future<void> removeChecklistTour() async =>
+      await _prefs.remove(_checklistTour);
+
+  // Checklist Tour //
+  bool? get profileTour => _prefs.getBool(_profileTour);
+
+  Future<bool> setProfileTour(bool profileTour) =>
+      _prefs.setBool(_profileTour, profileTour);
+
+  Future<void> removeProfileTour() async => await _prefs.remove(_profileTour);
 }

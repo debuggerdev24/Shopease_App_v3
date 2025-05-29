@@ -20,6 +20,7 @@ import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
@@ -54,13 +55,28 @@ class _ChecklistScreenState extends State<ChecklistScreen>
         },
       );
     // _tabsController.animateTo(context.read<ChecklistProvider>().currentTab);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<ChecklistProvider>().getChecklistItems();
-      context.read<HistoryProvider>().getHistoryItems();
-      if (context.read<ChecklistProvider>().shops.isEmpty) {
-        context.read<ChecklistProvider>().getShops();
-      }
-    });
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        context.read<ChecklistProvider>().getChecklistItems(
+          onSuccess: () {
+            if (SharedPrefs().appTour != false) showChecklistTour();
+          },
+        );
+        context.read<HistoryProvider>().getHistoryItems();
+        if (context.read<ChecklistProvider>().shops.isEmpty) {
+          context.read<ChecklistProvider>().getShops();
+        }
+      },
+    );
+  }
+
+  void showChecklistTour() {
+    return getChecklistTutorial(
+      onFinish: () => AppNavigator.goToBranch(2),
+    ).show(
+      context: AppNavigator.shellNavigatorChecklist.currentContext ?? context,
+    );
   }
 
   @override

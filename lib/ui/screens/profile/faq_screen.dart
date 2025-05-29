@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:shopease_app_flutter/Models/faq_model.dart';
+import 'package:shopease_app_flutter/models/faq_model.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';

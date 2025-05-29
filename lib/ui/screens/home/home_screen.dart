@@ -17,6 +17,7 @@ import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
 
@@ -32,9 +33,21 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<InventoryProvider>().getInventoryItems();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        context.read<InventoryProvider>().getInventoryItems().then((_) {
+          if (SharedPrefs().appTour != true) showInventoryTutorial();
+        });
+      },
+    );
+  }
+
+  void showInventoryTutorial() {
+    getInventoryTutorial(
+      onFinish: () => AppNavigator.goToBranch(1),
+    ).show(
+      context: AppNavigator.shellNavigatorHome.currentContext ?? context,
+    );
   }
 
   @override
@@ -53,12 +66,10 @@ class _HomeScreenState extends State<HomeScreen>
             actions: [
               IconButton(
                 onPressed: () {
-                  // show tutorial
-                  getTutorial().show(context: context);
-
-                  // showSearch(
-                  //     context: context,
-                  //     delegate: ProductSearchDelegate(provider.products));
+                  showSearch(
+                    context: context,
+                    delegate: ProductSearchDelegate(provider.products),
+                  );
                 },
                 icon: SvgIcon(
                   AppAssets.search,
@@ -151,55 +162,62 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildProductsList(InventoryProvider provider) {
     return ListView.separated(
-        shrinkWrap: true,
-        reverse: false,
-        itemCount: provider.filteredProducts.length,
-        separatorBuilder: (context, index) => 10.verticalSpace,
-        itemBuilder: (BuildContext context, int index) {
-          return ProductTile(
-            onLongPress: () {
-              context.goNamed(
-                AppRoute.multipleInventorySelection.name,
-              );
-            },
-            product: provider.filteredProducts[index],
-            onTap: () {
-              context.pushNamed(AppRoute.productDetail.name,
-                  extra: {'product': provider.filteredProducts[index]});
-            },
-            onAddToCart: () {
-              if (provider.filteredProducts[index].isInChecklist == true) {
-                context.read<ChecklistProvider>().deleteChecklistItems(
-                    itemIds: [provider.filteredProducts[index].itemId!],
-                    onSuccess: () {
-                      provider.addToChecklist(
-                          [provider.filteredProducts[index]], context, false);
-                    });
-              } else {
-                context.read<ChecklistProvider>().putChecklistFromInventory(
-                  data: [provider.filteredProducts[index].itemId!],
+      shrinkWrap: true,
+      reverse: false,
+      itemCount: provider.filteredProducts.length,
+      separatorBuilder: (context, index) => 10.verticalSpace,
+      itemBuilder: (BuildContext context, int index) {
+        return ProductTile(
+          onLongPress: () {
+            context.goNamed(
+              AppRoute.multipleInventorySelection.name,
+            );
+          },
+          product: provider.filteredProducts[index],
+          onTap: () {
+            context.pushNamed(AppRoute.productDetail.name,
+                extra: {'product': provider.filteredProducts[index]});
+          },
+          onAddToCart: () {
+            if (provider.filteredProducts[index].isInChecklist == true) {
+              context.read<ChecklistProvider>().deleteChecklistItems(
+                  itemIds: [provider.filteredProducts[index].itemId!],
                   onSuccess: () {
                     provider.addToChecklist(
                         [provider.filteredProducts[index]], context, false);
-                  },
-                );
-              }
-            },
-            onDelete: () {
-              provider.deletInventoryItems(
-                  itemIds: [provider.filteredProducts[index].itemId!],
-                  onSuccess: () {
-                    CustomToast.showSuccess(context, 'Successfully deleted');
                   });
-            },
-            onInventoryChange: (newType) {
-              provider.changeInventoryType(
-                provider.filteredProducts[index].itemId!,
-                newType,
+            } else {
+              context.read<ChecklistProvider>().putChecklistFromInventory(
+                data: [provider.filteredProducts[index].itemId!],
+                onSuccess: () {
+                  provider.addToChecklist(
+                      [provider.filteredProducts[index]], context, false);
+                },
               );
-            },
-          );
-        });
+            }
+          },
+          onDelete: () {
+            provider.deletInventoryItems(
+                itemIds: [provider.filteredProducts[index].itemId!],
+                onSuccess: () {
+                  CustomToast.showSuccess(context, 'Successfully deleted');
+                });
+          },
+          onInventoryChange: (newType) {
+            provider.changeInventoryType(
+              provider.filteredProducts[index].itemId!,
+              newType,
+            );
+          },
+          onChangedInStockQuantity: (q) {
+            provider.changeInStockQuantity(
+              provider.filteredProducts[index].itemId!,
+              q,
+            );
+          },
+        );
+      },
+    );
   }
 
   _buildAdDInvWidget() => BounceInUp(

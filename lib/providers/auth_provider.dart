@@ -146,12 +146,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> deleteMyAcocunt({
+    required String userId,
     Function(String)? onError,
     VoidCallback? onSuccess,
   }) async {
     try {
       setLoading(true);
-      final res = await services.deleteMyAccount();
+      final res = await services.deleteMyAccount(userId);
 
       if (res == null) {
         onError?.call(Constants.tokenExpiredMessage);

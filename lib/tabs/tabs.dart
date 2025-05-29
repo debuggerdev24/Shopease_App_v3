@@ -13,6 +13,7 @@ import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
 
@@ -50,10 +51,6 @@ class TabScreenState extends State<TabScreen> {
   }
 
   void goToBranch(int index) {
-    // if (index == 1) {
-    //   context.goNamed(AppRoute.checkList.name);
-    //   return;
-    // }
     widget.navigationShell.goBranch(index, initialLocation: index == 1);
   }
 
@@ -86,9 +83,11 @@ class TabScreenState extends State<TabScreen> {
         }
 
         if (index == 2) {
-          context.read<ProfileProvider>().getProfile(onSuccess: () {
-            context.read<ProfileProvider>().getAllProfile();
-          });
+          context.read<ProfileProvider>().getProfile(
+            onSuccess: () {
+              context.read<ProfileProvider>().getAllProfile();
+            },
+          );
         }
 
         // Saroj wants to call this APIs on every tab click.
@@ -121,6 +120,7 @@ class TabScreenState extends State<TabScreen> {
           );
         }),
         KBottomNavItem(
+          key: profileTabButtonKey,
           isSelected: widget.navigationShell.currentIndex == 2,
           svgIcon: AppAssets.person,
         ),

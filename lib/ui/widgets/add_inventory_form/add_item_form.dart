@@ -1,13 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
-import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/add_inventory_form/add_item_form_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
@@ -21,6 +22,9 @@ import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
+import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
+import 'package:shopease_app_flutter/utils/extensions/string_extension.dart';
+import 'package:shopease_app_flutter/utils/number_range_formatter.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class AddItemFormWidget extends StatelessWidget {
@@ -98,6 +102,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
 
   final TextEditingController _storageController = TextEditingController();
 
+  final TextEditingController _inStockQuantityController =
+      TextEditingController();
+
+  final TextEditingController _expiryDateController = TextEditingController();
+
   final TextEditingController _fileFieldController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -110,9 +119,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<AddItemFormProvider>().getCategories(
             onSuccess: setFormFields,
-            onError: (msg) {
-              setFormFields();
-            },
+            onError: (_) => setFormFields(),
           );
       if (widget.product == null || !widget.isEdit) {
         context.read<AddItemFormProvider>().changeSelectedCategory(null);
@@ -207,6 +214,17 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         },
                       ),
                       12.h.verticalSpace,
+                      AppTextField(
+                        name: "inStockQuantity",
+                        controller: _inStockQuantityController,
+                        labelText: "InStock Quantity",
+                        hintText: "Enter from 1 to 99",
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          NumberRangeFormatter(min: 0, max: 99),
+                        ],
+                      ),
+                      12.h.verticalSpace,
                       CardDropDownField(
                         name: 'inventoryLevelDropDown',
                         labelText: 'Inventory Level',
@@ -215,6 +233,32 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         dropDownList: inventoryDropdownList(),
                         onChanged: (value) {
                           provider.changeSelectedInvType(value);
+                        },
+                      ),
+                      12.h.verticalSpace,
+                      AppTextField(
+                        name: "expiryDate",
+                        controller: _expiryDateController,
+                        labelText: "Expiry Date",
+                        hintText: "MM/dd/YYYY",
+                        readOnly: true,
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: SvgPicture.asset(
+                            AppAssets.calender,
+                            color: AppColors.blackColor,
+                          ),
+                        ),
+                        onTap: () async {
+                          final date = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(DateTime.now().year + 100),
+                          );
+
+                          if (date != null) {
+                            _expiryDateController.text = date.toMMDDYYYY;
+                          }
                         },
                       ),
                       12.h.verticalSpace,
@@ -273,8 +317,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                                 ),
                                               )
                                             : DecorationImage(
-                                                image: CachedNetworkImageProvider(
-                                                    _fileFieldController.text),
+                                                image:
+                                                    CachedNetworkImageProvider(
+                                                        _fileFieldController
+                                                            .text),
                                               ),
                                   ),
                                   child: _fileFieldController.text.isEmpty
@@ -366,7 +412,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               'product_name': _nameController.text,
                               'product_description': _descController.text,
                               'brand': _brandController.text,
+                              'in_stock_quantity':
+                                  _inStockQuantityController.text,
                               'item_level': provider.selectedInvType,
+                              'expiry_date': _expiryDateController.text,
                               'item_category': provider.categories
                                   .firstWhere((element) =>
                                       element.categoryId ==
@@ -391,7 +440,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     productName: _nameController.text,
                                     productDescription: _descController.text,
                                     brand: _brandController.text,
+                                    inStockQuantity:
+                                        _inStockQuantityController.text,
                                     itemLevel: provider.selectedInvType,
+                                    expiryDate: _expiryDateController
+                                        .text.mmddYYYYToDate,
                                     itemCategory: provider.categories
                                         .firstWhere((element) =>
                                             element.categoryId ==
@@ -452,11 +505,13 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     _nameController.text = widget.product!.productName ?? '';
     _descController.text = widget.product!.productDescription ?? '';
     _brandController.text = widget.product!.brand ?? '';
+    _inStockQuantityController.text = widget.product!.inStockQuantity;
     context
         .read<AddItemFormProvider>()
         .changeSelectedInvType(widget.product!.itemLevel);
     _fileFieldController.text = widget.product!.itemImage ?? '';
     _storageController.text = widget.product!.itemStorage ?? '';
+    _expiryDateController.text = widget.product!.expiryDate?.toMMDDYYYY ?? '';
     context.read<AddItemFormProvider>().changeSelectedCategory(
           context.read<AddItemFormProvider>().categories.firstWhere(
             (element) {

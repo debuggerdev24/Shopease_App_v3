@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shopease_app_flutter/services/api_url.dart';
+import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 
 // import '../utils/shared_prefs.dart';
@@ -22,10 +23,10 @@ class BaseRepository {
     if (SharedPrefs().idToken != null) {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.prodBaseURL,
+          baseUrl: ApiUrl.devBaseURL,
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": 'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD',
+            "x-api-key": Constants.apiKey,
             "Authorization": "${SharedPrefs().idToken}"
           },
         ),
@@ -33,9 +34,9 @@ class BaseRepository {
     } else {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.prodBaseURL,
+          baseUrl: ApiUrl.devBaseURL,
           headers: {
-            "x-api-key": 'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD',
+            "x-api-key": Constants.apiKey,
           },
         ),
       );
@@ -49,7 +50,7 @@ class BaseRepository {
   void addToken(String idToken) {
     _dio.options = _dio.options.copyWith(headers: {
       'Authorization': idToken,
-      'x-api-key': 'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD'
+      'x-api-key': Constants.apiKey,
     });
   }
 

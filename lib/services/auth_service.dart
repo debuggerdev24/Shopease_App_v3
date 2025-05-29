@@ -17,7 +17,7 @@ abstract class BaseAuthService {
 
   Future<Response<dynamic>?> refreshAuth();
 
-  Future<Response<dynamic>?> deleteMyAccount();
+  Future<Response<dynamic>?> deleteMyAccount(String userId);
 }
 
 class AuthService implements BaseAuthService {
@@ -63,7 +63,14 @@ class AuthService implements BaseAuthService {
   }
 
   @override
-  Future<Response<dynamic>?> deleteMyAccount() async {
-    return await BaseRepository().delete(ApiUrl.deleteMyAcocunt);
+  Future<Response<dynamic>?> deleteMyAccount(String userId) async {
+    return await BaseRepository().post(
+      ApiUrl.deleteMyAcocunt,
+      data: {
+        "records": [
+          {"user_id": userId}
+        ]
+      },
+    );
   }
 }

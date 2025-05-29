@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shopease_app_flutter/Models/faq_model.dart';
+import 'package:shopease_app_flutter/models/faq_model.dart';
 import 'package:shopease_app_flutter/models/invitation_model.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/services/profile_service.dart';

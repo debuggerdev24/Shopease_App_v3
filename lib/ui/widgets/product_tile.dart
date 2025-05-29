@@ -1,24 +1,16 @@
-// import 'dart:convert';
-// import 'dart:developer';
-// import 'dart:io';
-
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
+import 'package:shopease_app_flutter/ui/widgets/product_image_widget.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/constants.dart';
+import 'package:shopease_app_flutter/utils/debouncer.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -34,6 +26,7 @@ class ProductTile extends StatefulWidget {
     this.check,
     this.isSlideEnabled = true,
     this.onSelectionChanges,
+    this.onChangedInStockQuantity,
   });
 
   final Product product;
@@ -45,6 +38,7 @@ class ProductTile extends StatefulWidget {
   final bool isSlideEnabled;
   final Function(bool?)? onSelectionChanges;
   final Function(InventoryType type)? onInventoryChange;
+  final ValueChanged<String>? onChangedInStockQuantity;
 
   @override
   State<ProductTile> createState() => _ProductTileState();
@@ -54,11 +48,15 @@ class _ProductTileState extends State<ProductTile>
     with SingleTickerProviderStateMixin {
   late SlidableController _slideController;
 
+  final Debouncer inStockQuantitydebouncer = Debouncer(500);
+  late final ValueNotifier<int> inStockQuantityListenable;
+
   @override
   void initState() {
     super.initState();
-
     _slideController = SlidableController(this);
+    inStockQuantityListenable =
+        ValueNotifier(int.tryParse(widget.product.inStockQuantity) ?? 0);
   }
 
   @override
@@ -91,17 +89,10 @@ class _ProductTileState extends State<ProductTile>
               const SizedBox(width: 8),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
+                child: ProductImageWidget(
+                  product: widget.product,
                   height: 100.h,
                   width: 100.h,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(
-                        widget.product.itemImage ?? Constants.placeholdeImg,
-                      ),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -113,7 +104,7 @@ class _ProductTileState extends State<ProductTile>
                     const SizedBox(height: 10),
                     Text(
                       maxLines: 10,
-                      widget.product.productName!,
+                      "${widget.product.productName!} (${widget.product.inStockQuantity})",
                       overflow: TextOverflow.ellipsis,
                       style: textStyle16.copyWith(
                         fontSize: 18,
@@ -153,8 +144,62 @@ class _ProductTileState extends State<ProductTile>
   }
 
   _buildRightSwipeActions(Product product) => ActionPane(
-        motion: const DrawerMotion(),
+        motion: const ScrollMotion(),
+        extentRatio: .75,
         children: [
+          Expanded(
+            child: Container(
+              width: 100,
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              color: AppColors.lightGreyColor.withAlpha(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: inStockQuantityListenable,
+                    builder: (context, value, _) {
+                      return AppChip(
+                        text: value.toString(),
+                      );
+                    },
+                  ),
+                  15.h.verticalSpace,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (inStockQuantityListenable.value == 0) return;
+                            inStockQuantityListenable.value -= 1;
+                            inStockQuantitydebouncer.run(
+                              () => widget.onChangedInStockQuantity?.call(
+                                inStockQuantityListenable.value.toString(),
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.remove),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            inStockQuantityListenable.value += 1;
+                            inStockQuantitydebouncer.run(
+                              () => widget.onChangedInStockQuantity?.call(
+                                inStockQuantityListenable.value.toString(),
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.add),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           AppSlidableaction(
             isRight: true,
             icon: product.isInChecklist == true
@@ -184,7 +229,7 @@ class _ProductTileState extends State<ProductTile>
 
   _buildLeftSwipeActions(Product product) => ActionPane(
         motion: const ScrollMotion(),
-        extentRatio: 0.75,
+        extentRatio: .75,
         children: [
           AppSlidableaction(
             icon: AppAssets.inventoryHigh,

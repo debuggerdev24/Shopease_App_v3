@@ -31,17 +31,18 @@ class _AddInventoryScreenState extends State<AddInventoryScreen> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      Consumer<InventoryProvider>(builder: (context, provider, _) {
-        return AddItemFormWidget(
-          isEdit: widget.isEdit,
-          isFromScan: widget.isFromScan,
-          product: widget.product,
-          onSubmit: submit,
-          title: widget.isEdit ? 'Edit' : 'Add Manually',
-          isLoading: provider.isLoading,
-        );
-      });
+  Widget build(BuildContext context) => Consumer<InventoryProvider>(
+        builder: (context, provider, _) {
+          return AddItemFormWidget(
+            isEdit: widget.isEdit,
+            isFromScan: widget.isFromScan,
+            product: widget.product,
+            onSubmit: submit,
+            title: widget.isEdit ? 'Edit' : 'Add Manually',
+            isLoading: provider.isLoading,
+          );
+        },
+      );
 
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<InventoryProvider>().putInventoryItem(

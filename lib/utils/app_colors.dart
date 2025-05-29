@@ -6,6 +6,8 @@ class AppColors {
   AppColors._();
 
   // static const primaryColor = Color(0xFFD6410A);
+  static const transperent = Colors.transparent;
+  static const yellow = Colors.yellow;
   static const whiteColor = Colors.white;
   static const blackColor = Colors.black;
   static const orangeColor = Color(0xFFD6410A);

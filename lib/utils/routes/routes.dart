@@ -81,10 +81,9 @@ class AppNavigator {
   static final _rootNavigator =
       GlobalKey<NavigatorState>(debugLabel: "ROOT NAVIGATOR");
 
-  static GlobalKey<NavigatorState> get rootNavigator => _rootNavigator;
-
   static final _shellNavigatorHome =
       GlobalKey<NavigatorState>(debugLabel: "INVENTORY NAVIGATOR");
+
   static final _shellNavigatorChecklist =
       GlobalKey<NavigatorState>(debugLabel: "CHECKLIST NAVIGATOR");
 
@@ -93,7 +92,20 @@ class AppNavigator {
 
   static final _shellNavigatorNotification =
       GlobalKey<NavigatorState>(debugLabel: "NOTIFICATION NAVIGATOR");
+
   static StatefulNavigationShell? indexedStackNavigationShell;
+
+  static GlobalKey<NavigatorState> get rootNavigator => _rootNavigator;
+  static GlobalKey<NavigatorState> get shellNavigatorHome =>
+      _shellNavigatorHome;
+  static GlobalKey<NavigatorState> get shellNavigatorChecklist =>
+      _shellNavigatorChecklist;
+  static GlobalKey<NavigatorState> get shellNavigatorProfile =>
+      _shellNavigatorProfile;
+  static GlobalKey<NavigatorState> get shellNavigatorNotification =>
+      _shellNavigatorNotification;
+
+  static void goToBranch(int index) => indexedStackNavigationShell?.goBranch(index);
 
   static final router = GoRouter(
     initialLocation: AppRoute.splashScreen.path,

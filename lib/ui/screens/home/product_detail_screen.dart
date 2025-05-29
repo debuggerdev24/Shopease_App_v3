@@ -8,6 +8,7 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
+import 'package:shopease_app_flutter/ui/widgets/product_image_widget.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
@@ -79,20 +80,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: Container(
+                  child: ProductImageWidget(
+                    product: widget.product,
                     height: 250.h,
-                    // width:.
-                    decoration: BoxDecoration(
-                      border: Border.symmetric(
-                          horizontal: BorderSide(
-                              color: AppColors.mediumGreyColor.shade200,
-                              width: 2.8)),
-                      color: Colors.white,
-                      image: DecorationImage(
-                          image: CachedNetworkImageProvider(widget.product.itemImage ??
-                              Constants.placeholdeImg),
-                          fit: BoxFit.cover),
-                    ),
                   ),
                 ),
                 10.verticalSpace,
@@ -104,7 +94,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GlobalText(
-                          widget.product.productName!,
+                          "${widget.product.productName!} (${widget.product.inStockQuantity})",
                           textStyle:
                               textStyle18SemiBold.copyWith(fontSize: 19.sp),
                         ),
