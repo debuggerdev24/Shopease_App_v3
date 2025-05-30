@@ -12,10 +12,11 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_icon_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/inventory_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/enums/expiry_status.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -167,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen>
       itemCount: provider.filteredProducts.length,
       separatorBuilder: (context, index) => 10.verticalSpace,
       itemBuilder: (BuildContext context, int index) {
-        return ProductTile(
+        return InventoryTile(
           onLongPress: () {
             context.goNamed(
               AppRoute.multipleInventorySelection.name,
@@ -294,12 +295,13 @@ class _HomeScreenState extends State<HomeScreen>
 
   showFilterSheet() async {
     return showModalBottomSheet(
-        showDragHandle: true,
-        enableDrag: true,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) {
-          return Consumer<InventoryProvider>(builder: (context, provider, _) {
+      showDragHandle: true,
+      enableDrag: true,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Consumer<InventoryProvider>(
+          builder: (context, provider, _) {
             return Padding(
               padding: const EdgeInsets.only(left: 14),
               child: Column(
@@ -342,6 +344,29 @@ class _HomeScreenState extends State<HomeScreen>
                   Padding(
                     padding: EdgeInsets.only(left: 12.w, right: 12.w),
                     child: GlobalText(
+                      'Expiry Details',
+                      textStyle: textStyle16.copyWith(fontSize: 15.sp),
+                    ),
+                  ),
+                  10.h.verticalSpace,
+                  Row(
+                    children: ExpiryStatus.values
+                        .map(
+                          (e) => e == ExpiryStatus.normal
+                              ? const SizedBox.shrink()
+                              : AppChip(
+                                  text: e.displayText,
+                                  isSelected:
+                                      provider.selectedExpiryFilter == e,
+                                  onTap: () => provider.changeFilterExpiry(e),
+                                ),
+                        )
+                        .toList(),
+                  ),
+                  10.h.verticalSpace,
+                  Padding(
+                    padding: EdgeInsets.only(left: 12.w, right: 12.w),
+                    child: GlobalText(
                       'Filter by Inventory Level',
                       textStyle: textStyle16.copyWith(fontSize: 15.sp),
                     ),
@@ -376,10 +401,13 @@ class _HomeScreenState extends State<HomeScreen>
                         },
                         text: 'Cancel'),
                   ),
+                  10.h.verticalSpace,
                 ],
               ),
             );
-          });
-        });
+          },
+        );
+      },
+    );
   }
 }

@@ -21,7 +21,7 @@ final List<TargetFocus> inventoryTargets = [
     key: invTabButtonKey,
     contents: [
       createTargetContent(
-        align: ContentAlign.right,
+        align: ContentAlign.top,
         text:
             "Inventory list to consolidate and organize all products in one place.",
       ),
@@ -62,7 +62,7 @@ final List<TargetFocus> inventoryTargets = [
     // enableTargetTab: false,
     contents: [
       createTargetContent(
-        align: ContentAlign.right,
+        align: ContentAlign.top,
         text: "A checklist to add products you want to review at the shop.",
       ),
     ],
@@ -154,7 +154,7 @@ TargetFocus createTargetFocus(
 TargetContent createTargetContent(
     {required String text, required ContentAlign align}) {
   return TargetContent(
-    align: ContentAlign.bottom,
+    align: align,
     child: SizedBox(
       width: 500,
       child: DottedBorder(

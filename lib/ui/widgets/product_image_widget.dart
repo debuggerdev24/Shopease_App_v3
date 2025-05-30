@@ -18,10 +18,10 @@ class ProductImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height ?? 100.h,
-      width: width ?? 100.h,
+      width: width ?? double.infinity,
       alignment: Alignment.bottomCenter,
       decoration: BoxDecoration(
-        border: Border.all(color: product.expiryState.color),
+        border: Border.all(color: product.expiryStatus.color),
         image: DecorationImage(
           image: CachedNetworkImageProvider(
             product.itemImage ?? Constants.placeholdeImg,
@@ -32,9 +32,9 @@ class ProductImageWidget extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: ColoredBox(
-          color: product.expiryState.color,
+          color: product.expiryStatus.color,
           child: Text(
-            product.expiryState.displayText,
+            product.expiryStatus.displayText,
             textAlign: TextAlign.center,
             style: textStyle12.copyWith(
               color: AppColors.whiteColor,

@@ -69,5 +69,5 @@ class ApiUrl {
 
   static const String removeuserfromgroup = '/removeuserfromgroup';
 
-  static const String getFaqs = '/getFaqs';
+  static const String getFaqs = '/faq';
 }

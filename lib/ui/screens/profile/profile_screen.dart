@@ -46,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       (timeStamp) async {
         await context.read<ProfileProvider>().getProfile(
           onSuccess: () {
-            if (SharedPrefs().appTour != false) showProfileTour();
+            if (SharedPrefs().appTour != true) showProfileTour();
             context.read<ProfileProvider>().getAllProfile();
           },
         );
@@ -691,6 +691,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     OverlayState overlayState = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
+    bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+
     YoutubePlayerController youtubeController = YoutubePlayerController(
       initialVideoId: YoutubePlayer.convertUrlToId(
               'https://youtu.be/BERHyRyCsqU?si=9qMSOiTigmIoLww-') ??
@@ -715,7 +718,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               top: position.dy,
               left: position.dx,
               child: Container(
-                width: .98.sw,
+                width: isPortrait ? .98.sw : .45.sw,
+                height: isPortrait ? null : .5.sh,
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.all(5),
                 color: AppColors.blackColor,

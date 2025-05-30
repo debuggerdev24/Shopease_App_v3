@@ -256,6 +256,14 @@ class ChecklistProvider extends ChangeNotifier {
   }
 
   /// Checklist - APIs
+  Future<void> changeInStockQuantity(String itemId, String quantity) async {
+    final product = _checklist.firstWhere((e) => e.itemId == itemId);
+    product.changeQuantity(quantity);
+    await putCheklistItems(
+      data: [product.toJson()],
+      isEdit: true,
+    );
+  }
 
   Future<void> getChecklistItems({
     Function(String)? onError,
@@ -272,7 +280,8 @@ class ChecklistProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         _checklist.clear();
-        _checklist.addAll((res.data as List).map((e) => Product.fromJson(e)));
+        _checklist.addAll((res.data as List)
+            .map((e) => Product.fromJson(e)..isInChecklist = true));
         _checklist.sort(
           (a, b) =>
               b.updatedDate?.compareTo(a.updatedDate ?? DateTime(0)) ?? -1,

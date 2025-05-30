@@ -396,23 +396,21 @@ class ProfileProvider extends ChangeNotifier {
       setLoading(true);
 
       await Future.delayed(const Duration(seconds: 1));
-      changeFaqs(dummyFaqs);
 
-      // TODO : change this dummy data
-      // final res = await services.getFaqs();
+      final res = await services.getFaqs();
 
-      // if (res == null) {
-      //   onError?.call(Constants.tokenExpiredMessage);
-      //   return;
-      // }
+      if (res == null) {
+        onError?.call(Constants.tokenExpiredMessage);
+        return;
+      }
 
-      // if (res.statusCode == 200) {
-      //   changeFaqs(
-      //       (res.data as List).map((e) => FaqModel.fromJson(e)).toList());
-      //   onSuccess?.call();
-      // } else {
-      //   onError?.call(res.data["message"] ?? Constants.commonErrMsg);
-      // }
+      if (res.statusCode == 200) {
+        changeFaqs(
+            (res.data as List).map((e) => FaqModel.fromJson(e)).toList());
+        onSuccess?.call();
+      } else {
+        onError?.call(res.data["message"] ?? Constants.commonErrMsg);
+      }
     } on DioException {
       rethrow;
     } catch (e, s) {

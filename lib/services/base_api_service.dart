@@ -56,7 +56,6 @@ class BaseRepository {
 
   void removeToken() {
     _dio.options.headers.remove('Authorization');
-    _dio.options.headers.remove('x-api-key');
   }
 
   Future<Response<dynamic>?> get(String path, {dynamic data}) async {
@@ -66,6 +65,7 @@ class BaseRepository {
         return res;
       }
     } on DioException catch (e) {
+      log("Error while caaling GET : $path - $e");
       if (e.response?.statusCode == 401) {
         final refreshRes = await _dio.get(ApiUrl.refreshAuth, data: {
           'refresh_token': SharedPrefs().refreshToken,
@@ -94,6 +94,7 @@ class BaseRepository {
         return res;
       }
     } on DioException catch (e) {
+      log("Error while caaling POST : $path - $e");
       if (e.response?.statusCode == 401) {
         final refreshRes = await _dio.post(ApiUrl.refreshAuth, data: {
           'refresh_token': SharedPrefs().refreshToken,
@@ -120,6 +121,7 @@ class BaseRepository {
         return res;
       }
     } on DioException catch (e) {
+      log("Error while caaling PUT : $path - $e");
       if (e.response?.statusCode == 401) {
         final refreshRes = await _dio.get(ApiUrl.refreshAuth, data: {
           'refresh_token': SharedPrefs().refreshToken,
@@ -144,6 +146,7 @@ class BaseRepository {
         return res;
       }
     } on DioException catch (e) {
+      log("Error while caaling DELETE : $path - $e");
       if (e.response?.statusCode == 401) {
         final refreshRes = await _dio.get(ApiUrl.refreshAuth, data: {
           'refresh_token': SharedPrefs().refreshToken,

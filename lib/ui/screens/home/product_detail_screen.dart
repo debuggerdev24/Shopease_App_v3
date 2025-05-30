@@ -94,7 +94,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GlobalText(
-                          "${widget.product.productName!} (${widget.product.inStockQuantity})",
+                          "${widget.product.productName!} (${widget.product.quantity})",
                           textStyle:
                               textStyle18SemiBold.copyWith(fontSize: 19.sp),
                         ),

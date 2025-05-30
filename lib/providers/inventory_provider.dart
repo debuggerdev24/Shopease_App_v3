@@ -4,6 +4,7 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
+import 'package:shopease_app_flutter/utils/enums/expiry_status.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
 
@@ -19,10 +20,8 @@ class InventoryProvider extends ChangeNotifier {
   final List<Product> _filteredProducts = [];
 
   final List<String> _selectedCategoryFilters = [];
-  final List<String> _sheetSeelctedCatFilters = [];
-
   String? _selectedInventoryLevelFilter;
-  String? _sheetSelectedInvLvlFilter;
+  ExpiryStatus? _selectedExpiryFilter;
 
   final List<Product> _selectedProducts = [];
   bool _selectValue = false;
@@ -34,10 +33,8 @@ class InventoryProvider extends ChangeNotifier {
   List<Product> get products => _products;
 
   List<String> get selectedCategoryFilters => _selectedCategoryFilters;
-  List<String> get sheetSeelctedCatFilters => _sheetSeelctedCatFilters;
-
   String? get selectedInventoryLevelFilter => _selectedInventoryLevelFilter;
-  String? get sheetSelectedInvLvlFilter => _sheetSelectedInvLvlFilter;
+  ExpiryStatus? get selectedExpiryFilter => _selectedExpiryFilter;
 
   List<Product> get filteredProducts => _filteredProducts;
   List<Product> get selectedProducts => _selectedProducts;
@@ -68,54 +65,98 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeFilterExpiry(ExpiryStatus? state) {
+    if (_selectedExpiryFilter == state) {
+      _selectedExpiryFilter = null;
+    } else {
+      _selectedExpiryFilter = state;
+    }
+    notifyListeners();
+  }
+
+  // void filterProducts() {
+  //   _filteredProducts.clear();
+  //   if (_selectedCategoryFilters.isEmpty &&
+  //       _selectedInventoryLevelFilter == null &&
+  //       _selectedExpiryFilter == null) {
+  //     _filteredProducts.addAll(_products);
+  //     _selectValue = false;
+  //     notifyListeners();
+  //     return;
+  //   }
+
+  //   if (_selectedCategoryFilters.isEmpty) {
+  //     _filteredProducts.addAll(
+  //       _products.where(
+  //         (element) => element.itemLevel == _selectedInventoryLevelFilter && ,
+  //       ),
+  //     );
+
+  //     _selectValue = true;
+  //     notifyListeners();
+  //     return;
+  //   }
+
+  //   if (_selectedInventoryLevelFilter == null) {
+  //     _filteredProducts.addAll(
+  //       _products.where(
+  //         (product) => _selectedCategoryFilters.contains(Utils.categories
+  //             .firstWhere(
+  //                 (category) => category.categoryName == product.itemCategory)
+  //             .categoryId),
+  //       ),
+  //     );
+
+  //     _selectValue = true;
+  //     notifyListeners();
+
+  //     return;
+  //   }
+
+  //   _filteredProducts.addAll(
+  //     _products.where(
+  //       (product) =>
+  //           product.itemLevel == _selectedInventoryLevelFilter &&
+  //           _selectedCategoryFilters.contains(Utils.categories
+  //               .firstWhere(
+  //                   (category) => category.categoryName == product.itemCategory)
+  //               .categoryId),
+  //     ),
+  //   );
+
+  //   _selectValue = true;
+  //   notifyListeners();
+  // }
+
   void filterProducts() {
     _filteredProducts.clear();
+
     if (_selectedCategoryFilters.isEmpty &&
-        _selectedInventoryLevelFilter == null) {
+        _selectedInventoryLevelFilter == null &&
+        _selectedExpiryFilter == null) {
       _filteredProducts.addAll(_products);
       _selectValue = false;
       notifyListeners();
       return;
     }
 
-    if (_selectedCategoryFilters.isEmpty) {
-      _filteredProducts.addAll(
-        _products.where(
-          (element) => element.itemLevel == _selectedInventoryLevelFilter,
-        ),
-      );
-
-      _selectValue = true;
-      notifyListeners();
-      return;
-    }
-
-    if (_selectedInventoryLevelFilter == null) {
-      _filteredProducts.addAll(
-        _products.where(
-          (product) => _selectedCategoryFilters.contains(Utils.categories
-              .firstWhere(
-                  (category) => category.categoryName == product.itemCategory)
-              .categoryId),
-        ),
-      );
-
-      _selectValue = true;
-      notifyListeners();
-
-      return;
-    }
-
-    _filteredProducts.addAll(
-      _products.where(
-        (product) =>
-            product.itemLevel == _selectedInventoryLevelFilter &&
-            _selectedCategoryFilters.contains(Utils.categories
+    _filteredProducts.addAll(_products.where((product) {
+      final matchesCategory = _selectedCategoryFilters.isEmpty ||
+          _selectedCategoryFilters.contains(
+            Utils.categories
                 .firstWhere(
                     (category) => category.categoryName == product.itemCategory)
-                .categoryId),
-      ),
-    );
+                .categoryId,
+          );
+
+      final matchesInventory = _selectedInventoryLevelFilter == null ||
+          product.itemLevel == _selectedInventoryLevelFilter;
+
+      final matchesExpiry = _selectedExpiryFilter == null ||
+          product.expiryStatus == _selectedExpiryFilter;
+
+      return matchesCategory && matchesInventory && matchesExpiry;
+    }));
 
     _selectValue = true;
     notifyListeners();
@@ -154,9 +195,9 @@ class InventoryProvider extends ChangeNotifier {
 
   Future<void> changeInStockQuantity(String itemId, String quantity) async {
     final product = _products.firstWhere((e) => e.itemId == itemId);
-    product.inStockQuantity = quantity;
+    product.changeQuantity(quantity);
     await putInventoryItem(
-      data: [product.copyWith(inStockQuantity: quantity).toJson()],
+      data: [product.toJson()],
       isEdit: true,
     );
   }

@@ -13,7 +13,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
-import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/inventory_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';

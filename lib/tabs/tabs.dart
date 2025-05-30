@@ -13,6 +13,7 @@ import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
+import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';

@@ -1,6 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,9 +7,9 @@ import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
+import 'package:shopease_app_flutter/ui/widgets/product_image_widget.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -27,6 +25,7 @@ class ChecklistTile extends StatefulWidget {
     this.onSelectionChanges,
     this.showCheckbox = false,
     this.onTap,
+    this.onChangedRequiredQuantity,
   });
 
   final Product product;
@@ -35,8 +34,9 @@ class ChecklistTile extends StatefulWidget {
   final VoidCallback? onLongPress;
   final bool isSlideEnabled;
   final bool isSelected;
-  final Function(bool?)? onSelectionChanges;
   final bool showCheckbox;
+  final Function(bool?)? onSelectionChanges;
+  final ValueChanged<String>? onChangedRequiredQuantity;
 
   @override
   State<ChecklistTile> createState() => _ChecklistTileState();
@@ -46,10 +46,22 @@ class _ChecklistTileState extends State<ChecklistTile>
     with SingleTickerProviderStateMixin {
   late final SlidableController _slideController;
 
+  late final ValueNotifier<int> requiredQuantityListenable;
+
   @override
   void initState() {
     super.initState();
     _slideController = SlidableController(this);
+    requiredQuantityListenable =
+        ValueNotifier(int.tryParse(widget.product.quantity) ?? 0);
+  }
+
+  @override
+  void didUpdateWidget(ChecklistTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.product.quantity != widget.product.quantity) {
+      requiredQuantityListenable.value = int.parse(widget.product.quantity);
+    }
   }
 
   @override
@@ -91,17 +103,10 @@ class _ChecklistTileState extends State<ChecklistTile>
                   ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Container(
+                  child: ProductImageWidget(
+                    product: widget.product,
                     height: 100.h,
                     width: 100.h,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: CachedNetworkImageProvider(
-                          widget.product.itemImage ?? Constants.placeholdeImg,
-                        ),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -112,7 +117,7 @@ class _ChecklistTileState extends State<ChecklistTile>
                     children: [
                       const SizedBox(height: 10),
                       Text(
-                        widget.product.productName!,
+                        "${widget.product.productName!} (${widget.product.quantity})",
                         maxLines: 10,
                         style: textStyle16.copyWith(
                           fontSize: 18,
@@ -129,14 +134,6 @@ class _ChecklistTileState extends State<ChecklistTile>
                     ],
                   ),
                 ),
-                SizedBox(width: 10.h),
-
-                /// Saroj - told to remove this icon
-                // SvgIcon(
-                //   AppAssets.addCart,
-                //   size: 25.sp,
-                //   color: AppColors.greenColor,
-                // ),
                 SizedBox(width: 25.sp),
                 SvgPicture.asset(
                   widget.product.itemLevel == InventoryType.high.name
@@ -158,8 +155,58 @@ class _ChecklistTileState extends State<ChecklistTile>
   }
 
   _buildRightSwipeActions(Product product) => ActionPane(
-        motion: const DrawerMotion(),
+        motion: const ScrollMotion(),
+        extentRatio: .75,
         children: [
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(left: 5.w),
+              padding: EdgeInsets.symmetric(vertical: 8.h),
+              color: AppColors.lightGreyColor.withAlpha(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: requiredQuantityListenable,
+                    builder: (context, value, _) {
+                      return AppChip(
+                        text: value.toString(),
+                      );
+                    },
+                  ),
+                  15.h.verticalSpace,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (requiredQuantityListenable.value == 0) return;
+                            requiredQuantityListenable.value -= 1;
+                            widget.onChangedRequiredQuantity?.call(
+                              requiredQuantityListenable.value.toString(),
+                            );
+                          },
+                          child: const Icon(Icons.remove),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            requiredQuantityListenable.value += 1;
+                            widget.onChangedRequiredQuantity?.call(
+                              requiredQuantityListenable.value.toString(),
+                            );
+                          },
+                          child: const Icon(Icons.add),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
           AppSlidableaction(
             isRight: true,
             icon: AppAssets.replace,
@@ -249,7 +296,7 @@ class _ChecklistTileState extends State<ChecklistTile>
               'Are you sure want to delete from\nChecklist?',
               style: textStyle18SemiBold,
               textAlign: TextAlign.center,
-            ),  
+            ),
             20.verticalSpace,
             DeleteButton(
                 onPressed: () {

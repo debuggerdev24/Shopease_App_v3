@@ -11,9 +11,9 @@ class Debouncer {
   void run(VoidCallback action) {
     if (_timer != null || _timer?.isActive == true) {
       _timer?.cancel();
-      _timer = null;
     }
 
+    _timer = null;
     _timer = Timer(Duration(microseconds: milliseconds), action);
   }
 }

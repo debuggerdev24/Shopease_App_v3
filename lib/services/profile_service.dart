@@ -206,6 +206,6 @@ class ProfileService implements BaseProfileService {
 
   @override
   Future<Response?> getFaqs() async {
-    return await BaseRepository().get(ApiUrl.removeuserfromgroup);
+    return await BaseRepository().get(ApiUrl.getFaqs);
   }
 }

@@ -23,9 +23,6 @@ class SharedPrefs {
   final String _userNameKey = "name";
   final String _theme = 'theme';
   final String _appTour = 'appTour';
-  final String _invTour = 'invTour';
-  final String _checklistTour = 'invTour';
-  final String _profileTour = 'profileTour';
 
   /// initializer
   init() async {
@@ -112,28 +109,4 @@ class SharedPrefs {
   Future<bool> setAppTour(bool appTour) => _prefs.setBool(_appTour, appTour);
 
   Future<void> removeAppTour() async => await _prefs.remove(_appTour);
-
-  // Inventory Tour //
-  bool? get invTour => _prefs.getBool(_invTour);
-
-  Future<bool> setInvTour(bool invTour) => _prefs.setBool(_invTour, invTour);
-
-  Future<void> removeInvTour() async => await _prefs.remove(_invTour);
-
-  // Checklist Tour //
-  bool? get checklistTour => _prefs.getBool(_checklistTour);
-
-  Future<bool> setChecklistTour(bool checklistTour) =>
-      _prefs.setBool(_checklistTour, checklistTour);
-
-  Future<void> removeChecklistTour() async =>
-      await _prefs.remove(_checklistTour);
-
-  // Checklist Tour //
-  bool? get profileTour => _prefs.getBool(_profileTour);
-
-  Future<bool> setProfileTour(bool profileTour) =>
-      _prefs.setBool(_profileTour, profileTour);
-
-  Future<void> removeProfileTour() async => await _prefs.remove(_profileTour);
 }

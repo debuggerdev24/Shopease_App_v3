@@ -60,7 +60,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
       (timeStamp) {
         context.read<ChecklistProvider>().getChecklistItems(
           onSuccess: () {
-            if (SharedPrefs().appTour != false) showChecklistTour();
+            if (SharedPrefs().appTour != true) showChecklistTour();
           },
         );
         context.read<HistoryProvider>().getHistoryItems();
@@ -272,6 +272,12 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                             onDelete: () async {
                               await provider.deleteChecklistItems(
                                 itemIds: [product.itemId!],
+                              );
+                            },
+                            onChangedRequiredQuantity: (q) {
+                              provider.changeInStockQuantity(
+                                product.itemId!,
+                                q,
                               );
                             },
                             onSelectionChanges: (value) {

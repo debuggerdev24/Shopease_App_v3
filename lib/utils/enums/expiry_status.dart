@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 
-enum ExpiryState {
+enum ExpiryStatus {
   normal(color: AppColors.transperent, displayText: ''),
   expiring(color: AppColors.yellow, displayText: 'Expiring'),
   expired(color: AppColors.redColor, displayText: 'Expired');
@@ -9,5 +9,5 @@ enum ExpiryState {
   final Color color;
   final String displayText;
 
-  const ExpiryState({required this.color, required this.displayText});
+  const ExpiryStatus({required this.color, required this.displayText});
 }

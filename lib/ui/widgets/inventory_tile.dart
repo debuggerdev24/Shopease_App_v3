@@ -14,8 +14,8 @@ import 'package:shopease_app_flutter/utils/debouncer.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class ProductTile extends StatefulWidget {
-  const ProductTile({
+class InventoryTile extends StatefulWidget {
+  const InventoryTile({
     super.key,
     required this.product,
     this.onTap,
@@ -41,14 +41,13 @@ class ProductTile extends StatefulWidget {
   final ValueChanged<String>? onChangedInStockQuantity;
 
   @override
-  State<ProductTile> createState() => _ProductTileState();
+  State<InventoryTile> createState() => _InventoryTileState();
 }
 
-class _ProductTileState extends State<ProductTile>
+class _InventoryTileState extends State<InventoryTile>
     with SingleTickerProviderStateMixin {
   late SlidableController _slideController;
 
-  final Debouncer inStockQuantitydebouncer = Debouncer(500);
   late final ValueNotifier<int> inStockQuantityListenable;
 
   @override
@@ -56,7 +55,15 @@ class _ProductTileState extends State<ProductTile>
     super.initState();
     _slideController = SlidableController(this);
     inStockQuantityListenable =
-        ValueNotifier(int.tryParse(widget.product.inStockQuantity) ?? 0);
+        ValueNotifier(int.tryParse(widget.product.quantity) ?? 0);
+  }
+
+  @override
+  void didUpdateWidget(InventoryTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.product.quantity != widget.product.quantity) {
+      inStockQuantityListenable.value = int.parse(widget.product.quantity);
+    }
   }
 
   @override
@@ -104,7 +111,7 @@ class _ProductTileState extends State<ProductTile>
                     const SizedBox(height: 10),
                     Text(
                       maxLines: 10,
-                      "${widget.product.productName!} (${widget.product.inStockQuantity})",
+                      "${widget.product.productName!} (${widget.product.quantity})",
                       overflow: TextOverflow.ellipsis,
                       style: textStyle16.copyWith(
                         fontSize: 18,
@@ -149,7 +156,7 @@ class _ProductTileState extends State<ProductTile>
         children: [
           Expanded(
             child: Container(
-              width: 100,
+              margin: EdgeInsets.only(left: 5.w),
               padding: EdgeInsets.symmetric(vertical: 8.h),
               color: AppColors.lightGreyColor.withAlpha(20),
               child: Column(
@@ -172,10 +179,8 @@ class _ProductTileState extends State<ProductTile>
                           onTap: () {
                             if (inStockQuantityListenable.value == 0) return;
                             inStockQuantityListenable.value -= 1;
-                            inStockQuantitydebouncer.run(
-                              () => widget.onChangedInStockQuantity?.call(
-                                inStockQuantityListenable.value.toString(),
-                              ),
+                            widget.onChangedInStockQuantity?.call(
+                              inStockQuantityListenable.value.toString(),
                             );
                           },
                           child: const Icon(Icons.remove),
@@ -185,10 +190,8 @@ class _ProductTileState extends State<ProductTile>
                         child: GestureDetector(
                           onTap: () {
                             inStockQuantityListenable.value += 1;
-                            inStockQuantitydebouncer.run(
-                              () => widget.onChangedInStockQuantity?.call(
-                                inStockQuantityListenable.value.toString(),
-                              ),
+                            widget.onChangedInStockQuantity?.call(
+                              inStockQuantityListenable.value.toString(),
                             );
                           },
                           child: const Icon(Icons.add),

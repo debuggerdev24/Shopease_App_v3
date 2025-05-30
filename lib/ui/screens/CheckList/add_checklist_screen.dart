@@ -36,23 +36,25 @@ class _AddChecklistScreenState extends State<AddChecklistScreen> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      Consumer<ChecklistProvider>(builder: (context, provider, _) {
-        return AddItemFormWidget(
-          isEdit: widget.isEdit,
-          title: widget.isReplace
-              ? 'Replace Manually'
-              : widget.isEdit
-                  ? 'Edit'
-                  : 'Add manually',
-          isFromReplace: widget.isReplace,
-          isFromScan: widget.isFromScan,
-          product: widget.product,
-          isLoading: provider.isLoading,
-          onSubmit: submit,
-          oldChecklistItemId: widget.oldChecklistItemId,
-        );
-      });
+  Widget build(BuildContext context) => Consumer<ChecklistProvider>(
+        builder: (context, provider, _) {
+          return AddItemFormWidget(
+            isEdit: widget.isEdit,
+            isForChecklist: true,
+            title: widget.isReplace
+                ? 'Replace Manually'
+                : widget.isEdit
+                    ? 'Edit'
+                    : 'Add manually',
+            isFromReplace: widget.isReplace,
+            isFromScan: widget.isFromScan,
+            product: widget.product,
+            isLoading: provider.isLoading,
+            onSubmit: submit,
+            oldChecklistItemId: widget.oldChecklistItemId,
+          );
+        },
+      );
 
   Future<void> submit(Map<String, dynamic> data) async {
     context.read<ChecklistProvider>().putCheklistItems(

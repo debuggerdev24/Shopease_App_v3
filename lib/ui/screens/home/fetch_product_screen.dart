@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
-import 'package:shopease_app_flutter/ui/widgets/product_tile.dart';
+import 'package:shopease_app_flutter/ui/widgets/inventory_tile.dart';
 
 class FetchProductScreen extends StatefulWidget {
   const FetchProductScreen({super.key, this.product});
@@ -18,10 +18,10 @@ class _FetchProductScreenState extends State<FetchProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ScannerProvider>(builder: (context, provider, _) {
-      return Scaffold(    
+      return Scaffold(
         body: Column(
           children: [
-             ProductTile(product: widget.product!),
+            InventoryTile(product: widget.product!),
             const Spacer(),
             AppButton(
               onPressed: () {},

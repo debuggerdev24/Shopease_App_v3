@@ -88,11 +88,9 @@ class _FaqScreenState extends State<FaqScreen> {
       controlAffinity: ListTileControlAffinity.leading,
       collapsedIconColor: AppColors.orangeColor,
       iconColor: AppColors.orangeColor,
+      expandedAlignment: Alignment.centerLeft,
       shape: const RoundedRectangleBorder(),
-      title: GlobalText(
-        faq.question,
-        textStyle: textStyle16,
-      ),
+      title: GlobalText(faq.question, textStyle: textStyle16),
       children: [
         GlobalText(faq.answer, textStyle: textStyle14),
       ],

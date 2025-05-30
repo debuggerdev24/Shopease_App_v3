@@ -85,6 +85,12 @@ class ChecklistSearchDelegate extends SearchDelegate {
                       onSelectionChanges: (value) {
                         provider.addToSelected(value, products[index]);
                       },
+                      onChangedRequiredQuantity: (q) {
+                        provider.changeInStockQuantity(
+                          products[index].itemId!,
+                          q,
+                        );
+                      },
                     );
                   },
                 );

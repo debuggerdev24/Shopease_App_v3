@@ -1,4 +1,4 @@
-import 'package:shopease_app_flutter/utils/enums/expiry_state.dart';
+import 'package:shopease_app_flutter/utils/enums/expiry_status.dart';
 
 List<Product> productFromJson(List<dynamic> data) =>
     List<Product>.from(data.map((x) => Product.fromJson(x)));
@@ -21,7 +21,7 @@ class Product {
   String inStockQuantity;
   String requiredQuantity;
   DateTime? expiryDate;
-  ExpiryState expiryState;
+  ExpiryStatus expiryStatus;
 
   Product({
     this.itemId,
@@ -41,17 +41,26 @@ class Product {
     this.inStockQuantity = "",
     this.requiredQuantity = "",
     this.expiryDate,
-  }) : expiryState = expiryDate?.isBefore(DateTime.now()) == true
-            ? ExpiryState.expired
-            : (expiryDate?.difference(DateTime.now()).inDays ?? 0) >= 5
-                ? ExpiryState.expiring
-                : ExpiryState.normal;
+  }) : expiryStatus = expiryDate == null
+            ? ExpiryStatus.normal
+            : expiryDate.isBefore(DateTime.now()) == true
+                ? ExpiryStatus.expired
+                : expiryDate.difference(DateTime.now()).inDays <= 5
+                    ? ExpiryStatus.expiring
+                    : ExpiryStatus.normal;
 
   get name => null;
 
   get timestamp => null;
 
+  String get quantity =>
+      isInChecklist == true ? requiredQuantity : inStockQuantity;
+
   void changeSelectedState(bool newValue) => isSelectedForComplete = newValue;
+
+  void changeQuantity(String q) {
+    isInChecklist == true ? requiredQuantity = q : inStockQuantity = q;
+  }
 
   Product copyWith({
     String? itemId,
@@ -108,8 +117,8 @@ class Product {
             ? null
             : DateTime.tryParse(json["last_updated_date"]),
         isSelectedForComplete: json['is_selected_for_complete'] ?? false,
-        inStockQuantity: json['in_stock_quantity'] ?? "",
-        requiredQuantity: json['required_quantity'] ?? "",
+        inStockQuantity: json['in_stock_quantity'] ?? "0",
+        requiredQuantity: json['required_quantity'] ?? "0",
         expiryDate: DateTime.tryParse(json['expiry_date'] ?? ""),
       );
 
@@ -128,8 +137,8 @@ class Product {
         'barcode': barcode,
         'is_selected_for_complete': isSelectedForComplete,
         "last_updated_date": updatedDate?.toIso8601String(),
-        "in_stock_quantity": inStockQuantity,
-        "required_quantity": requiredQuantity,
+        (isInChecklist == true ? 'required_quantity' : 'in_stock_quantity'):
+            quantity,
         "expiry_date": expiryDate?.toIso8601String(),
       };
 }

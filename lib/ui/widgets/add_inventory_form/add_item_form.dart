@@ -1,9 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -38,6 +36,7 @@ class AddItemFormWidget extends StatelessWidget {
     this.title,
     this.product,
     this.oldChecklistItemId,
+    this.isForChecklist = false,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
@@ -48,6 +47,7 @@ class AddItemFormWidget extends StatelessWidget {
   final bool isEdit;
   final String? title;
   final String? oldChecklistItemId;
+  final bool isForChecklist;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +62,7 @@ class AddItemFormWidget extends StatelessWidget {
         title: title,
         isFromReplace: isFromReplace,
         oldChecklistItemId: oldChecklistItemId,
+        isForChecklist: isForChecklist,
       ),
     );
   }
@@ -78,6 +79,7 @@ class AddItemForm extends StatefulWidget {
     this.product,
     this.title,
     this.oldChecklistItemId,
+    this.isForChecklist = false,
   });
 
   final Function(Map<String, dynamic>) onSubmit;
@@ -88,6 +90,7 @@ class AddItemForm extends StatefulWidget {
   final bool isFromReplace;
   final String? title;
   final String? oldChecklistItemId;
+  final bool isForChecklist;
 
   @override
   State<AddItemForm> createState() => _AddItemFormState();
@@ -102,8 +105,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
 
   final TextEditingController _storageController = TextEditingController();
 
-  final TextEditingController _inStockQuantityController =
-      TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
 
   final TextEditingController _expiryDateController = TextEditingController();
 
@@ -187,12 +189,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             color: AppColors.mediumGreyColor,
                           ),
                         ),
-                        // validator: (value) {
-                        //   if (value.length > 100) {
-                        //     return 'Description cannot be more than 45 characters!';
-                        //   }
-                        //   return null;
-                        // },
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.r),
                           borderSide: const BorderSide(
@@ -215,9 +211,13 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       ),
                       12.h.verticalSpace,
                       AppTextField(
-                        name: "inStockQuantity",
-                        controller: _inStockQuantityController,
-                        labelText: "InStock Quantity",
+                        name: widget.isForChecklist == true
+                            ? "requiredQuntity"
+                            : "inStockQuantity",
+                        controller: _quantityController,
+                        labelText: widget.isForChecklist
+                            ? "Required Quantity"
+                            : "InStock Quantity",
                         hintText: "Enter from 1 to 99",
                         keyboardType: TextInputType.number,
                         inputFormatters: [
@@ -347,46 +347,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             ),
                         ],
                       ),
-
-                      // AppTextField(
-                      //   name: 'productImg',
-                      //   controller: _fileFieldController,
-                      //   maxLines: 1,
-                      //   readOnly: true,
-                      //   labelText: 'Upload Photo',
-                      //   hintText: 'Select a photo',
-                      //   bottomText: 'Max File Size:5MB',
-                      //   onTap: onSelectFileTap,
-                      //   prefix: Container(
-                      //     height: 100,
-                      //     width: 100,
-                      //     decoration: BoxDecoration(
-                      //       image: DecorationImage(
-                      //         image: widget.isEdit
-                      //             ? CachedNetworkImageProvider(_fileFieldController.text)
-                      //                 as ImageProvider
-                      //             : FileImage(File(_fileFieldController.text))
-                      //                 as ImageProvider,
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   suffixIcon: _fileFieldController.text.isEmpty
-                      //       ? IconButton(
-                      //           onPressed: onSelectFileTap,
-                      //           icon: SvgIcon(
-                      //             AppAssets.upload,
-                      //             color: AppColors.blackColor,
-                      //             size: 18.sp,
-                      //           ),
-                      //         )
-                      //       : IconButton(
-                      //           onPressed: () {
-                      //             _fileFieldController.clear();
-                      //             provider.clearFile();
-                      //           },
-                      //           icon: const Icon(Icons.clear),
-                      //         ),
-                      // ),
                       12.h.verticalSpace,
                       AppTextField(
                         controller: _storageController,
@@ -412,17 +372,21 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               'product_name': _nameController.text,
                               'product_description': _descController.text,
                               'brand': _brandController.text,
-                              'in_stock_quantity':
-                                  _inStockQuantityController.text,
+                              (widget.isForChecklist
+                                      ? 'required_quantity'
+                                      : 'in_stock_quantity'):
+                                  _quantityController.text,
                               'item_level': provider.selectedInvType,
-                              'expiry_date': _expiryDateController.text,
+                              'expiry_date': _expiryDateController
+                                  .text.mmddYYYYToDate
+                                  .toIso8601String(),
                               'item_category': provider.categories
                                   .firstWhere((element) =>
                                       element.categoryId ==
                                       provider.selectedCategoryId)
                                   .categoryName,
                               'item_storage': _storageController.text,
-                              'is_in_checklist': false,
+                              'is_in_checklist': widget.isForChecklist,
                             };
 
                             if (!widget.isEdit &&
@@ -440,8 +404,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     productName: _nameController.text,
                                     productDescription: _descController.text,
                                     brand: _brandController.text,
-                                    inStockQuantity:
-                                        _inStockQuantityController.text,
+                                    inStockQuantity: widget.isForChecklist
+                                        ? ""
+                                        : _quantityController.text,
+                                    requiredQuantity: widget.isForChecklist
+                                        ? _quantityController.text
+                                        : "",
                                     itemLevel: provider.selectedInvType,
                                     expiryDate: _expiryDateController
                                         .text.mmddYYYYToDate,
@@ -505,7 +473,9 @@ class _AddItemFormState<T> extends State<AddItemForm> {
     _nameController.text = widget.product!.productName ?? '';
     _descController.text = widget.product!.productDescription ?? '';
     _brandController.text = widget.product!.brand ?? '';
-    _inStockQuantityController.text = widget.product!.inStockQuantity;
+    _quantityController.text = widget.isForChecklist
+        ? widget.product!.requiredQuantity
+        : widget.product!.inStockQuantity;
     context
         .read<AddItemFormProvider>()
         .changeSelectedInvType(widget.product!.itemLevel);
