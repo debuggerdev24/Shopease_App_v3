@@ -32,7 +32,6 @@ Future<void> main() async {
   if (SharedPrefs().idToken != null) {
     BaseRepository().addToken(SharedPrefs().idToken!);
   }
-
   runApp(const MyApp());
 }
 
@@ -95,3 +94,5 @@ class MyApp extends StatelessWidget {
         }),
       );
 }
+//✅ 2,3,5,6,7,10,12,11
+//1, 8, 4, 9,

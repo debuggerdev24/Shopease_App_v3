@@ -36,11 +36,12 @@ class TabScreenState extends State<TabScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ChecklistProvider>().getChecklistItems();
-    context.read<NotificationProvider>().getNotifications();
-    context.read<NotificationProvider>().getinvitations();
+
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) async {
+        context.read<ChecklistProvider>().getChecklistItems();
+        context.read<NotificationProvider>().getNotifications();
+        context.read<NotificationProvider>().getinvitations();
         await Utils.getCategories();
       },
     );

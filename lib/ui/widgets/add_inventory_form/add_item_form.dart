@@ -98,21 +98,13 @@ class AddItemForm extends StatefulWidget {
 
 class _AddItemFormState<T> extends State<AddItemForm> {
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _descController = TextEditingController();
-
   final TextEditingController _brandController = TextEditingController();
-
   final TextEditingController _storageController = TextEditingController();
-
   final TextEditingController _quantityController = TextEditingController();
-
   final TextEditingController _expiryDateController = TextEditingController();
-
   final TextEditingController _fileFieldController = TextEditingController();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   bool isEnabled = false;
 
   @override
@@ -195,6 +187,13 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             color: Color.fromARGB(255, 162, 4, 4),
                           ),
                         ),
+                        // validator: (value) {
+                        //   if (value!.toString().isEmpty) {
+                        //     return 'Please Enter Description!';
+                        //   }
+                        //
+                        //   return null;
+                        // },
                       ),
                       12.h.verticalSpace,
                       AppTextField(
@@ -212,7 +211,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       12.h.verticalSpace,
                       AppTextField(
                         name: widget.isForChecklist == true
-                            ? "requiredQuntity"
+                            ? "requiredQuantity"
                             : "inStockQuantity",
                         controller: _quantityController,
                         labelText: widget.isForChecklist
@@ -223,6 +222,16 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         inputFormatters: [
                           NumberRangeFormatter(min: 0, max: 99),
                         ],
+                        validator: (value) {
+                          if (value!.toString().isEmpty) {
+                            return 'Please Enter Quantity!';
+                          }
+
+                          if (int.parse(value) < 1) {
+                            return 'Please Enter Valid Quantity!';
+                          }
+                          return null;
+                        },
                       ),
                       12.h.verticalSpace,
                       CardDropDownField(
@@ -259,6 +268,13 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                           if (date != null) {
                             _expiryDateController.text = date.toMMDDYYYY;
                           }
+                        },
+                        validator: (value) {
+                          if (value!.toString().isEmpty) {
+                            return 'Please Enter Date!';
+                          }
+
+                          return null;
                         },
                       ),
                       12.h.verticalSpace,
@@ -362,9 +378,10 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                       ),
                       30.h.verticalSpace,
                       AppButton(
-                        colorType: (_nameController.text.isNotEmpty)
-                            ? AppButtonColorType.primary
-                            : AppButtonColorType.greyed,
+                        colorType: AppButtonColorType.primary,
+                        // (_nameController.text.isNotEmpty)
+                        //     ? AppButtonColorType.primary
+                        // : AppButtonColorType.greyed,
                         isLoading: widget.isLoading,
                         onPressed: () {
                           if (_formKey.currentState?.validate() == true) {
@@ -388,7 +405,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               'item_storage': _storageController.text,
                               'is_in_checklist': widget.isForChecklist,
                             };
-
                             if (!widget.isEdit &&
                                 _fileFieldController.text.isNotEmpty) {
                               data.addAll({
@@ -495,7 +511,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
 
   onSelectFileTap() async {
     final name = await context.read<AddItemFormProvider>().setFile(
-          await ImagePickerhelper().openPicker(context),
+          await ImagePickerHelper().openPicker(context),
         );
     log('file name => $name', name: 'onSelectFileTap');
     if (name != null) {

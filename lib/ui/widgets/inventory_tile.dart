@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -10,7 +12,7 @@ import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_image_widget.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:shopease_app_flutter/utils/debouncer.dart';
+import 'package:shopease_app_flutter/utils/enums/expiry_status.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
@@ -75,77 +77,94 @@ class _InventoryTileState extends State<InventoryTile>
   @override
   Widget build(BuildContext context) {
     print("widget.product.isInChecklist --> ${widget.product.isInChecklist} ");
-    return Slidable(
-      controller: _slideController,
-      endActionPane: !widget.isSlideEnabled
-          ? null
-          : _buildRightSwipeActions(widget.product),
-      startActionPane: !widget.isSlideEnabled
-          ? null
-          : _buildLeftSwipeActions(widget.product),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        onLongPress: widget.onLongPress,
-        child: Container(
-          color: Colors.grey[800]!.withOpacity(0.05),
-          padding: EdgeInsets.symmetric(horizontal: 10.w),
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(width: 8),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ProductImageWidget(
-                  product: widget.product,
-                  height: 100.h,
-                  width: 100.h,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Stack(
+        children: [
+          Slidable(
+            controller: _slideController,
+            endActionPane: !widget.isSlideEnabled
+                ? null
+                : _buildRightSwipeActions(widget.product),
+            startActionPane: !widget.isSlideEnabled
+                ? null
+                : _buildLeftSwipeActions(widget.product),
+            child: GestureDetector(
+              onTap: widget.onTap,
+              onLongPress: widget.onLongPress,
+              child: Container(
+                color: Colors.grey[800]!.withValues(alpha: 0.05),
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 10),
-                    Text(
-                      maxLines: 10,
-                      "${widget.product.productName!} (${widget.product.quantity})",
-                      overflow: TextOverflow.ellipsis,
-                      style: textStyle16.copyWith(
-                        fontSize: 18,
-                        overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ProductImageWidget(
+                        product: widget.product,
+                        height: 100.h,
+                        width: 100.h,
                       ),
                     ),
-                    SizedBox(height: 10.h),
-                    if (widget.product.brand.toString().isNotEmpty)
-                      AppChip(text: widget.product.brand ?? '')
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          Text(
+                            maxLines: 10,
+                            "${widget.product.productName!} (${widget.product.quantity})",
+                            overflow: TextOverflow.ellipsis,
+                            style: textStyle16.copyWith(
+                              fontSize: 18,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          if (widget.product.brand.toString().isNotEmpty)
+                            AppChip(text: widget.product.brand ?? '')
+                        ],
+                      ),
+                    ),
+                    if (widget.product.isInChecklist == true) ...[
+                      20.horizontalSpace,
+                      SvgIcon(
+                        AppAssets.succcessCart,
+                        size: 20.sp,
+                        color: AppColors.greenColor,
+                      ),
+                    ],
+                    20.horizontalSpace,
+                    SvgPicture.asset(
+                      widget.product.itemLevel == InventoryType.high.name
+                          ? AppAssets.inventoryHigh
+                          : widget.product.itemLevel ==
+                                  InventoryType.medium.name
+                              ? AppAssets.inventoryMid
+                              : AppAssets.inventoryLow,
+                      width: 18.h,
+                      height: 18.h,
+                    ),
+                    SizedBox(width: 10.sp),
                   ],
                 ),
               ),
-              if (widget.product.isInChecklist == true) ...[
-                20.horizontalSpace,
-                SvgIcon(
-                  AppAssets.succcessCart,
-                  size: 20.sp,
-                  color: AppColors.greenColor,
-                ),
-              ],
-              20.horizontalSpace,
-              SvgPicture.asset(
-                widget.product.itemLevel == InventoryType.high.name
-                    ? AppAssets.inventoryHigh
-                    : widget.product.itemLevel == InventoryType.medium.name
-                        ? AppAssets.inventoryMid
-                        : AppAssets.inventoryLow,
-                width: 18.h,
-                height: 18.h,
-              ),
-              SizedBox(width: 10.sp),
-            ],
+            ),
           ),
-        ),
+          if (widget.product.expiryStatus == ExpiryStatus.expired)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey.withValues(
+                  alpha: 0.3,
+                )),
+              ),
+            )
+        ],
       ),
     );
   }
@@ -161,27 +180,35 @@ class _InventoryTileState extends State<InventoryTile>
               color: AppColors.lightGreyColor.withAlpha(20),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ValueListenableBuilder(
                     valueListenable: inStockQuantityListenable,
                     builder: (context, value, _) {
-                      return AppChip(
-                        text: value.toString(),
+                      return Text(
+                        maxLines: 10,
+                        "Qty : ${value.toString()}",
+                        style: textStyle14.copyWith(
+                          color: AppColors.primaryColor,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       );
+                      //   AppChip(
+                      //   text:
+                      // );
                     },
                   ),
-                  15.h.verticalSpace,
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            if (inStockQuantityListenable.value == 0) return;
+                            if (inStockQuantityListenable.value == 1) return;
                             inStockQuantityListenable.value -= 1;
-                            widget.onChangedInStockQuantity?.call(
-                              inStockQuantityListenable.value.toString(),
-                            );
+                            // widget.onChangedInStockQuantity?.call(
+                            //   inStockQuantityListenable.value.toString(),
+                            // );
                           },
                           child: const Icon(Icons.remove),
                         ),
@@ -190,15 +217,27 @@ class _InventoryTileState extends State<InventoryTile>
                         child: GestureDetector(
                           onTap: () {
                             inStockQuantityListenable.value += 1;
-                            widget.onChangedInStockQuantity?.call(
-                              inStockQuantityListenable.value.toString(),
-                            );
+                            // widget.onChangedInStockQuantity?.call(
+                            //   inStockQuantityListenable.value.toString(),
+                            // );
                           },
                           child: const Icon(Icons.add),
                         ),
                       ),
                     ],
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      widget.onChangedInStockQuantity?.call(
+                        inStockQuantityListenable.value.toString(),
+                      );
+                    },
+                    child: Text(
+                      "Done",
+                      style:
+                          textStyle14.copyWith(color: AppColors.primaryColor),
+                    ),
+                  )
                 ],
               ),
             ),

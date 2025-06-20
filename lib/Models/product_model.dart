@@ -22,6 +22,7 @@ class Product {
   String requiredQuantity;
   DateTime? expiryDate;
   ExpiryStatus expiryStatus;
+  int? daysUntilExpiry;
 
   Product({
     this.itemId,

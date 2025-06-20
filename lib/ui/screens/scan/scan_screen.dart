@@ -95,12 +95,13 @@ class _ScanScreenState extends State<ScanScreen> {
                     },
                     onError: (msg) {
                       context.pushReplacementNamed(
-                          AppRoute.scanNotFoundScreen.name,
-                          extra: {
-                            'isReplace': widget.isReplace,
-                            'oldId': widget.oldChecklistItemId,
-                            'isFromChecklist': widget.isFromChecklist,
-                          });
+                        AppRoute.scanNotFoundScreen.name,
+                        extra: {
+                          'isReplace': widget.isReplace,
+                          'oldId': widget.oldChecklistItemId,
+                          'isFromChecklist': widget.isFromChecklist,
+                        },
+                      );
                     },
                   );
                 },

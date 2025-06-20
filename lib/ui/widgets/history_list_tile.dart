@@ -1,27 +1,18 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:shopease_app_flutter/Models/product_model.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
-import 'package:shopease_app_flutter/providers/checklist_provider.dart';
-import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
-import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/image_sheet.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
-import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
@@ -70,7 +61,7 @@ class _HistorylistTileState extends State<HistorylistTile>
           },
           // 815fc512-1673-43cf-ba6c-a3e3508b402f
           child: Container(
-            color: Colors.grey[800]!.withOpacity(0.05),
+            color: Colors.grey[800]!.withValues(alpha: 0.05),
             width: double.infinity,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -107,7 +98,8 @@ class _HistorylistTileState extends State<HistorylistTile>
                                   widget.product.imageUrl!.isEmpty
                               ? null
                               : DecorationImage(
-                                  image: CachedNetworkImageProvider(widget.product.imageUrl!),
+                                  image: CachedNetworkImageProvider(
+                                      widget.product.imageUrl!),
                                   fit: BoxFit.fill,
                                 ),
                         ),

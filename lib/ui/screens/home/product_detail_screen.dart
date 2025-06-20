@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,7 +8,6 @@ import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_image_widget.dart';
-import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 
@@ -81,6 +79,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ProductImageWidget(
+                    fit: BoxFit.contain,
                     product: widget.product,
                     height: 250.h,
                   ),

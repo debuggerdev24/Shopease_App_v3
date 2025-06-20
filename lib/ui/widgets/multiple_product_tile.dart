@@ -45,8 +45,8 @@ class _MultipleProductTileState extends State<MultipleProductTile>
       onLongPress: widget.onLongPress,
       child: Container(
         color: widget.isSelected
-            ? Colors.grey[700]!.withOpacity(0.05)
-            : Colors.grey.withOpacity(0.2),
+            ? Colors.grey[700]!.withValues(alpha: 0.05)
+            : Colors.grey.withValues(alpha: 0.2),
         padding: const EdgeInsets.only(left: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,

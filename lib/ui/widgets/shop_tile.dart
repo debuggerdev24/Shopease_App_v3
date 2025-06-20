@@ -2,14 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/shop_model.dart';
-import 'package:shopease_app_flutter/providers/checklist_provider.dart';
-import 'package:shopease_app_flutter/ui/widgets/add_shop_form/add_shop_form.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_slidable_action.dart';
-import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
@@ -72,10 +67,11 @@ class _ShopTileState extends State<ShopTile>
                   width: 100.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: CachedNetworkImageProvider((widget.shop.itemImage == null ||
-                              widget.shop.itemImage?.isEmpty == true)
-                          ? Constants.placeholdeImg
-                          : widget.shop.itemImage ?? ''),
+                      image: CachedNetworkImageProvider(
+                          (widget.shop.itemImage == null ||
+                                  widget.shop.itemImage?.isEmpty == true)
+                              ? Constants.placeholdeImg
+                              : widget.shop.itemImage ?? ''),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -96,7 +92,7 @@ class _ShopTileState extends State<ShopTile>
                         fontSize: 18, overflow: TextOverflow.ellipsis),
                   ),
                   SizedBox(height: 10.h),
-                   if (widget.shop.shopLocation.toString().isNotEmpty)
+                  if (widget.shop.shopLocation.toString().isNotEmpty)
                     AppChip(text: widget.shop.shopLocation ?? ''),
                 ],
               ),

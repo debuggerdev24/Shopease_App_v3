@@ -1,11 +1,8 @@
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -31,7 +28,7 @@ class AddInvoiceScreen extends StatefulWidget {
 class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
-    // log("shop:${widget.shop}:::::total${widget.total}");
+    log("shop:${widget.shop}:::::histId${widget.histId}");
     return Consumer<HistoryProvider>(builder: (context, provider, _) {
       return Scaffold(
         appBar: AppBar(
@@ -53,24 +50,25 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               ),
               const Spacer(),
               AppButton(
-                  onPressed: () async {
-                    await provider
-                        .changeSelectedFile(
-                            await ImagePickerhelper().openPicker(context))
-                        .then(
-                          (value) => context.pushNamed(
-                            AppRoute.saveInvoice.name,
-                            extra: {
-                              'shop': widget.shop,
-                              'histId': widget.histId,
-                              'edit': false,
-                              // 'total': 100,
-                            },
-                          ),
-                        );
-                  },
-                  text: 'Add Invoice'),
-              20.h.verticalSpace,
+                onPressed: () async {
+                  final pickedImage =
+                      await ImagePickerHelper().openPicker(context);
+                  if (pickedImage != null) {
+                    await provider.changeSelectedFile(pickedImage);
+                    context.pushNamed(
+                      AppRoute.saveInvoice.name,
+                      extra: {
+                        'shop': widget.shop,
+                        'histId': widget.histId,
+                        'edit': false,
+                        // 'total': 100,
+                      },
+                    );
+                  }
+                },
+                text: 'Add Invoice',
+              ),
+
               // AppButton(
               //   onPressed: () async {
               //     await provider.selectFileFromGallery(onSuccess: () {
@@ -84,7 +82,6 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               //   text: 'Upload from Gallery',
               //   colorType: AppButtonColorType.secondary,
               // ),
-              30.h.verticalSpace,
             ],
           ),
         ),

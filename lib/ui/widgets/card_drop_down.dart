@@ -72,7 +72,8 @@ class CardDropDownField extends StatelessWidget {
               maxHeight: 32.w, maxWidth: 32.w, minHeight: 30.w, minWidth: 30.w),
           filled: true,
           hintText: hintText ?? '',
-          hintStyle: textStyle16.copyWith(color: Colors.black.withOpacity(0.4)),
+          hintStyle:
+              textStyle16.copyWith(color: Colors.black.withValues(alpha: 0.4)),
           isDense: true,
           focusColor: AppColors.orangeColor,
           fillColor: Colors.white,

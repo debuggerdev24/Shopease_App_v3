@@ -7,7 +7,6 @@ import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
-
 import '../../../utils/routes/routes.dart';
 
 class ScanAndAddScreen extends StatefulWidget {

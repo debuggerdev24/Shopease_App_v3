@@ -16,22 +16,22 @@ class GlobalText extends StatelessWidget {
   final List<Shadow>? shadows;
   final TextStyle? textStyle;
   const GlobalText(
-      this.text, {
-        Key? key,
-        this.height,
-        this.fontSize,
-        this.fontWeight,
-        this.fontFamily,
-        this.color,
-        this.textDecoration,
-        this.textOverflow,
-        this.fontStyle = FontStyle.normal,
-        this.letterSpacing,
-        this.textAlign,
-        this.maxLine,
-        this.shadows,
-        this.textStyle,
-      }) : super(key: key);
+    this.text, {
+    Key? key,
+    this.height,
+    this.fontSize,
+    this.fontWeight,
+    this.fontFamily,
+    this.color,
+    this.textDecoration,
+    this.textOverflow,
+    this.fontStyle = FontStyle.normal,
+    this.letterSpacing,
+    this.textAlign,
+    this.maxLine,
+    this.shadows,
+    this.textStyle,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final fontTextStyle = TextStyle(
@@ -45,15 +45,12 @@ class GlobalText extends StatelessWidget {
       fontStyle: fontStyle,
       letterSpacing: letterSpacing,
       shadows: shadows,
-
-
     );
     return Text(
-
       text,
       textAlign: textAlign,
       maxLines: maxLine,
-      locale: Locale('ar', 'sa'),
+      locale: const Locale('ar', 'sa'),
       style: textStyle ?? fontTextStyle,
     );
   }

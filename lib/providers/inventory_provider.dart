@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
@@ -274,6 +276,7 @@ class InventoryProvider extends ChangeNotifier {
     VoidCallback? onSuccess,
   }) async {
     try {
+      log("-------------------------> data : $data");
       setLoading(true);
       final res = await services.putInventoryItem(data: data, isEdit: isEdit);
 

@@ -23,7 +23,11 @@ class _FaqScreenState extends State<FaqScreen> {
   void initState() {
     super.initState();
 
-    context.read<ProfileProvider>().getFaqs();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        context.read<ProfileProvider>().getFaqs();
+      },
+    );
   }
 
   @override
@@ -37,12 +41,13 @@ class _FaqScreenState extends State<FaqScreen> {
       body: Column(
         children: [
           Container(
-            height: 120.h,
+            height: 90.h,
             alignment: Alignment.center,
             color: AppColors.primaryColor.withAlpha(50),
             child: GlobalText(
               "Frequently Asked Questions",
-              textStyle: textStyle18,
+              textStyle:
+                  textStyle24SemiBold.copyWith(fontWeight: FontWeight.w400),
             ),
           ),
           20.h.verticalSpace,

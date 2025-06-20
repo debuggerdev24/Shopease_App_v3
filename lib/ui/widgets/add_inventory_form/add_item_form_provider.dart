@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/category_model.dart';
 import 'package:shopease_app_flutter/services/inventory_services.dart';
-import 'package:shopease_app_flutter/ui/widgets/image_picker_helper.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 
 class AddItemFormProvider extends ChangeNotifier {

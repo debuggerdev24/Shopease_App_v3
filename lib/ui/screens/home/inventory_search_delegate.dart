@@ -5,12 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
-import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/no_search_found.dart';
 import 'package:shopease_app_flutter/ui/widgets/inventory_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
-import 'package:shopease_app_flutter/utils/styles.dart';
 
 class ProductSearchDelegate extends SearchDelegate<String> {
   final List<Product> productList;

@@ -7,10 +7,10 @@ import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
-class ImagePickerhelper {
-  ImagePickerhelper._();
+class ImagePickerHelper {
+  ImagePickerHelper._();
 
-  factory ImagePickerhelper() => ImagePickerhelper._();
+  factory ImagePickerHelper() => ImagePickerHelper._();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -56,12 +56,22 @@ class ImagePickerhelper {
   }
 
   Future<XFile?> openGallery() async {
-    final file = await _picker.pickImage(source: ImageSource.gallery);
+    final file = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50,
+      maxHeight: 1024,
+      maxWidth: 1024,
+    );
     return file;
   }
 
   Future<XFile?> openCamera() async {
-    final file = await _picker.pickImage(source: ImageSource.camera);
+    final file = await _picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 50,
+      maxHeight: 1024,
+      maxWidth: 1024,
+    );
     return file;
   }
 

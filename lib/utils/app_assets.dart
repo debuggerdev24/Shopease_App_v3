@@ -64,14 +64,13 @@ class AppAssets {
   static const String addToCheck = "assets/icons/addToCheck.svg";
   static const String rmCart = "assets/icons/rmCart.svg";
   static const String calender = "assets/icons/calender.svg";
-
   static const String scanner = "assets/icons/scanner.svg";
   static const String search = "assets/icons/search.svg";
   static const String add = "assets/icons/add.svg";
   static const String userEdit = "assets/icons/userEdit.svg";
   static const String zoomIcon = "assets/icons/zoom.svg";
   static const String acceptInvitation = "assets/icons/acceptinvite.png";
-  static const String removeinviteuser = "assets/icons/deletinvitation.png";
+  static const String removeInviteUser = "assets/icons/deletinvitation.png";
   static const String support = "assets/icons/support.svg";
   static const String warning = "assets/icons/warning.svg";
   static const String noConnectionBG = "assets/images/no_internet_bg.png";

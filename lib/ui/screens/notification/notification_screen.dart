@@ -332,7 +332,7 @@ class _NotificationScreenState extends State<NotificationScreen>
           ),
           AppSlidableaction(
             isRight: true,
-            icon: AppAssets.removeinviteuser,
+            icon: AppAssets.removeInviteUser,
             onTap: () async {
               await provider.rejectinvite(
                 data: {

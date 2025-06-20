@@ -6,13 +6,16 @@ import 'package:shopease_app_flutter/utils/app_colors.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
+import '../../utils/enums/expiry_status.dart';
+
 class ProductImageWidget extends StatelessWidget {
   const ProductImageWidget(
-      {super.key, required this.product, this.height, this.width});
+      {super.key, required this.product, this.height, this.width, this.fit});
 
   final Product product;
   final double? height;
   final double? width;
+  final BoxFit? fit;
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +24,13 @@ class ProductImageWidget extends StatelessWidget {
       width: width ?? double.infinity,
       alignment: Alignment.bottomCenter,
       decoration: BoxDecoration(
+        color: Colors.grey.shade200,
         border: Border.all(color: product.expiryStatus.color),
         image: DecorationImage(
           image: CachedNetworkImageProvider(
             product.itemImage ?? Constants.placeholdeImg,
           ),
-          fit: BoxFit.contain,
+          fit: fit ?? BoxFit.cover,
         ),
       ),
       child: SizedBox(
@@ -34,7 +38,7 @@ class ProductImageWidget extends StatelessWidget {
         child: ColoredBox(
           color: product.expiryStatus.color,
           child: Text(
-            product.expiryStatus.displayText,
+            "${product.expiryStatus.displayText} ${(product.expiryStatus == ExpiryStatus.expiring) ? "in ${(product.expiryDate!.difference(DateTime.now()).inDays + 1)} D.." : ""}",
             textAlign: TextAlign.center,
             style: textStyle12.copyWith(
               color: AppColors.whiteColor,

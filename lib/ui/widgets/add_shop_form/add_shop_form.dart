@@ -135,8 +135,8 @@ class _AddShopFormState extends State<AddShopForm> {
                                     ),
                                   )
                                 : DecorationImage(
-                                    image:
-                                        CachedNetworkImageProvider(_fileFieldController.text),
+                                    image: CachedNetworkImageProvider(
+                                        _fileFieldController.text),
                                   ),
                       ),
                       child: SvgPicture.asset(
@@ -253,7 +253,7 @@ class _AddShopFormState extends State<AddShopForm> {
 
   onSelectFileTap() async {
     final name = await context.read<AddShopFormProvider>().setFile(
-          await ImagePickerhelper().openPicker(context),
+          await ImagePickerHelper().openPicker(context),
         );
     log('file name => $name', name: 'onSelectFileTap');
     if (name != null) {

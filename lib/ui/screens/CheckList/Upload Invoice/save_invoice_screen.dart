@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/history_provider.dart';
+import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
@@ -57,6 +57,17 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
     log('shop:${widget.shop}:::total:${widget.totalAmount}:::histId:${widget.histId}');
+    final provider = context.watch<HistoryProvider>();
+    // final scannedData = provider.scannedText.split("\n");
+
+    _priceController.text = provider.totalAmount;
+    // for (int i = 0; i < scannedData.length; i++) {
+    //   if (scannedData[i].toLowerCase().contains("amount") ||
+    //       scannedData[i].toLowerCase().contains("total")) {
+    //     _priceController.text = scannedData[i].split(" ")[1] ?? "";
+    //   }
+    // }
+
     return Consumer<HistoryProvider>(
       builder: (context, provider, _) {
         return Scaffold(
@@ -91,11 +102,9 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                         onTap: () {
                           if (provider.selectedFile != null) {
                             showImageSheet(
-                                context: context,
-                                imgUrl: context
-                                    .read<HistoryProvider>()
-                                    .selectedFile!
-                                    .path);
+                              context: context,
+                              imgUrl: provider.selectedFile!.path,
+                            );
                           } else {
                             provider.selectFileFromGallery();
                           }
@@ -122,7 +131,10 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                         ),
                       ),
                       IconButton(
-                          onPressed: provider.clearFile,
+                          onPressed: () {
+                            _priceController.clear();
+                            provider.clearFile();
+                          },
                           icon: const Icon(
                             Icons.delete,
                             color: AppColors.redColor,
@@ -136,7 +148,7 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     controller: _priceController,
-                    prefixText: '\$',
+                    // prefixText: '\$',
                     hintText: 'Enter invoice price',
                     hintStyle: textStyle16.copyWith(
                         color: AppColors.blackColor,
@@ -172,8 +184,8 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                 text: "Save",
                 isLoading: provider.isLoading,
                 onPressed: () async {
-                  /// Add History
                   print("DateTime.now().toUtc() ==> ${DateTime.now().toUtc()}");
+
                   Map<String, dynamic> newData = {
                     'hist_id': widget.histId ??
                         context.read<ChecklistProvider>().currentHistId,
@@ -186,7 +198,6 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                     //     .selectedChecklists
                     //     .length,
                   };
-                  log("history $newData");
                   await provider.puthistoryItems(
                     data: [newData],
                     isEdit: false,
@@ -197,11 +208,29 @@ class _SaveInvoiceScreenState extends State<SaveInvoiceScreen> {
                       context.goNamed(AppRoute.checkList.name);
                       context.read<ChecklistProvider>().clearSelectedProducts();
                       provider.getHistoryItems();
+                      context.read<InventoryProvider>().putInventoryItem(
+                            data: provider.scannedItem,
+                            isEdit: false,
+                            onError: (msg) =>
+                                CustomToast.showError(context, msg),
+                            onSuccess: () {
+                              // if (!widget.isEdit) {
+                              CustomToast.showSuccess(
+                                  context, 'Product added successfully!');
+                              // }
+                              context
+                                  .read<InventoryProvider>()
+                                  .getInventoryItems();
+                              context.goNamed(AppRoute.home.name);
+                            },
+                          );
                     },
                     onError: (msg) {
                       CustomToast.showError(context, msg);
                     },
                   );
+
+                  // log(provider.scannedItem.toString());
                 },
               )),
         );

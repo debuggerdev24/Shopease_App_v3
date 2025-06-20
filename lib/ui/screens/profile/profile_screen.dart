@@ -327,7 +327,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     onSelectFileTap() async {
       final name = await context.read<ProfileProvider>().setFile(
-            await ImagePickerhelper().openPicker(context),
+            await ImagePickerHelper().openPicker(context),
           );
       if (name != null) {
         fileFieldController.text = name;

@@ -53,7 +53,7 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
                   onPressed: () async {
                     await provider
                         .changeSelectedFile(
-                            await ImagePickerhelper().openPicker(context))
+                            await ImagePickerHelper().openPicker(context))
                         .then(
                           (value) => context.pushNamed(
                             AppRoute.saveInvoice.name,
