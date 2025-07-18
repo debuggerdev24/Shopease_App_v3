@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -84,8 +86,8 @@ class _ChecklistTileState extends State<ChecklistTile>
           opacity: widget.isSelected ? .75 : 1,
           child: Container(
             color: widget.isSelected
-                ? Colors.grey[200]!.withOpacity(.05)
-                : Colors.grey[800]!.withOpacity(0.05),
+                ? Colors.grey[200]!.withValues(alpha: 0.05)
+                : Colors.grey[800]!.withValues(alpha: 0.05),
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             width: double.infinity,
             child: Row(
@@ -159,51 +161,114 @@ class _ChecklistTileState extends State<ChecklistTile>
         extentRatio: .75,
         children: [
           Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: 5.w),
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              color: AppColors.lightGreyColor.withAlpha(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: requiredQuantityListenable,
-                    builder: (context, value, _) {
-                      return AppChip(
-                        text: value.toString(),
-                      );
-                    },
-                  ),
-                  15.h.verticalSpace,
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (requiredQuantityListenable.value == 0) return;
-                            requiredQuantityListenable.value -= 1;
-                            widget.onChangedRequiredQuantity?.call(
-                              requiredQuantityListenable.value.toString(),
-                            );
-                          },
-                          child: const Icon(Icons.remove),
-                        ),
+            child: GestureDetector(
+              onTap: () {
+                int oldQty = requiredQuantityListenable.value;
+                showAddQuantitySheet(context, oldQty, requiredQuantityListenable);
+              },
+              child: Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(left: 5.w),
+                color: AppColors.lightGreyColor.withAlpha(20),
+                child: ValueListenableBuilder(
+                  valueListenable: requiredQuantityListenable,
+                  builder: (context, value, _) {
+                    return Text(
+                      maxLines: 10,
+                      "Qty : ${value.toString()}",
+                      style: textStyle16.copyWith(
+                        color: AppColors.primaryColor,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            requiredQuantityListenable.value += 1;
-                            widget.onChangedRequiredQuantity?.call(
-                              requiredQuantityListenable.value.toString(),
-                            );
-                          },
-                          child: const Icon(Icons.add),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    );
+                    //   AppChip(
+                    //   text:
+                    // );
+                  },
+                ),
+                // Row(
+                //                     mainAxisSize: MainAxisSize.min,
+                //                     children: [
+                //                       Expanded(
+                //                         child: GestureDetector(
+                //                           onTap: () {
+                //                             if (requiredQuantityListenable.value == 1) return;
+                //                             requiredQuantityListenable.value -= 1;
+                //                             // widget.onChangedInStockQuantity?.call(
+                //                             //   inStockQuantityListenable.value.toString(),
+                //                             // );
+                //                           },
+                //                           child: const Icon(Icons.remove),
+                //                         ),
+                //                       ),
+                //                       Expanded(
+                //                         child: GestureDetector(
+                //                           onTap: () {
+                //                             requiredQuantityListenable.value += 1;
+                //                             // widget.onChangedInStockQuantity?.call(
+                //                             //   inStockQuantityListenable.value.toString(),
+                //                             // );
+                //                           },
+                //                           child: const Icon(Icons.add),
+                //                         ),
+                //                       ),
+                //                     ],
+                //                   ),
+                //                   GestureDetector(
+                //                     onTap: () {
+                //                       widget.onChangedRequiredQuantity?.call(
+                //                         requiredQuantityListenable.value.toString(),
+                //                       );
+                //                     },
+                //                     child: Text(
+                //                       "Done",
+                //                       style:
+                //                       textStyle14.copyWith(color: AppColors.primaryColor),
+                //                     ),
+                //                   )
+                //todo ----------------------
+                // Column(
+                //   mainAxisSize: MainAxisSize.max,
+                //   children: [
+                //     ValueListenableBuilder(
+                //       valueListenable: requiredQuantityListenable,
+                //       builder: (context, value, _) {
+                //         return AppChip(
+                //           text: value.toString(),
+                //         );
+                //       },
+                //     ),
+                //     15.h.verticalSpace,
+                //     Row(
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //         Expanded(
+                //           child: GestureDetector(
+                //             onTap: () {
+                //               if (requiredQuantityListenable.value == 0) return;
+                //               requiredQuantityListenable.value -= 1;
+                //               widget.onChangedRequiredQuantity?.call(
+                //                 requiredQuantityListenable.value.toString(),
+                //               );
+                //             },
+                //             child: const Icon(Icons.remove),
+                //           ),
+                //         ),
+                //         Expanded(
+                //           child: GestureDetector(
+                //             onTap: () {
+                //               requiredQuantityListenable.value += 1;
+                //               widget.onChangedRequiredQuantity?.call(
+                //                 requiredQuantityListenable.value.toString(),
+                //               );
+                //             },
+                //             child: const Icon(Icons.add),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ],
+                // ),
               ),
             ),
           ),
@@ -212,6 +277,8 @@ class _ChecklistTileState extends State<ChecklistTile>
             icon: AppAssets.replace,
             forgroundColor: AppColors.primaryColor,
             onTap: () {
+              log("---------------------> RequireQty : ${requiredQuantityListenable.value}");
+
               _showReplaceBrandSheet(product);
             },
           ),
@@ -226,6 +293,92 @@ class _ChecklistTileState extends State<ChecklistTile>
           ),
         ],
       );
+
+  Future<dynamic> showAddQuantitySheet(
+      BuildContext context, int oldQty, ValueNotifier<int> listenAbleValue) {
+    return showModalBottomSheet(
+      enableDrag: true,
+      isScrollControlled: true,
+      showDragHandle: true,
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Add Quantity",
+              style: textStyle24SemiBold.copyWith(fontWeight: FontWeight.w500),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 18.h, bottom: 30.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 10.w,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        if (listenAbleValue.value > 1) {
+                          listenAbleValue.value -= 1;
+                        }
+                      },
+                      color: AppColors.orangeColor,
+                      icon: const Icon(Icons.remove)),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 2.h, horizontal: 18.w),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22.r),
+                        border: Border.all(color: AppColors.mediumGreyColor)),
+                    child: ValueListenableBuilder<int>(
+                      valueListenable: requiredQuantityListenable,
+                      builder:
+                          (BuildContext context, int value, Widget? child) =>
+                              Text(
+                        value.toString(),
+                        style: textStyle24SemiBold.copyWith(
+                          color: AppColors.orangeColor,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      requiredQuantityListenable.value += 1;
+                      // widget.onChangedInStockQuantity?.call(
+                      //   inStockQuantityListenable.value.toString(),
+                      // );
+                    },
+                    color: AppColors.orangeColor,
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
+              ),
+            ),
+            AppButton(
+              onPressed: () {
+                widget.onChangedRequiredQuantity?.call(
+                  requiredQuantityListenable.value.toString(),
+                );
+                context.pop();
+              },
+              text: "Save",
+            ),
+            20.h.verticalSpace,
+            AppButton(
+              colorType: AppButtonColorType.secondary,
+              onPressed: () {
+                requiredQuantityListenable.value = oldQty;
+                context.pop();
+              },
+              text: "Cancel",
+            ),
+            30.h.verticalSpace,
+          ],
+        );
+      },
+    );
+  }
 
   _showReplaceBrandSheet(Product product) {
     showModalBottomSheet(

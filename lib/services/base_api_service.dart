@@ -43,7 +43,7 @@ class BaseRepository {
     }
     log('dio headers: ${_dio.options.headers}');
     _dio.interceptors.add(
-      PrettyDioLogger(request: true, requestBody: true, requestHeader: true),
+      PrettyDioLogger(requestBody: true, requestHeader: true),
     );
   }
 

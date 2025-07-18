@@ -101,7 +101,8 @@ class _AddItemFormState<T> extends State<AddItemForm> {
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _brandController = TextEditingController();
   final TextEditingController _storageController = TextEditingController();
-  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _quantityController =
+      TextEditingController();
   final TextEditingController _expiryDateController = TextEditingController();
   final TextEditingController _fileFieldController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -120,6 +121,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
         context.read<AddItemFormProvider>().changeSelectedInvType(null);
       }
     });
+
   }
 
   @override
@@ -223,11 +225,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                           NumberRangeFormatter(min: 0, max: 99),
                         ],
                         validator: (value) {
-                          if (value!.toString().isEmpty) {
-                            return 'Please Enter Quantity!';
-                          }
+                          // if (value!.toString().isEmpty) {
+                          //   return 'Please Enter Quantity!';
+                          // }
 
-                          if (int.parse(value) < 1) {
+                          if (value.toString().isNotEmpty && int.parse(value) < 1) {
                             return 'Please Enter Valid Quantity!';
                           }
                           return null;
@@ -264,18 +266,16 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                             firstDate: DateTime.now(),
                             lastDate: DateTime(DateTime.now().year + 100),
                           );
-
                           if (date != null) {
                             _expiryDateController.text = date.toMMDDYYYY;
                           }
                         },
-                        validator: (value) {
-                          if (value!.toString().isEmpty) {
-                            return 'Please Enter Date!';
-                          }
-
-                          return null;
-                        },
+                        // validator: (value) {
+                        //   if (value!.toString().isEmpty) {
+                        //     return 'Please Enter Date!';
+                        //   }
+                        //   return null;
+                        // },
                       ),
                       12.h.verticalSpace,
                       CardDropDownField(
@@ -385,6 +385,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                         isLoading: widget.isLoading,
                         onPressed: () {
                           if (_formKey.currentState?.validate() == true) {
+                            log(widget.isForChecklist.toString());
                             final Map<String, dynamic> data = {
                               'product_name': _nameController.text,
                               'product_description': _descController.text,
@@ -392,11 +393,15 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                               (widget.isForChecklist
                                       ? 'required_quantity'
                                       : 'in_stock_quantity'):
-                                  _quantityController.text,
+                                  _quantityController.text.trim().isEmpty
+                                      ? "1"
+                                      : _quantityController.text.trim(),
                               'item_level': provider.selectedInvType,
-                              'expiry_date': _expiryDateController
-                                  .text.mmddYYYYToDate
-                                  .toIso8601String(),
+                              'expiry_date': _expiryDateController.text
+                                      .isNotEmpty
+                                  ? _expiryDateController.text.mmddYYYYToDate
+                                      .toIso8601String()
+                                  : null,
                               'item_category': provider.categories
                                   .firstWhere((element) =>
                                       element.categoryId ==
@@ -422,12 +427,12 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     brand: _brandController.text,
                                     inStockQuantity: widget.isForChecklist
                                         ? ""
-                                        : _quantityController.text,
+                                        : _quantityController.text.trim().isEmpty ? "1" : _quantityController.text,
                                     requiredQuantity: widget.isForChecklist
                                         ? _quantityController.text
                                         : "",
                                     itemLevel: provider.selectedInvType,
-                                    expiryDate: _expiryDateController
+                                    expiryDate: _expiryDateController.text.trim().isEmpty ? null : _expiryDateController
                                         .text.mmddYYYYToDate,
                                     itemCategory: provider.categories
                                         .firstWhere((element) =>

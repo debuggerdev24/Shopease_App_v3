@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -57,7 +58,7 @@ class _InventoryTileState extends State<InventoryTile>
     super.initState();
     _slideController = SlidableController(this);
     inStockQuantityListenable =
-        ValueNotifier(int.tryParse(widget.product.quantity) ?? 0);
+        ValueNotifier(int.tryParse(widget.product.inStockQuantity) ?? 0);
   }
 
   @override
@@ -78,21 +79,22 @@ class _InventoryTileState extends State<InventoryTile>
   Widget build(BuildContext context) {
     print("widget.product.isInChecklist --> ${widget.product.isInChecklist} ");
     return Padding(
+      key: ObjectKey(widget.product.itemId),
       padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Stack(
-        children: [
-          Slidable(
-            controller: _slideController,
-            endActionPane: !widget.isSlideEnabled
-                ? null
-                : _buildRightSwipeActions(widget.product),
-            startActionPane: !widget.isSlideEnabled
-                ? null
-                : _buildLeftSwipeActions(widget.product),
-            child: GestureDetector(
-              onTap: widget.onTap,
-              onLongPress: widget.onLongPress,
-              child: Container(
+      child: GestureDetector(
+        onLongPress: widget.onLongPress,
+        onTap: widget.onTap,
+        child: Slidable(
+          controller: _slideController,
+          endActionPane: !widget.isSlideEnabled
+              ? null
+              : _buildRightSwipeActions(widget.product),
+          startActionPane: !widget.isSlideEnabled
+              ? null
+              : _buildLeftSwipeActions(widget.product),
+          child: Stack(
+            children: [
+              Container(
                 color: Colors.grey[800]!.withValues(alpha: 0.05),
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 width: double.infinity,
@@ -117,7 +119,7 @@ class _InventoryTileState extends State<InventoryTile>
                           const SizedBox(height: 10),
                           Text(
                             maxLines: 10,
-                            "${widget.product.productName!} (${widget.product.quantity})",
+                            "${widget.product.productName!} (${widget.product.inStockQuantity})",
                             overflow: TextOverflow.ellipsis,
                             style: textStyle16.copyWith(
                               fontSize: 18,
@@ -153,18 +155,19 @@ class _InventoryTileState extends State<InventoryTile>
                   ],
                 ),
               ),
-            ),
+              if (widget.product.expiryStatus == ExpiryStatus.expired)
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(
+                        alpha: 0.12,
+                      ),
+                    ),
+                  ),
+                )
+            ],
           ),
-          if (widget.product.expiryStatus == ExpiryStatus.expired)
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.grey.withValues(
-                  alpha: 0.3,
-                )),
-              ),
-            )
-        ],
+        ),
       ),
     );
   }
@@ -173,72 +176,26 @@ class _InventoryTileState extends State<InventoryTile>
         motion: const ScrollMotion(),
         extentRatio: .75,
         children: [
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: 5.w),
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              color: AppColors.lightGreyColor.withAlpha(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ValueListenableBuilder(
-                    valueListenable: inStockQuantityListenable,
-                    builder: (context, value, _) {
-                      return Text(
-                        maxLines: 10,
-                        "Qty : ${value.toString()}",
-                        style: textStyle14.copyWith(
-                          color: AppColors.primaryColor,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                      //   AppChip(
-                      //   text:
-                      // );
-                    },
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (inStockQuantityListenable.value == 1) return;
-                            inStockQuantityListenable.value -= 1;
-                            // widget.onChangedInStockQuantity?.call(
-                            //   inStockQuantityListenable.value.toString(),
-                            // );
-                          },
-                          child: const Icon(Icons.remove),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            inStockQuantityListenable.value += 1;
-                            // widget.onChangedInStockQuantity?.call(
-                            //   inStockQuantityListenable.value.toString(),
-                            // );
-                          },
-                          child: const Icon(Icons.add),
-                        ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      widget.onChangedInStockQuantity?.call(
-                        inStockQuantityListenable.value.toString(),
-                      );
-                    },
-                    child: Text(
-                      "Done",
-                      style:
-                          textStyle14.copyWith(color: AppColors.primaryColor),
+          ValueListenableBuilder<int>(
+            valueListenable: inStockQuantityListenable,
+            builder: (context, value, child) => Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  int oldQty = inStockQuantityListenable.value;
+                  showAddQuantitySheet(context, oldQty,inStockQuantityListenable);
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.only(left: 5.w),
+                  color: AppColors.lightGreyColor.withAlpha(20),
+                  child: Text(
+                    "Qty : ${value.toString()}",
+                    style: textStyle16.copyWith(
+                      color: AppColors.primaryColor,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -268,6 +225,95 @@ class _InventoryTileState extends State<InventoryTile>
           ),
         ],
       );
+
+  Future<dynamic> showAddQuantitySheet(BuildContext context, int oldQty,ValueNotifier<int> listenAbleValue) {
+    return showModalBottomSheet(
+                  enableDrag: true,
+                  isScrollControlled: true,
+                  showDragHandle: true,
+                  context: context,
+                  builder: (context) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Add Quantity",
+                          style: textStyle24SemiBold.copyWith(
+                              fontWeight: FontWeight.w500),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 18.h, bottom: 30.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10.w,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    if (listenAbleValue.value >
+                                        1) {
+                                      listenAbleValue.value -= 1;
+                                    }
+                                  },
+                                  color: AppColors.orangeColor,
+                                  icon: const Icon(Icons.remove)),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 2.h, horizontal: 18.w),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(22.r),
+                                    border: Border.all(
+                                        color: AppColors.mediumGreyColor)),
+                                child: ValueListenableBuilder<int>(
+                                  valueListenable: inStockQuantityListenable,
+                                  builder: (BuildContext context, int value,
+                                          Widget? child) =>
+                                      Text(
+                                    value.toString(),
+                                    style: textStyle24SemiBold.copyWith(
+                                      color: AppColors.orangeColor,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  inStockQuantityListenable.value += 1;
+                                  // widget.onChangedInStockQuantity?.call(
+                                  //   inStockQuantityListenable.value.toString(),
+                                  // );
+                                },
+                                color: AppColors.orangeColor,
+                                icon: const Icon(Icons.add),
+                              ),
+                            ],
+                          ),
+                        ),
+                        AppButton(
+                          onPressed: () {
+                            widget.onChangedInStockQuantity?.call(
+                              inStockQuantityListenable.value.toString(),
+                            );
+                            context.pop();
+
+                          },
+                          text: "Save",
+                        ),
+                        20.h.verticalSpace,
+                        AppButton(
+                          colorType: AppButtonColorType.secondary,
+                          onPressed: () {
+                            inStockQuantityListenable.value = oldQty;
+                            context.pop();
+                          },
+                          text: "Cancel",
+                        ),
+                        30.h.verticalSpace,
+                      ],
+                    );
+                  },
+                );
+  }
 
   _buildLeftSwipeActions(Product product) => ActionPane(
         motion: const ScrollMotion(),

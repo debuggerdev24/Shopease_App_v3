@@ -36,20 +36,21 @@ class _FaqScreenState extends State<FaqScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: GlobalText('FAQ', textStyle: textStyle24SemiBold),
+        leadingWidth: 32,
+        title: GlobalText('FAQ', textStyle: textStyle20SemiBold),
       ),
       body: Column(
         children: [
-          Container(
-            height: 90.h,
-            alignment: Alignment.center,
-            color: AppColors.primaryColor.withAlpha(50),
-            child: GlobalText(
-              "Frequently Asked Questions",
-              textStyle:
-                  textStyle24SemiBold.copyWith(fontWeight: FontWeight.w400),
-            ),
-          ),
+          // Container(
+          //   height: 90.h,
+          //   alignment: Alignment.center,
+          //   color: AppColors.primaryColor.withAlpha(50),
+          //   child: GlobalText(
+          //     "",
+          //     textStyle:
+          //         textStyle24SemiBold.copyWith(fontWeight: FontWeight.w400),
+          //   ),
+          // ),
           20.h.verticalSpace,
           Expanded(
             child: provider.isLoading

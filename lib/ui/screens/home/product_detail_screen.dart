@@ -10,7 +10,6 @@ import 'package:shopease_app_flutter/ui/widgets/app_chip.dart';
 import 'package:shopease_app_flutter/ui/widgets/product_image_widget.dart';
 import 'package:shopease_app_flutter/utils/enums/inventory_type.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
-
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/styles.dart';
@@ -92,12 +91,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GlobalText(
-                          "${widget.product.productName!} (${widget.product.quantity})",
-                          textStyle:
-                              textStyle18SemiBold.copyWith(fontSize: 19.sp),
+                        Expanded(
+                          child: GlobalText(
+                            "${widget.product.productName!} (${widget.product.quantity})",
+                            textStyle:
+                                textStyle18SemiBold.copyWith(fontSize: 19.sp),
+                          ),
                         ),
-                        const Spacer(),
+                        5.w.horizontalSpace,
                         widget.product.isInChecklist!
                             ? SvgIcon(
                                 AppAssets.succcessCart,
@@ -121,7 +122,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                 ),
-                15.verticalSpace,
+                10.verticalSpace,
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15.sp),
                   child: GlobalText(

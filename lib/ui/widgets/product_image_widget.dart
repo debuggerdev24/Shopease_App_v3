@@ -38,9 +38,10 @@ class ProductImageWidget extends StatelessWidget {
         child: ColoredBox(
           color: product.expiryStatus.color,
           child: Text(
-            "${product.expiryStatus.displayText} ${(product.expiryStatus == ExpiryStatus.expiring) ? "in ${(product.expiryDate!.difference(DateTime.now()).inDays + 1)} D.." : ""}",
+            "${product.expiryStatus.displayText} ${(product.expiryStatus == ExpiryStatus.expiring) ? "in ${(product.expiryDate!.difference(DateTime.now()).inDays + 1)} days" : ""}",
             textAlign: TextAlign.center,
             style: textStyle12.copyWith(
+              fontSize: 9.5.sp,
               color: AppColors.whiteColor,
             ),
           ),

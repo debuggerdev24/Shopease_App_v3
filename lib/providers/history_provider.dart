@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/history_item_detail_model.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/services/history_service.dart';
+import 'package:shopease_app_flutter/services/scanning_service.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
@@ -170,9 +171,9 @@ class HistoryProvider extends ChangeNotifier {
   }
 
   //todo --------------------> change selected file.
-  Future<void> changeSelectedFile(XFile? file) async {
+  Future<void> changeSelectedFile(XFile? file,BuildContext context) async {
     _selectedFile = file;
-    getDetailsFromInvoice(file!.path);
+    scannedItem = await InvoiceScannerService().scanInvoiceAndGetData(file!.path, context);//getDetailsFromInvoice(file!.path);
     notifyListeners();
   }
 
@@ -247,10 +248,10 @@ class HistoryProvider extends ChangeNotifier {
   // }
 
   //todo --------------------> get all item details.
-  List<Map<String, String>> extractFlexibleInvoiceItems(String scannedText) {
+  List<Map<String, dynamic>> extractFlexibleInvoiceItems(String scannedText) {
     final lines = scannedText.split('\n');
 
-    final List<Map<String, String>> extractedItems = [];
+    final List<Map<String, dynamic>> extractedItems = [];
 
     bool startedItems = false;
 
@@ -289,7 +290,7 @@ class HistoryProvider extends ChangeNotifier {
           final unitPrice =
               priceMatches.length > 1 ? priceMatches.first.group(0)! : "";
 
-          String qty = "";
+          String qty = "1";
           if (numberMatches.length > 1) {
             qty = numberMatches[1].group(0)!;
           } else if (numberMatches.length == 1) {
@@ -311,10 +312,14 @@ class HistoryProvider extends ChangeNotifier {
           extractedItems.add({
             'sl': sl,
             'product_name': description,
+            "brand": "Brand Name",
+            "is_in_checklist": false,
             'price': unitPrice,
+            "expiry_date": DateTime.now().add(Duration(days: 30)).toIso8601String(),
             'in_stock_quantity':
                 (qty == "0" || qty.isEmpty || qty == "00") ? "1" : qty,
             'total': totalPrice,
+            "item_category": "Other"
           });
         }
       }
@@ -349,8 +354,7 @@ class HistoryProvider extends ChangeNotifier {
     notifyListeners();
 
     if (!isImageScannable(recognizedText)) {
-      CustomToast.showError(AppNavigator.rootNavigator.currentContext!,
-          "Image is not Scannable!");
+      log("Image is not Scannable!");
       return;
     }
     List<Map<String, dynamic>> elements = [];
@@ -377,7 +381,6 @@ class HistoryProvider extends ChangeNotifier {
 
     for (var element in elements) {
       int key = (element['centerY'] / verticalTolerance).round();
-
       groupedRows.putIfAbsent(key, () => []).add(element);
     }
 
@@ -408,11 +411,11 @@ class HistoryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> selectFileFromGallery({VoidCallback? onSuccess}) async {
+  Future<void> selectFileFromGallery({VoidCallback? onSuccess,required BuildContext context}) async {
     final file = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (file == null) return;
     _selectedFile = file;
-    changeSelectedFile(file);
+    changeSelectedFile(file,context);
     notifyListeners();
     onSuccess?.call();
   }

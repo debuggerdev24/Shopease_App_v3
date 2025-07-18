@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:shopease_app_flutter/utils/enums/expiry_status.dart';
 
 List<Product> productFromJson(List<dynamic> data) =>
@@ -99,29 +100,32 @@ class Product {
         expiryDate: expiryDate ?? this.expiryDate,
       );
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
-        itemId: json["item_id"],
-        productName: json["product_name"],
-        itemCategory: json["item_category"],
-        isInChecklist: json['is_in_checklist'] ?? false,
-        productDescription: json["product_description"],
-        brand: json["brand"],
-        itemLevel: json["item_level"],
-        itemCount: json["item_count"],
-        locationId: json["location_id"],
-        itemImage: (json["image_url"] is List)
-            ? json['image_url'][0]
-            : json['image_url'],
-        itemStorage: json['item_storage'] ?? '',
-        barcode: json['barcode'],
-        updatedDate: json["last_updated_date"] == null
-            ? null
-            : DateTime.tryParse(json["last_updated_date"]),
-        isSelectedForComplete: json['is_selected_for_complete'] ?? false,
-        inStockQuantity: json['in_stock_quantity'] ?? "0",
-        requiredQuantity: json['required_quantity'] ?? "0",
-        expiryDate: DateTime.tryParse(json['expiry_date'] ?? ""),
-      );
+  factory Product.fromJson(Map<String, dynamic> json) {
+    log("CheckList Model and Inv. Model updated.");
+    return Product(
+      itemId: json["item_id"],
+      productName: json["product_name"],
+      itemCategory: json["item_category"],
+      isInChecklist: json['is_in_checklist'] ?? false,
+      productDescription: json["product_description"],
+      brand: json["brand"],
+      itemLevel: json["item_level"],
+      itemCount: json["item_count"],
+      locationId: json["location_id"],
+      itemImage: (json["image_url"] is List)
+          ? json['image_url'][0]
+          : json['image_url'],
+      itemStorage: json['item_storage'] ?? '',
+      barcode: json['barcode'],
+      updatedDate: json["last_updated_date"] == null
+          ? null
+          : DateTime.tryParse(json["last_updated_date"]),
+      isSelectedForComplete: json['is_selected_for_complete'] ?? false,
+      inStockQuantity: (json['in_stock_quantity'] == "" || json['in_stock_quantity'] == "0" || json['in_stock_quantity'] == null) ? "1" : json['in_stock_quantity'],
+      requiredQuantity: (json['required_quantity'] == "" || json['required_quantity'] == "0" || json['required_quantity'] == null) ? "1" : json['required_quantity'],
+      expiryDate: DateTime.tryParse(json['expiry_date'] ?? ""),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "item_id": itemId,

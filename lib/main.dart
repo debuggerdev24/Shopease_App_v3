@@ -7,6 +7,7 @@ import 'package:shopease_app_flutter/providers/history_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/notifications_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
+import 'package:shopease_app_flutter/providers/receipt_scan_provider.dart';
 import 'package:shopease_app_flutter/providers/scan_provider.dart';
 import 'package:shopease_app_flutter/providers/theme_provider.dart';
 import 'package:shopease_app_flutter/services/auth_service.dart';
@@ -72,6 +73,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ConnectivityProvider>(
           create: (_) => ConnectivityProvider(),
+        ),
+        ChangeNotifierProvider<ReceiptScanProvider>(
+          create: (_) => ReceiptScanProvider(),
         )
       ],
       child: buildMyapp(),
@@ -94,5 +98,8 @@ class MyApp extends StatelessWidget {
         }),
       );
 }
-//✅ 2,3,5,6,7,10,12,11
-//1, 8, 4, 9,
+
+//new
+//send exp. -> 2,10,
+//need to more explanation -> 2,7,9
+//fixed -> 5,3,6,11

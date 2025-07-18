@@ -16,9 +16,7 @@ import 'package:shopease_app_flutter/ui/widgets/checklist_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/date_picker.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
 import 'package:shopease_app_flutter/ui/widgets/history_list_tile.dart';
-import 'package:shopease_app_flutter/ui/widgets/multiple_product_tile.dart';
 import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
-import 'package:shopease_app_flutter/utils/constants.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
@@ -190,7 +188,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
         ? const Center(child: CircularProgressIndicator())
         : Column(
             children: [
-              // Checklist Heading Bar
+              //todo  Checklist Heading Bar
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
                 child: Row(
@@ -223,7 +221,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                   ],
                 ),
               ),
-              // Checklist List view
+              //todo  Checklist List view
               provider.filteredChecklist.isEmpty
                   ? Center(
                       child: Column(
@@ -257,6 +255,8 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                         separatorBuilder: (context, index) => 10.verticalSpace,
                         itemBuilder: (context, index) {
                           final product = provider.filteredChecklist[index];
+                          log("in stock quantity : ${product.inStockQuantity}");
+                          log("quantity : ${product.quantity}");
                           return ChecklistTile(
                             product: product,
                             onTap: () {

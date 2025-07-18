@@ -58,9 +58,9 @@ class ImagePickerHelper {
   Future<XFile?> openGallery() async {
     final file = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 50,
-      maxHeight: 1024,
-      maxWidth: 1024,
+      imageQuality: 40,
+      maxWidth: 700,
+      maxHeight: 700,
     );
     return file;
   }
@@ -68,9 +68,9 @@ class ImagePickerHelper {
   Future<XFile?> openCamera() async {
     final file = await _picker.pickImage(
       source: ImageSource.camera,
-      imageQuality: 50,
-      maxHeight: 1024,
-      maxWidth: 1024,
+      imageQuality: 40,
+      maxWidth: 700,
+      maxHeight: 700,
     );
     return file;
   }

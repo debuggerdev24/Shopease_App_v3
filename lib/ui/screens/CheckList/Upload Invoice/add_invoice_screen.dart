@@ -54,7 +54,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                   final pickedImage =
                       await ImagePickerHelper().openPicker(context);
                   if (pickedImage != null) {
-                    await provider.changeSelectedFile(pickedImage);
+                    await provider.changeSelectedFile(pickedImage,context);
                     context.pushNamed(
                       AppRoute.saveInvoice.name,
                       extra: {

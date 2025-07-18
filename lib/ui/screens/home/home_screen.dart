@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
@@ -78,34 +81,23 @@ class _HomeScreenState extends State<HomeScreen>
                   color: AppColors.blackGreyColor,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: AppIconButton(
-                    key: scanInvButtonKey,
-                    onTap: () {
-                      context.pushNamed(AppRoute.scanAndAddScreen.name);
-                    },
-                    child: const SvgIcon(
-                      AppAssets.scanner,
-                      size: 23,
-                      color: AppColors.blackGreyColor,
-                    )),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5, right: 10),
-                child: AppIconButton(
-                  key: addInvButtonKey,
+              AppIconButton(
+                  key: scanInvButtonKey,
                   onTap: () {
-                    context.pushNamed(
-                      AppRoute.addInventoryForm.name,
-                      extra: {'isEdit': false},
-                    );
+                    context.pushNamed(AppRoute.scanAndAddScreen.name);
                   },
                   child: const SvgIcon(
-                    AppAssets.add,
-                    size: 20,
-                    color: AppColors.orangeColor,
-                  ),
+                    AppAssets.scanner,
+                    size: 23,
+                    color: AppColors.blackGreyColor,
+                  )),
+              AppIconButton(
+                key: addInvButtonKey,
+                onTap: () => showAddInventoryOptions(),
+                child: const SvgIcon(
+                  AppAssets.add,
+                  size: 20,
+                  color: AppColors.orangeColor,
                 ),
               ),
             ],
@@ -136,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildInventoryHeadingBar(InventoryProvider provider) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: Row(
         children: [
           10.horizontalSpace,
@@ -162,55 +154,64 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildProductsList(InventoryProvider provider) {
+    List<Product> sortedList = provider.filteredProducts;
+    // [...provider.filteredProducts]..sort(
+    //     (a, b) => a.name
+    //         .toString()
+    //         .toLowerCase()
+    //         .compareTo(b.name.toString().toLowerCase()),
+    //   );
+
     return ListView.builder(
-      itemCount: provider.filteredProducts.length,
+      itemCount: sortedList.length,
       // separatorBuilder: (context, index) => 10.verticalSpace,
       itemBuilder: (BuildContext context, int index) {
         return InventoryTile(
+          key: ValueKey("tile_$index${sortedList[index].productName}"),
           onLongPress: () {
             context.goNamed(
               AppRoute.multipleInventorySelection.name,
             );
           },
-          product: provider.filteredProducts[index],
+          product: sortedList[index],
           onTap: () {
             context.pushNamed(AppRoute.productDetail.name,
-                extra: {'product': provider.filteredProducts[index]});
+                extra: {'product': sortedList[index]});
           },
           onAddToCart: () {
-            if (provider.filteredProducts[index].isInChecklist == true) {
+            if (sortedList[index].isInChecklist == true) {
               context.read<ChecklistProvider>().deleteChecklistItems(
-                  itemIds: [provider.filteredProducts[index].itemId!],
-                  onSuccess: () {
-                    provider.addToChecklist(
-                        [provider.filteredProducts[index]], context, false);
+                  itemIds: [sortedList[index].itemId!],
+                  onSuccess: () {//in_stock_quantity
+                    provider
+                        .addToChecklist([sortedList[index]], context, false);
                   });
             } else {
               context.read<ChecklistProvider>().putChecklistFromInventory(
-                data: [provider.filteredProducts[index].itemId!],
+                data: [sortedList[index].itemId!],
                 onSuccess: () {
-                  provider.addToChecklist(
-                      [provider.filteredProducts[index]], context, false);
+                  log(sortedList[index].inStockQuantity);
+                  provider.addToChecklist([sortedList[index]], context, false);
                 },
               );
             }
           },
           onDelete: () {
             provider.deletInventoryItems(
-                itemIds: [provider.filteredProducts[index].itemId!],
+                itemIds: [sortedList[index].itemId!],
                 onSuccess: () {
                   CustomToast.showSuccess(context, 'Successfully deleted');
                 });
           },
           onInventoryChange: (newType) {
             provider.changeInventoryType(
-              provider.filteredProducts[index].itemId!,
+              sortedList[index].itemId!,
               newType,
             );
           },
           onChangedInStockQuantity: (q) {
             provider.changeInStockQuantity(
-              provider.filteredProducts[index].itemId!,
+              sortedList[index].itemId!,
               q,
             );
           },
@@ -245,7 +246,8 @@ class _HomeScreenState extends State<HomeScreen>
               padding: EdgeInsets.all(20.sp),
               child: AppButton(
                   onPressed: () {
-                    context.pushNamed(AppRoute.addInventoryForm.name);
+                    showAddInventoryOptions();
+                    // context.pushNamed(AppRoute.addInventoryForm.name);
                   },
                   text: 'Add an Inventory'),
             ),
@@ -404,6 +406,51 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  showAddInventoryOptions() {
+    return showModalBottomSheet(
+      showDragHandle: true,
+      enableDrag: true,
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.whiteColor,
+      builder: (context) {
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(20.sp),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 20.h,
+            children: [
+              GlobalText(
+                textAlign: TextAlign.center,
+                "How would you like to add the new product?",
+                textStyle: textStyle18,
+              ),
+              AppButton(
+                onPressed: () {
+                  context.pop();
+                  context.pushNamed(
+                    AppRoute.addInventoryForm.name,
+                    extra: {'isEdit': false},
+                  );
+                },
+                text: "Add Manually",
+              ),
+              AppButton(
+                onPressed: () {
+                  context.pop();
+                  context.pushNamed(AppRoute.uploadReceiptScreen.name);
+                },
+                colorType: AppButtonColorType.secondary,
+                text: "Receipt scan",
+              ),
+            ],
+          ),
         );
       },
     );

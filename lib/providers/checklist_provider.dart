@@ -215,7 +215,6 @@ class ChecklistProvider extends ChangeNotifier {
       );
       _selectValue = true;
       notifyListeners();
-
       return;
     }
     _filteredChecklist.addAll(
@@ -251,7 +250,6 @@ class ChecklistProvider extends ChangeNotifier {
           _shops.where((e) => _selectedShopFilter.contains(e.shopLocation)));
       _shopvalue = true;
     }
-
     notifyListeners();
   }
 

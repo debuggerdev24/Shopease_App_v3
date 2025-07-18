@@ -65,7 +65,6 @@ class SharedPrefs {
       _prefs.setString(_idTokenKey, sessionId);
 
   Future<void> removeIdToken() async => await _prefs.remove(_idTokenKey);
-
   /// LOCATION ID ///
   String? get locationId => _prefs.getString(_locationIdKey);
 
@@ -73,6 +72,7 @@ class SharedPrefs {
       _prefs.setString(_locationIdKey, sessionId);
 
   Future<void> removeLocationId() async => await _prefs.remove(_locationIdKey);
+
 
   /// USER ID ///
   String? get userId => _prefs.getString(_userIdKey);

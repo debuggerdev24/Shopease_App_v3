@@ -76,59 +76,6 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void filterProducts() {
-  //   _filteredProducts.clear();
-  //   if (_selectedCategoryFilters.isEmpty &&
-  //       _selectedInventoryLevelFilter == null &&
-  //       _selectedExpiryFilter == null) {
-  //     _filteredProducts.addAll(_products);
-  //     _selectValue = false;
-  //     notifyListeners();
-  //     return;
-  //   }
-
-  //   if (_selectedCategoryFilters.isEmpty) {
-  //     _filteredProducts.addAll(
-  //       _products.where(
-  //         (element) => element.itemLevel == _selectedInventoryLevelFilter && ,
-  //       ),
-  //     );
-
-  //     _selectValue = true;
-  //     notifyListeners();
-  //     return;
-  //   }
-
-  //   if (_selectedInventoryLevelFilter == null) {
-  //     _filteredProducts.addAll(
-  //       _products.where(
-  //         (product) => _selectedCategoryFilters.contains(Utils.categories
-  //             .firstWhere(
-  //                 (category) => category.categoryName == product.itemCategory)
-  //             .categoryId),
-  //       ),
-  //     );
-
-  //     _selectValue = true;
-  //     notifyListeners();
-
-  //     return;
-  //   }
-
-  //   _filteredProducts.addAll(
-  //     _products.where(
-  //       (product) =>
-  //           product.itemLevel == _selectedInventoryLevelFilter &&
-  //           _selectedCategoryFilters.contains(Utils.categories
-  //               .firstWhere(
-  //                   (category) => category.categoryName == product.itemCategory)
-  //               .categoryId),
-  //     ),
-  //   );
-
-  //   _selectValue = true;
-  //   notifyListeners();
-  // }
 
   void filterProducts() {
     _filteredProducts.clear();
@@ -191,8 +138,9 @@ class InventoryProvider extends ChangeNotifier {
     if (product.itemLevel == newType.name) return;
     product.itemLevel = newType.name;
     await putInventoryItem(
-        data: [product.copyWith(itemLevel: newType.name).toJson()],
-        isEdit: true);
+      data: [product.copyWith(itemLevel: newType.name).toJson()],
+      isEdit: true,
+    );
   }
 
   Future<void> changeInStockQuantity(String itemId, String quantity) async {
@@ -235,11 +183,17 @@ class InventoryProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         _products.clear();
-        _products.addAll((res.data as List).map((e) => Product.fromJson(e)));
+        _products.addAll((res.data as List).map((e) {
+          return Product.fromJson(e);
+        }));
+        // for(var pro in _products){
+        //   log("------------> ${pro.inStockQuantity.toString()}");
+        // }
 
         _products.sort((a, b) => b.updatedDate!.compareTo(a.updatedDate!));
-        print(
-            'Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
+        print('Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
+        //updated thing : 
+        _selectedExpiryFilter = null;
         filterProducts();
         notifyListeners();
         onSuccess?.call();

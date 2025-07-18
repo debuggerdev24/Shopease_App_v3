@@ -24,10 +24,12 @@ import 'package:shopease_app_flutter/ui/screens/home/home_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory/add_inventroy_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/inventory/multiple_inventory_selection_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/home/product_detail_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/scan/scan_and_add_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/scan/scan_not_found_screen.dart';
-import 'package:shopease_app_flutter/ui/screens/scan/scan_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/qr_scan/scan_and_add_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/qr_scan/scan_not_found_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/qr_scan/scan_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/on_boarding/on_board_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/receipt_scan/scan_receipt_screen.dart';
+import 'package:shopease_app_flutter/ui/screens/receipt_scan/upload_receipt_screen.dart';
 import 'package:shopease_app_flutter/ui/screens/splash/splash_screen.dart';
 import 'package:shopease_app_flutter/ui/widgets/internet_connectivity_wrapper.dart';
 
@@ -68,7 +70,7 @@ enum AppRoute {
   faqScreen,
 
   ////////// BRANCH 4 //////////
-  notifications,
+  notifications, uploadReceiptScreen, scanReceiptScreen,
 }
 
 extension PathName on AppRoute {
@@ -382,6 +384,16 @@ class AppNavigator {
                         history: state.extra as History,
                       ),
                     ),
+                  ),
+                  GoRoute(
+                    path: AppRoute.uploadReceiptScreen.name,
+                    name: AppRoute.uploadReceiptScreen.name,
+                    builder: (context, state) => UploadReceiptScreen()
+                  ),
+                  GoRoute(
+                    path: AppRoute.scanReceiptScreen.name,
+                    name: AppRoute.scanReceiptScreen.name,
+                    builder: (context, state) => ScanReceiptScreen()
                   ),
                 ],
               ),
