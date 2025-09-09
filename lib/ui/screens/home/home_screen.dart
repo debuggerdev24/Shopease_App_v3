@@ -56,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    // log("----------------------------> ${}");
     return Consumer<InventoryProvider>(
       builder: (context, provider, _) {
         return Scaffold(
@@ -182,7 +183,8 @@ class _HomeScreenState extends State<HomeScreen>
             if (sortedList[index].isInChecklist == true) {
               context.read<ChecklistProvider>().deleteChecklistItems(
                   itemIds: [sortedList[index].itemId!],
-                  onSuccess: () {//in_stock_quantity
+                  onSuccess: () {
+                    //in_stock_quantity
                     provider
                         .addToChecklist([sortedList[index]], context, false);
                   });

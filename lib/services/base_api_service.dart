@@ -23,7 +23,7 @@ class BaseRepository {
     if (SharedPrefs().idToken != null) {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.devBaseURL,
+          baseUrl: ApiUrl.prodBaseURL,
           headers: {
             "Content-Type": "application/json",
             "x-api-key": Constants.apiKey,
@@ -34,7 +34,7 @@ class BaseRepository {
     } else {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.devBaseURL,
+          baseUrl: ApiUrl.prodBaseURL,
           headers: {
             "x-api-key": Constants.apiKey,
           },

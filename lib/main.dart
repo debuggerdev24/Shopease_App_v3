@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
 import 'package:shopease_app_flutter/providers/connectivity_provider.dart';
@@ -21,8 +23,6 @@ import 'package:shopease_app_flutter/services/scan_service.dart';
 import 'package:shopease_app_flutter/utils/app_themes.dart';
 import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 
 late PackageInfo packageInfo;
 Future<void> main() async {
@@ -103,3 +103,5 @@ class MyApp extends StatelessWidget {
 //send exp. -> 2,10,
 //need to more explanation -> 2,7,9
 //fixed -> 5,3,6,11
+//Worked on added the dependencies for the push notification.
+//lutter cklWorked on

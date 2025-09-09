@@ -5,7 +5,6 @@ class ApiUrl {
   static const String confirmSignUp = "/confirmsignup";
   static const String deleteMyAcocunt = "/deleteuser";
   static const String refreshAuth = '/refreshauth';
-
   static const String getCategories = '/getcategory';
 
   static const String getProfile = '/getprofile';

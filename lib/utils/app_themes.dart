@@ -2,6 +2,7 @@
 // themes.
 
 import 'package:flutter/material.dart';
+
 import 'app_colors.dart';
 
 class AppThemes {
@@ -11,7 +12,7 @@ class AppThemes {
     // backgroundColor: AppColors.whiteColor,
     dialogBackgroundColor: AppColors.whiteColor,
     appBarTheme: const AppBarTheme(color: AppColors.whiteColor),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
       backgroundColor: AppColors.whiteColor,
     ),
     progressIndicatorTheme:
@@ -25,7 +26,8 @@ class AppThemes {
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(),
     primaryColor: AppColors.orangeColor,
     appBarTheme: const AppBarTheme(color: AppColors.whiteColor),
-    dialogTheme: const DialogTheme(backgroundColor: AppColors.blackGreyColor),
+    dialogTheme:
+        const DialogThemeData(backgroundColor: AppColors.blackGreyColor),
     progressIndicatorTheme:
         const ProgressIndicatorThemeData(color: AppColors.primaryColor),
   );
