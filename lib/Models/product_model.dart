@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:shopease_app_flutter/utils/enums/expiry_status.dart';
 
 List<Product> productFromJson(List<dynamic> data) =>
@@ -121,14 +122,23 @@ class Product {
           ? null
           : DateTime.tryParse(json["last_updated_date"]),
       isSelectedForComplete: json['is_selected_for_complete'] ?? false,
-      inStockQuantity: (json['in_stock_quantity'] == "" || json['in_stock_quantity'] == "0" || json['in_stock_quantity'] == null) ? "1" : json['in_stock_quantity'],
-      requiredQuantity: (json['required_quantity'] == "" || json['required_quantity'] == "0" || json['required_quantity'] == null) ? "1" : json['required_quantity'],
+      inStockQuantity: (json['in_stock_quantity'] == "" ||
+              json['in_stock_quantity'] == "0" ||
+              json['in_stock_quantity'] == null)
+          ? "1"
+          : json['in_stock_quantity'],
+      requiredQuantity: (json['required_quantity'] == "" ||
+              json['required_quantity'] == "0" ||
+              json['required_quantity'] == null)
+          ? "1"
+          : json['required_quantity'],
       expiryDate: DateTime.tryParse(json['expiry_date'] ?? ""),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "item_id": itemId,
+        "in_stock_quantity": inStockQuantity,
         "product_name": productName,
         "item_category": itemCategory,
         'is_in_checklist': isInChecklist,

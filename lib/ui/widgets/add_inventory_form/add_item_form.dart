@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -101,8 +102,7 @@ class _AddItemFormState<T> extends State<AddItemForm> {
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _brandController = TextEditingController();
   final TextEditingController _storageController = TextEditingController();
-  final TextEditingController _quantityController =
-      TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _expiryDateController = TextEditingController();
   final TextEditingController _fileFieldController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -121,7 +121,6 @@ class _AddItemFormState<T> extends State<AddItemForm> {
         context.read<AddItemFormProvider>().changeSelectedInvType(null);
       }
     });
-
   }
 
   @override
@@ -225,11 +224,8 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                           NumberRangeFormatter(min: 0, max: 99),
                         ],
                         validator: (value) {
-                          // if (value!.toString().isEmpty) {
-                          //   return 'Please Enter Quantity!';
-                          // }
-
-                          if (value.toString().isNotEmpty && int.parse(value) < 1) {
+                          if (value.toString().isNotEmpty &&
+                              int.parse(value) < 1) {
                             return 'Please Enter Valid Quantity!';
                           }
                           return null;
@@ -397,8 +393,8 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                       ? "1"
                                       : _quantityController.text.trim(),
                               'item_level': provider.selectedInvType,
-                              'expiry_date': _expiryDateController.text
-                                      .isNotEmpty
+                              'expiry_date': _expiryDateController
+                                      .text.isNotEmpty
                                   ? _expiryDateController.text.mmddYYYYToDate
                                       .toIso8601String()
                                   : null,
@@ -427,13 +423,25 @@ class _AddItemFormState<T> extends State<AddItemForm> {
                                     brand: _brandController.text,
                                     inStockQuantity: widget.isForChecklist
                                         ? ""
-                                        : _quantityController.text.trim().isEmpty ? "1" : _quantityController.text,
+                                        : _quantityController.text
+                                                .trim()
+                                                .isEmpty
+                                            ? "1"
+                                            : _quantityController.text,
                                     requiredQuantity: widget.isForChecklist
                                         ? _quantityController.text
+                                                .trim()
+                                                .isEmpty
+                                            ? "1"
+                                            : _quantityController.text
                                         : "",
                                     itemLevel: provider.selectedInvType,
-                                    expiryDate: _expiryDateController.text.trim().isEmpty ? null : _expiryDateController
-                                        .text.mmddYYYYToDate,
+                                    expiryDate: _expiryDateController.text
+                                            .trim()
+                                            .isEmpty
+                                        ? null
+                                        : _expiryDateController
+                                            .text.mmddYYYYToDate,
                                     itemCategory: provider.categories
                                         .firstWhere((element) =>
                                             element.categoryId ==
@@ -547,7 +555,11 @@ class _AddItemFormState<T> extends State<AddItemForm> {
       case 0:
         return const SvgIcon(AppAssets.inventoryLow, color: Colors.red);
       case 1:
-        return const SvgIcon(AppAssets.inventoryMid, color: Colors.yellow);
+        return const SvgIcon(
+          AppAssets.inventoryMid,
+          color: Colors.orange,
+        );
+
       case 2:
         return const SvgIcon(AppAssets.inventoryHigh, color: Colors.green);
       default:

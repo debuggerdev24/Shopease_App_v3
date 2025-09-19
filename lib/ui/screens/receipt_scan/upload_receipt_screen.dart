@@ -1,15 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:shopease_app_flutter/providers/inventory_provider.dart';
 import 'package:shopease_app_flutter/providers/receipt_scan_provider.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
-import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
-import 'package:shopease_app_flutter/utils/routes/routes.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 
 class UploadReceiptScreen extends StatefulWidget {
@@ -175,25 +172,25 @@ class _UploadReceiptScreenState extends State<UploadReceiptScreen> {
       source: imageSource,
     );
     await provider.changeSelectedFile(xFile, () {
-      CustomToast.showSuccess(context, "Products Fetched Successfully.");
-    },(){
-      CustomToast.showError(context,
-          "Image is not Scannable!");
-    } ,context);
-    if (provider.scannedItem.isNotEmpty) {
-      context.read<InventoryProvider>().putInventoryItem(
-            data: provider.scannedItem,
-            isEdit: false,
-            onError: (msg) => CustomToast.showError(context, msg),
-            onSuccess: () {
-              // if (!widget.isEdit) {
-              CustomToast.showSuccess(context, 'Product added successfully!');
-              // }
-              context.read<InventoryProvider>().getInventoryItems();
-              context.goNamed(AppRoute.home.name);
-            },
-          );
-    }
+      // CustomToast.showSuccess(context, "Products Fetched Successfully.");
+    }, () {
+      // CustomToast.showError(context,
+      //     "Image is not Scannable!");
+    }, context,);
+    // if (provider.scannedItem.isNotEmpty) {
+    // context.read<InventoryProvider>().putInventoryItem(
+    //       data: provider.scannedItem,
+    //       isEdit: false,
+    //       onError: (msg) => CustomToast.showError(context, msg),
+    //       onSuccess: () {
+    //         // if (!widget.isEdit) {
+    //         CustomToast.showSuccess(context, 'Product added successfully!');
+    //         // }
+    //         context.read<InventoryProvider>().getInventoryItems();
+    //         context.goNamed(AppRoute.home.name);
+    //       },
+    //     );
+    // }
   }
 }
 

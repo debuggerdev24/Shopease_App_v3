@@ -8,8 +8,8 @@ class Constants {
 
   static const String commonAuthErrMsg = 'Authentication failed.';
 
-  static const String apiKey = //'VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0' ??
-      'DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD';
+  static const String devApiKey = "VJRwQuymlVlkmxsiipmVtCTtFX5H2B7aapyk3kf0";
+  static const String prodApiKey = "DYdcC1Gu0L1B9cs2lPmkL94L4kQq7cLw2Fhy0nPD";
 
   static const String defaultShopImage =
       'https://shopease-bucket-prod.s3.amazonaws.com/default/shops/shop_default.jpeg?';

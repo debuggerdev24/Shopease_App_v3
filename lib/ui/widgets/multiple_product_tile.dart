@@ -80,7 +80,7 @@ class _MultipleProductTileState extends State<MultipleProductTile>
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    widget.product.productName!,
+                    "${widget.product.productName!} (${widget.product.inStockQuantity})",
                     maxLines: 5,
                     style: textStyle16.copyWith(
                       fontSize: 18,

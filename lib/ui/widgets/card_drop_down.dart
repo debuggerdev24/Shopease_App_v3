@@ -75,7 +75,7 @@ class CardDropDownField extends StatelessWidget {
           hintStyle:
               textStyle16.copyWith(color: Colors.black.withValues(alpha: 0.4)),
           isDense: true,
-          focusColor: AppColors.orangeColor,
+          // focusColor: AppColors.orangeColor,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40.r),

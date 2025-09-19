@@ -1,16 +1,10 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopease_app_flutter/models/history_item_detail_model.dart';
 import 'package:shopease_app_flutter/models/history_model.dart';
 import 'package:shopease_app_flutter/services/history_service.dart';
-import 'package:shopease_app_flutter/services/scanning_service.dart';
-import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/constants.dart';
-import 'package:shopease_app_flutter/utils/routes/routes.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -59,7 +53,7 @@ class HistoryProvider extends ChangeNotifier {
 
   List<String> get selectedShopFilter => _selectedShopFilter;
   String scannedText = "", totalAmount = "";
-  List<Map<String, dynamic>> scannedItem = [];
+  // List<Map<String, dynamic>> scannedItem = [];
 
   void setLoading(bool newValue) {
     _isLoading = newValue;
@@ -171,75 +165,43 @@ class HistoryProvider extends ChangeNotifier {
   }
 
   //todo --------------------> change selected file.
-  Future<void> changeSelectedFile(XFile? file,BuildContext context) async {
+  Future<void> changeSelectedFile(XFile? file, BuildContext context) async {
     _selectedFile = file;
-    scannedItem = await InvoiceScannerService().scanInvoiceAndGetData(file!.path, context);//getDetailsFromInvoice(file!.path);
+    // scannedItem = await InvoiceScannerService().scanInvoiceAndGetData(file!.path, context);//getDetailsFromInvoice(file!.path);
     notifyListeners();
   }
 
   //todo --------------------> get total amount.
-  String? extractInvoiceTotalAmount(String scannedText) {
-    final lines = scannedText.split('\n');
-
-    // Total-related keywords to include
-    final totalKeywords = [
-      'total:',
-      'grand total',
-      'total',
-      'amount due',
-    ];
-
-    // Exclude lines that are subtotal
-    final excludeKeywords = ['sub total', 'subtotal'];
-
-    for (final line in lines.reversed) {
-      final lowerLine = line.toLowerCase();
-
-      // Skip if it contains excluded keywords like 'sub total'
-      if (excludeKeywords.any((keyword) => lowerLine.contains(keyword))) {
-        continue;
-      }
-
-      // Proceed only if it has a valid total keyword
-      if (totalKeywords.any((keyword) => lowerLine.contains(keyword))) {
-        final match = RegExp(r'(\$)?\d{1,3}(?:,\d{3})*(?:\.\d{2})?')
-            .allMatches(line)
-            .toList();
-
-        if (match.isNotEmpty) {
-          return match.last.group(0);
-        }
-      }
-    }
-
-    return null; // Not found
-  }
-
   // String? extractInvoiceTotalAmount(String scannedText) {
   //   final lines = scannedText.split('\n');
   //
-  //   // Common total keywords
+  //   // Total-related keywords to include
   //   final totalKeywords = [
   //     'total:',
   //     'grand total',
-  //     'sub total',
   //     'total',
-  //     'amount due'
+  //     'amount due',
   //   ];
+  //
+  //   // Exclude lines that are subtotal
+  //   final excludeKeywords = ['sub total', 'subtotal'];
   //
   //   for (final line in lines.reversed) {
   //     final lowerLine = line.toLowerCase();
   //
-  //     // If the line contains any total-related keyword
+  //     // Skip if it contains excluded keywords like 'sub total'
+  //     if (excludeKeywords.any((keyword) => lowerLine.contains(keyword))) {
+  //       continue;
+  //     }
+  //
+  //     // Proceed only if it has a valid total keyword
   //     if (totalKeywords.any((keyword) => lowerLine.contains(keyword))) {
-  //       // Try to match the last currency/number value in the line
   //       final match = RegExp(r'(\$)?\d{1,3}(?:,\d{3})*(?:\.\d{2})?')
   //           .allMatches(line)
   //           .toList();
   //
   //       if (match.isNotEmpty) {
-  //         return match.last
-  //             .group(0); // Return last match (most likely the total)
+  //         return match.last.group(0);
   //       }
   //     }
   //   }
@@ -247,175 +209,175 @@ class HistoryProvider extends ChangeNotifier {
   //   return null; // Not found
   // }
 
-  //todo --------------------> get all item details.
-  List<Map<String, dynamic>> extractFlexibleInvoiceItems(String scannedText) {
-    final lines = scannedText.split('\n');
-
-    final List<Map<String, dynamic>> extractedItems = [];
-
-    bool startedItems = false;
-
-    for (var i = 0; i < lines.length; i++) {
-      final line = lines[i].trim();
-
-      // Skip empty lines
-      if (line.isEmpty) continue;
-
-      // Start when we suspect items section is beginning
-      if (!startedItems &&
-          (line.toLowerCase().contains("sl") ||
-              line.toLowerCase().contains("item") ||
-              line.toLowerCase().contains("description") ||
-              RegExp(r"\$\d+").hasMatch(line))) {
-        startedItems = true;
-        continue;
-      }
-
-      if (startedItems) {
-        // Stop when footer or total section starts
-        if (line.toLowerCase().contains("thank you") ||
-            line.toLowerCase().contains("sub total") ||
-            line.toLowerCase().contains("total:") ||
-            line.toLowerCase().contains("payment") ||
-            line.toLowerCase().contains("account")) {
-          break;
-        }
-
-        final priceMatches =
-            RegExp(r"\$\d+(?:\.\d{2})?").allMatches(line).toList();
-        final numberMatches = RegExp(r"\b\d+\b").allMatches(line).toList();
-
-        if (priceMatches.isNotEmpty && numberMatches.isNotEmpty) {
-          final totalPrice = priceMatches.last.group(0)!;
-          final unitPrice =
-              priceMatches.length > 1 ? priceMatches.first.group(0)! : "";
-
-          String qty = "1";
-          if (numberMatches.length > 1) {
-            qty = numberMatches[1].group(0)!;
-          } else if (numberMatches.length == 1) {
-            qty = numberMatches[0].group(0)!;
-          }
-
-          // Try to extract SL (only if more than one number)
-          final sl = numberMatches.length > 1 ? numberMatches[0].group(0)! : "";
-
-          // Remove known values to estimate description
-          String description = line
-              .replaceAll(unitPrice, '')
-              .replaceAll(totalPrice, '')
-              .replaceAll(qty, '')
-              .replaceAll(sl, '')
-              .replaceAll(RegExp(r"\s+"), ' ')
-              .trim();
-
-          extractedItems.add({
-            'sl': sl,
-            'product_name': description,
-            "brand": "Brand Name",
-            "is_in_checklist": false,
-            'price': unitPrice,
-            "expiry_date": DateTime.now().add(Duration(days: 30)).toIso8601String(),
-            'in_stock_quantity':
-                (qty == "0" || qty.isEmpty || qty == "00") ? "1" : qty,
-            'total': totalPrice,
-            "item_category": "Other"
-          });
-        }
-      }
-    }
-
-    return extractedItems;
-  }
+  // List<Map<String, dynamic>> extractFlexibleInvoiceItems(String scannedText) {
+  //   final lines = scannedText.split('\n');
+  //
+  //   final List<Map<String, dynamic>> extractedItems = [];
+  //
+  //   bool startedItems = false;
+  //
+  //   for (var i = 0; i < lines.length; i++) {
+  //     final line = lines[i].trim();
+  //
+  //     // Skip empty lines
+  //     if (line.isEmpty) continue;
+  //
+  //     // Start when we suspect items section is beginning
+  //     if (!startedItems &&
+  //         (line.toLowerCase().contains("sl") ||
+  //             line.toLowerCase().contains("item") ||
+  //             line.toLowerCase().contains("description") ||
+  //             RegExp(r"\$\d+").hasMatch(line))) {
+  //       startedItems = true;
+  //       continue;
+  //     }
+  //
+  //     if (startedItems) {
+  //       // Stop when footer or total section starts
+  //       if (line.toLowerCase().contains("thank you") ||
+  //           line.toLowerCase().contains("sub total") ||
+  //           line.toLowerCase().contains("total:") ||
+  //           line.toLowerCase().contains("payment") ||
+  //           line.toLowerCase().contains("account")) {
+  //         break;
+  //       }
+  //
+  //       final priceMatches =
+  //           RegExp(r"\$\d+(?:\.\d{2})?").allMatches(line).toList();
+  //       final numberMatches = RegExp(r"\b\d+\b").allMatches(line).toList();
+  //
+  //       if (priceMatches.isNotEmpty && numberMatches.isNotEmpty) {
+  //         final totalPrice = priceMatches.last.group(0)!;
+  //         final unitPrice =
+  //             priceMatches.length > 1 ? priceMatches.first.group(0)! : "";
+  //
+  //         String qty = "1";
+  //         if (numberMatches.length > 1) {
+  //           qty = numberMatches[1].group(0)!;
+  //         } else if (numberMatches.length == 1) {
+  //           qty = numberMatches[0].group(0)!;
+  //         }
+  //
+  //         // Try to extract SL (only if more than one number)
+  //         final sl = numberMatches.length > 1 ? numberMatches[0].group(0)! : "";
+  //
+  //         // Remove known values to estimate description
+  //         String description = line
+  //             .replaceAll(unitPrice, '')
+  //             .replaceAll(totalPrice, '')
+  //             .replaceAll(qty, '')
+  //             .replaceAll(sl, '')
+  //             .replaceAll(RegExp(r"\s+"), ' ')
+  //             .trim();
+  //
+  //         extractedItems.add({
+  //           'sl': sl,
+  //           'product_name': description,
+  //           "brand": "Brand Name",
+  //           "is_in_checklist": false,
+  //           'price': unitPrice,
+  //           "expiry_date": DateTime.now().add(Duration(days: 30)).toIso8601String(),
+  //           'in_stock_quantity':
+  //               (qty == "0" || qty.isEmpty || qty == "00") ? "1" : qty,
+  //           'total': totalPrice,
+  //           "item_category": "Other"
+  //         });
+  //       }
+  //     }
+  //   }
+  //
+  //   return extractedItems;
+  // }
 
   //todo -------------------> check image is scannable or not.
-  bool isImageScannable(RecognizedText recognizedText) {
-    final allLines = recognizedText.blocks.expand((b) => b.lines).toList();
-    final allElements = allLines.expand((l) => l.elements).toList();
-
-    bool hasText = recognizedText.text.trim().isNotEmpty;
-    bool hasEnoughLines = allLines.length >= 3;
-    bool hasInvoiceKeywords =
-        recognizedText.text.toLowerCase().contains('invoice') ||
-            recognizedText.text.contains('\$') ||
-            recognizedText.text.toLowerCase().contains('total');
-
-    return hasText && (hasEnoughLines || hasInvoiceKeywords);
-  }
+  // bool isImageScannable(RecognizedText recognizedText) {
+  //   final allLines = recognizedText.blocks.expand((b) => b.lines).toList();
+  //   final allElements = allLines.expand((l) => l.elements).toList();
+  //
+  //   bool hasText = recognizedText.text.trim().isNotEmpty;
+  //   bool hasEnoughLines = allLines.length >= 3;
+  //   bool hasInvoiceKeywords =
+  //       recognizedText.text.toLowerCase().contains('invoice') ||
+  //           recognizedText.text.contains('\$') ||
+  //           recognizedText.text.toLowerCase().contains('total');
+  //
+  //   return hasText && (hasEnoughLines || hasInvoiceKeywords);
+  // }
 
   // todo --------------------------------------> get details from the invoice
-  Future<void> getDetailsFromInvoice(String filePath) async {
-    final inputImage = InputImage.fromFilePath(filePath);
-    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-    final RecognizedText recognizedText =
-        await textRecognizer.processImage(inputImage);
-    scannedText = recognizedText.text;
-    log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$scannedText");
-    notifyListeners();
+  // Future<void> getDetailsFromInvoice(String filePath) async {
+  //   final inputImage = InputImage.fromFilePath(filePath);
+  //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  //   final RecognizedText recognizedText =
+  //       await textRecognizer.processImage(inputImage);
+  //   scannedText = recognizedText.text;
+  //   log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$scannedText");
+  //   notifyListeners();
+  //
+  //   if (!isImageScannable(recognizedText)) {
+  //     log("Image is not Scannable!");
+  //     return;
+  //   }
+  //   List<Map<String, dynamic>> elements = [];
+  //
+  //   for (final block in recognizedText.blocks) {
+  //     for (final line in block.lines) {
+  //       for (final element in line.elements) {
+  //         elements.add({
+  //           'text': element.text,
+  //           'left': element.boundingBox.left,
+  //           'top': element.boundingBox.top,
+  //           'bottom': element.boundingBox.bottom,
+  //           'right': element.boundingBox.right,
+  //           'centerY':
+  //               (element.boundingBox.top + element.boundingBox.bottom) / 2,
+  //         });
+  //       }
+  //     }
+  //   }
+  //
+  //   /// Group elements into rows based on Y center alignment
+  //   const double verticalTolerance = 12.0; // adjust this based on font size
+  //   Map<int, List<Map<String, dynamic>>> groupedRows = {};
+  //
+  //   for (var element in elements) {
+  //     int key = (element['centerY'] / verticalTolerance).round();
+  //     groupedRows.putIfAbsent(key, () => []).add(element);
+  //   }
+  //
+  //   /// Sort rows by vertical Y value and elements within row by X
+  //   List<int> sortedRowKeys = groupedRows.keys.toList()..sort();
+  //   String formattedText = '';
+  //
+  //   for (int rowKey in sortedRowKeys) {
+  //     List<Map<String, dynamic>> row = groupedRows[rowKey]!;
+  //
+  //     // Sort by horizontal position
+  //     row.sort((a, b) => a['left'].compareTo(b['left']));
+  //
+  //     String line = row.map((e) => e['text']).join(' ');
+  //     formattedText += '$line\n';
+  //   }
+  //
+  //   scannedText = formattedText.trim();
+  //   totalAmount = extractInvoiceTotalAmount(scannedText)!;
+  //   log("Formatted text (line-wise):\n$scannedText");
+  //
+  //   await textRecognizer.close();
+  //
+  //   scannedItem = extractFlexibleInvoiceItems(scannedText);
+  //   notifyListeners();
+  //   for (final item in scannedItem) {
+  //     log("Item: ${item['description']}, Qty: ${item['in_stock_quantity']}, Price: ${item['price']}, Total: ${item['total']}");
+  //   }
+  // }
 
-    if (!isImageScannable(recognizedText)) {
-      log("Image is not Scannable!");
-      return;
-    }
-    List<Map<String, dynamic>> elements = [];
-
-    for (final block in recognizedText.blocks) {
-      for (final line in block.lines) {
-        for (final element in line.elements) {
-          elements.add({
-            'text': element.text,
-            'left': element.boundingBox.left,
-            'top': element.boundingBox.top,
-            'bottom': element.boundingBox.bottom,
-            'right': element.boundingBox.right,
-            'centerY':
-                (element.boundingBox.top + element.boundingBox.bottom) / 2,
-          });
-        }
-      }
-    }
-
-    /// Group elements into rows based on Y center alignment
-    const double verticalTolerance = 12.0; // adjust this based on font size
-    Map<int, List<Map<String, dynamic>>> groupedRows = {};
-
-    for (var element in elements) {
-      int key = (element['centerY'] / verticalTolerance).round();
-      groupedRows.putIfAbsent(key, () => []).add(element);
-    }
-
-    /// Sort rows by vertical Y value and elements within row by X
-    List<int> sortedRowKeys = groupedRows.keys.toList()..sort();
-    String formattedText = '';
-
-    for (int rowKey in sortedRowKeys) {
-      List<Map<String, dynamic>> row = groupedRows[rowKey]!;
-
-      // Sort by horizontal position
-      row.sort((a, b) => a['left'].compareTo(b['left']));
-
-      String line = row.map((e) => e['text']).join(' ');
-      formattedText += '$line\n';
-    }
-
-    scannedText = formattedText.trim();
-    totalAmount = extractInvoiceTotalAmount(scannedText)!;
-    log("Formatted text (line-wise):\n$scannedText");
-
-    await textRecognizer.close();
-
-    scannedItem = extractFlexibleInvoiceItems(scannedText);
-    notifyListeners();
-    for (final item in scannedItem) {
-      log("Item: ${item['description']}, Qty: ${item['in_stock_quantity']}, Price: ${item['price']}, Total: ${item['total']}");
-    }
-  }
-
-  Future<void> selectFileFromGallery({VoidCallback? onSuccess,required BuildContext context}) async {
+  Future<void> selectFileFromGallery(
+      {VoidCallback? onSuccess, required BuildContext context}) async {
     final file = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (file == null) return;
     _selectedFile = file;
-    changeSelectedFile(file,context);
+    changeSelectedFile(file, context);
     notifyListeners();
     onSuccess?.call();
   }

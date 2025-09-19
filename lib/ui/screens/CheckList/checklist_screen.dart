@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,6 +21,7 @@ import 'package:shopease_app_flutter/ui/widgets/toast_notification.dart';
 import 'package:shopease_app_flutter/utils/extensions/date_time_ext.dart';
 import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/utils.dart';
+
 import '../../../utils/app_assets.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/routes/routes.dart';
@@ -71,7 +73,14 @@ class _ChecklistScreenState extends State<ChecklistScreen>
 
   void showChecklistTour() {
     return getChecklistTutorial(
-      onFinish: () => AppNavigator.goToBranch(2),
+      onFinish: () {
+        AppNavigator.goToBranch(2);
+        // SharedPrefs().setAppTour(true);
+      },
+      onSkip: () {
+        AppNavigator.goToBranch(2);
+        return true;
+      },
     ).show(
       context: AppNavigator.shellNavigatorChecklist.currentContext ?? context,
     );
@@ -296,7 +305,6 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                         },
                       ),
                     ),
-
               // Buy button
               if (provider.filteredChecklist
                   .any((e) => e.isSelectedForComplete))

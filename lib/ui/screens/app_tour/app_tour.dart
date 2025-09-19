@@ -43,18 +43,12 @@ final List<TargetFocus> inventoryTargets = [
         text:
             "You can manually add products at any time by using this option as needed.",
       ),
+
+
+
+      
     ],
   ),
-  // createTargetFocus(
-  //   key: addInvSheetKey,
-  //   contents: [
-  //     createTargetContent(
-  //       align: ContentAlign.bottom,
-  //       text:
-  //           "No matter which option yiu choose,adding product to your inventory is quick and convenient.",
-  //     ),
-  //   ],
-  // ),
   createTargetFocus(
     key: checkListTabButtonKey,
     // enableTargetTab: false,
@@ -107,27 +101,36 @@ final List<TargetFocus> profileTargets = [
   ),
 ];
 
-TutorialCoachMark getInventoryTutorial({VoidCallback? onFinish}) =>
+TutorialCoachMark getInventoryTutorial(
+        {VoidCallback? onFinish, bool Function()? onSkip}) =>
     createTutorial(
       targets: inventoryTargets,
+      onSkip: onSkip,
       onFinish: onFinish,
     );
 
-TutorialCoachMark getChecklistTutorial({VoidCallback? onFinish}) =>
+TutorialCoachMark getChecklistTutorial(
+        {VoidCallback? onFinish, bool Function()? onSkip}) =>
     createTutorial(
       targets: checklistTargets,
+      onSkip: onSkip,
       onFinish: onFinish,
     );
 
-TutorialCoachMark getProfileTutorial({VoidCallback? onFinish}) =>
+TutorialCoachMark getProfileTutorial(
+        {VoidCallback? onFinish, bool Function()? onSkip}) =>
     createTutorial(
       targets: profileTargets,
       onFinish: onFinish,
+      onSkip: onSkip,
     );
 
 TutorialCoachMark createTutorial(
-    {required List<TargetFocus> targets, VoidCallback? onFinish}) {
+    {required List<TargetFocus> targets,
+    VoidCallback? onFinish,
+    bool Function()? onSkip}) {
   return TutorialCoachMark(
+    onSkip: onSkip,
     targets: targets,
     colorShadow: AppColors.lightGreyColor.withAlpha(256),
     onFinish: onFinish,

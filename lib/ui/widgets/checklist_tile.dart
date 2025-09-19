@@ -164,7 +164,8 @@ class _ChecklistTileState extends State<ChecklistTile>
             child: GestureDetector(
               onTap: () {
                 int oldQty = requiredQuantityListenable.value;
-                showAddQuantitySheet(context, oldQty, requiredQuantityListenable);
+                showAddQuantitySheet(
+                    context, oldQty, requiredQuantityListenable);
               },
               child: Container(
                 alignment: Alignment.center,
@@ -344,7 +345,10 @@ class _ChecklistTileState extends State<ChecklistTile>
                   ),
                   IconButton(
                     onPressed: () {
-                      requiredQuantityListenable.value += 1;
+                      if (listenAbleValue.value < 99) {
+                        requiredQuantityListenable.value += 1;
+                      }
+
                       // widget.onChangedInStockQuantity?.call(
                       //   inStockQuantityListenable.value.toString(),
                       // );

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -57,6 +58,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void showProfileTour() {
     return getProfileTutorial(
       onFinish: () => SharedPrefs().setAppTour(true),
+      onSkip: () {
+        SharedPrefs().setAppTour(true);
+        return true;
+      },
     ).show(
       context: AppNavigator.shellNavigatorProfile.currentContext ?? context,
     );

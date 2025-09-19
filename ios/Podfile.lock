@@ -3,41 +3,7 @@ PODS:
     - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
-  - DKImagePickerController/Core (4.3.9):
-    - DKImagePickerController/ImageDataManager
-    - DKImagePickerController/Resource
-  - DKImagePickerController/ImageDataManager (4.3.9)
-  - DKImagePickerController/PhotoGallery (4.3.9):
-    - DKImagePickerController/Core
-    - DKPhotoGallery
-  - DKImagePickerController/Resource (4.3.9)
-  - DKPhotoGallery (0.0.19):
-    - DKPhotoGallery/Core (= 0.0.19)
-    - DKPhotoGallery/Model (= 0.0.19)
-    - DKPhotoGallery/Preview (= 0.0.19)
-    - DKPhotoGallery/Resource (= 0.0.19)
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Core (0.0.19):
-    - DKPhotoGallery/Model
-    - DKPhotoGallery/Preview
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Model (0.0.19):
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Preview (0.0.19):
-    - DKPhotoGallery/Model
-    - DKPhotoGallery/Resource
-    - SDWebImage
-    - SwiftyGif
-  - DKPhotoGallery/Resource (0.0.19):
-    - SDWebImage
-    - SwiftyGif
   - DynamsoftBarcodeReader (9.6.40)
-  - file_picker (0.0.1):
-    - DKImagePickerController/PhotoGallery
-    - Flutter
   - Flutter (1.0.0)
   - flutter_barcode_sdk (2.2.0):
     - DynamsoftBarcodeReader (= 9.6.40)
@@ -56,13 +22,6 @@ PODS:
     - OrderedSet (~> 6.0.3)
   - fluttertoast (0.0.2):
     - Flutter
-  - google_mlkit_commons (0.6.1):
-    - Flutter
-    - MLKitVision
-  - google_mlkit_text_recognition (0.11.0):
-    - Flutter
-    - google_mlkit_commons
-    - GoogleMLKit/TextRecognition (~> 4.0.0)
   - GoogleDataTransport (9.4.1):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30911.0, >= 2.30908.0)
@@ -72,9 +31,6 @@ PODS:
     - MLKitBarcodeScanning (~> 3.0.0)
   - GoogleMLKit/MLKitCore (4.0.0):
     - MLKitCommon (~> 9.0.0)
-  - GoogleMLKit/TextRecognition (4.0.0):
-    - GoogleMLKit/MLKitCore
-    - MLKitTextRecognition (~> 2.0.0)
   - GoogleToolboxForMac/DebugUtils (2.3.2):
     - GoogleToolboxForMac/Defines (= 2.3.2)
   - GoogleToolboxForMac/Defines (2.3.2)
@@ -129,13 +85,6 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.0)
     - GoogleUtilitiesComponents (~> 1.0)
     - GTMSessionFetcher/Core (< 3.0, >= 1.1)
-  - MLKitTextRecognition (2.0.0):
-    - MLKitCommon (~> 9.0)
-    - MLKitTextRecognitionCommon (= 1.0.0)
-    - MLKitVision (~> 5.0)
-  - MLKitTextRecognitionCommon (1.0.0):
-    - MLKitCommon (~> 9.0)
-    - MLKitVision (~> 5.0)
   - MLKitVision (5.0.0):
     - GoogleToolboxForMac/Logger (~> 2.1)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
@@ -171,23 +120,17 @@ PODS:
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
-  - SwiftyGif (5.4.5)
   - url_launcher_ios (0.0.1):
-    - Flutter
-  - workmanager (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
-  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_barcode_sdk (from `.symlinks/plugins/flutter_barcode_sdk/ios`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
-  - google_mlkit_commons (from `.symlinks/plugins/google_mlkit_commons/ios`)
-  - google_mlkit_text_recognition (from `.symlinks/plugins/google_mlkit_text_recognition/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - mobile_scanner (from `.symlinks/plugins/mobile_scanner/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
@@ -196,12 +139,9 @@ DEPENDENCIES:
   - smart_auth (from `.symlinks/plugins/smart_auth/ios`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - workmanager (from `.symlinks/plugins/workmanager/ios`)
 
 SPEC REPOS:
   trunk:
-    - DKImagePickerController
-    - DKPhotoGallery
     - DynamsoftBarcodeReader
     - GoogleDataTransport
     - GoogleMLKit
@@ -214,23 +154,18 @@ SPEC REPOS:
     - MLImage
     - MLKitBarcodeScanning
     - MLKitCommon
-    - MLKitTextRecognition
-    - MLKitTextRecognitionCommon
     - MLKitVision
     - nanopb
     - OrderedSet
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
-    - SwiftyGif
 
 EXTERNAL SOURCES:
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
-  file_picker:
-    :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
   flutter_barcode_sdk:
@@ -241,10 +176,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
-  google_mlkit_commons:
-    :path: ".symlinks/plugins/google_mlkit_commons/ios"
-  google_mlkit_text_recognition:
-    :path: ".symlinks/plugins/google_mlkit_text_recognition/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   mobile_scanner:
@@ -261,23 +192,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
-  workmanager:
-    :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
   camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
-  DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
-  DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   DynamsoftBarcodeReader: 42d9ff4c9e1314ab1c600877e7f8c37ac2525bd8
-  file_picker: 5f42b9d5580e30b57b4863f9d94b448016b702e5
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_barcode_sdk: 1fb279340eb1f1a2a8fbf794193cc8ee58187685
   flutter_image_compress_common: 1697a328fd72bfb335507c6bca1a65fa5ad87df1
   flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
   fluttertoast: 2c67e14dce98bbdb200df9e1acf610d7a6264ea1
-  google_mlkit_commons: f27386da2a4d88eb7c56b4dd38dfcf61d9257d57
-  google_mlkit_text_recognition: 46fa320a20f0dc3f3a9b4e5bb27f3666f418d17d
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleMLKit: 2bd0dc6253c4d4f227aad460f69215a504b2980e
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
@@ -290,8 +214,6 @@ SPEC CHECKSUMS:
   MLImage: 7bb7c4264164ade9bf64f679b40fb29c8f33ee9b
   MLKitBarcodeScanning: 04e264482c5f3810cb89ebc134ef6b61e67db505
   MLKitCommon: c1b791c3e667091918d91bda4bba69a91011e390
-  MLKitTextRecognition: 9ff0c843f2723d31d4bdd0c0d17a0a18382ed23e
-  MLKitTextRecognitionCommon: 0d48930fee25cce9d52d0ba217490d4797061aa2
   MLKitVision: 8baa5f46ee3352614169b85250574fde38c36f49
   mobile_scanner: b67191637a5ea7ba15652ca208069d2bae1900ab
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
@@ -304,9 +226,7 @@ SPEC CHECKSUMS:
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   smart_auth: 33668081c5f646af84f10492a067d25fdcd16951
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
-  SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
-  workmanager: 01be2de7f184bd15de93a1812936a2b7f42ef07e
 
 PODFILE CHECKSUM: 53735818e7f43564ab8ff094d2865e4d6e12055c
 

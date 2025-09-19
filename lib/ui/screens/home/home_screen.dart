@@ -49,6 +49,10 @@ class _HomeScreenState extends State<HomeScreen>
   void showInventoryTutorial() {
     getInventoryTutorial(
       onFinish: () => AppNavigator.goToBranch(1),
+      onSkip: () {
+        AppNavigator.goToBranch(1);
+        return true;
+      },
     ).show(
       context: AppNavigator.shellNavigatorHome.currentContext ?? context,
     );
@@ -94,7 +98,14 @@ class _HomeScreenState extends State<HomeScreen>
                   )),
               AppIconButton(
                 key: addInvButtonKey,
-                onTap: () => showAddInventoryOptions(),
+                onTap: () {
+                  context.pushNamed(
+                    AppRoute.addInventoryForm.name,
+                    extra: {'isEdit': false},
+                  );
+
+                  // showAddInventoryOptions();
+                },
                 child: const SvgIcon(
                   AppAssets.add,
                   size: 20,
@@ -248,8 +259,8 @@ class _HomeScreenState extends State<HomeScreen>
               padding: EdgeInsets.all(20.sp),
               child: AppButton(
                   onPressed: () {
-                    showAddInventoryOptions();
-                    // context.pushNamed(AppRoute.addInventoryForm.name);
+                    // showAddInventoryOptions();
+                    context.pushNamed(AppRoute.addInventoryForm.name);
                   },
                   text: 'Add an Inventory'),
             ),
@@ -258,10 +269,10 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
   Widget buildInventoryContainer(
-      String text, String level, InventoryProvider provider) {
+      String text, String level, InventoryProvider provider, String value) {
     return GestureDetector(
       onTap: () {
-        provider.changeFilterInventoryLevel(text.toLowerCase());
+        provider.changeFilterInventoryLevel(value.toLowerCase());
       },
       child: Container(
         width: 111.w,
@@ -281,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen>
               style: textStyle14.copyWith(color: AppColors.primaryColor),
             ),
             if (provider.selectedInventoryLevelFilter ==
-                text.toLowerCase()) ...[
+                value.toLowerCase()) ...[
               10.horizontalSpace,
               SvgIcon(
                 AppAssets.check,
@@ -377,11 +388,11 @@ class _HomeScreenState extends State<HomeScreen>
                   Row(
                     children: [
                       buildInventoryContainer(
-                          'High', AppAssets.inventoryHigh, provider),
+                          'High', AppAssets.inventoryHigh, provider, "high"),
                       buildInventoryContainer(
-                          'Med', AppAssets.inventoryMid, provider),
+                          'Med', AppAssets.inventoryMid, provider, "medium"),
                       buildInventoryContainer(
-                          'Low', AppAssets.inventoryLow, provider),
+                          'Low', AppAssets.inventoryLow, provider, "low"),
                     ],
                   ),
                   25.h.verticalSpace,

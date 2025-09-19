@@ -76,7 +76,6 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void filterProducts() {
     _filteredProducts.clear();
 
@@ -98,6 +97,7 @@ class InventoryProvider extends ChangeNotifier {
                 .categoryId,
           );
 
+      log("-----------> Selected : $_selectedInventoryLevelFilter - Products : ${product.itemLevel}");
       final matchesInventory = _selectedInventoryLevelFilter == null ||
           product.itemLevel == _selectedInventoryLevelFilter;
 
@@ -144,12 +144,16 @@ class InventoryProvider extends ChangeNotifier {
   }
 
   Future<void> changeInStockQuantity(String itemId, String quantity) async {
+    log("--------------------> $quantity");
+
     final product = _products.firstWhere((e) => e.itemId == itemId);
     product.changeQuantity(quantity);
     await putInventoryItem(
       data: [product.toJson()],
       isEdit: true,
     );
+    await getInventoryItems();
+    log("--------------------> ${product.inStockQuantity}");
   }
 
   void addToChecklist(
@@ -191,8 +195,9 @@ class InventoryProvider extends ChangeNotifier {
         // }
 
         _products.sort((a, b) => b.updatedDate!.compareTo(a.updatedDate!));
-        print('Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
-        //updated thing : 
+        print(
+            'Sorted products: ${_products.map((e) => e.updatedDate).toList()}');
+        //updated thing :
         _selectedExpiryFilter = null;
         filterProducts();
         notifyListeners();

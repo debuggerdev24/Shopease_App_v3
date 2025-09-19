@@ -23,10 +23,10 @@ class BaseRepository {
     if (SharedPrefs().idToken != null) {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.prodBaseURL,
+          baseUrl: ApiUrl.devBaseURL,
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": Constants.apiKey,
+            "x-api-key": Constants.devApiKey,
             "Authorization": "${SharedPrefs().idToken}"
           },
         ),
@@ -34,9 +34,9 @@ class BaseRepository {
     } else {
       _dio = Dio(
         BaseOptions(
-          baseUrl: ApiUrl.prodBaseURL,
+          baseUrl: ApiUrl.devBaseURL,
           headers: {
-            "x-api-key": Constants.apiKey,
+            "x-api-key": Constants.devApiKey,
           },
         ),
       );
@@ -50,7 +50,7 @@ class BaseRepository {
   void addToken(String idToken) {
     _dio.options = _dio.options.copyWith(headers: {
       'Authorization': idToken,
-      'x-api-key': Constants.apiKey,
+      'x-api-key': Constants.devApiKey,
     });
   }
 
