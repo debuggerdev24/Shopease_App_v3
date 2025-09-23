@@ -80,8 +80,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
       builder: (context, provider, _) {
-        print("test data ${provider.groupProfiles}");
-
         return provider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -228,17 +226,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      onTap: () => showDeleteMyAccountSheet(),
-                      title: GlobalText(
-                        'Delete My Account',
-                        textStyle: textStyle16.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.redColor,
+                    if (!provider.profileData!.isInvited)
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        onTap: () => showDeleteMyAccountSheet(),
+                        title: GlobalText(
+                          'Delete My Account',
+                          textStyle: textStyle16.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.redColor,
+                          ),
                         ),
                       ),
-                    ),
                     20.h.verticalSpace,
                   ],
                 ),
@@ -525,6 +524,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+//
   void _showAssignAndLeaveGroupSheet(ProfileProvider profileProvider) {
     log(profileProvider.uninvitedUsers.length.toString());
     log("userList length: ${profileProvider.userList.length}");

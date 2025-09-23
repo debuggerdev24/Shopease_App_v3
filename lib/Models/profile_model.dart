@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class ProfileData {
   String preferredUsername;
   String userId;
@@ -15,21 +17,15 @@ class ProfileData {
     required this.imageUrl,
   });
 
-  factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
-        preferredUsername: json["preferred_username"],
-        userId: json["user_id"],
-        phoneNumber: json["phone_number"],
-        isAdmin: json["is_admin"],
-        isInvited: json["is_invited"],
-        imageUrl: json["image_url"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "preferred_username": preferredUsername,
-        "user_id": userId,
-        "phone_number": phoneNumber,
-        "is_admin": isAdmin,
-        "is_invited": isInvited,
-        "image_url": imageUrl,
-      };
+  factory ProfileData.fromJson(Map<String, dynamic> json) {
+    log("check is_invited : ${json["is_invited"]}");
+    return ProfileData(
+      preferredUsername: json["preferred_username"],
+      userId: json["user_id"],
+      phoneNumber: json["phone_number"],
+      isAdmin: json["is_admin"],
+      isInvited: json["is_invited"],
+      imageUrl: json["image_url"],
+    );
+  }
 }
