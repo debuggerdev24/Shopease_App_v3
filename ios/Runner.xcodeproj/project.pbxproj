@@ -352,13 +352,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -475,11 +471,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = J5W8GZBU5R;
 				ENABLE_BITCODE = NO;
 				FLUTTER_BUILD_NAME = 1.3;
-				FLUTTER_BUILD_NUMBER = 4;
+				FLUTTER_BUILD_NUMBER = 6;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Shopease;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
@@ -666,11 +662,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = J5W8GZBU5R;
 				ENABLE_BITCODE = NO;
 				FLUTTER_BUILD_NAME = 1.3;
-				FLUTTER_BUILD_NUMBER = 4;
+				FLUTTER_BUILD_NUMBER = 6;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Shopease;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
@@ -697,11 +693,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = J5W8GZBU5R;
 				ENABLE_BITCODE = NO;
 				FLUTTER_BUILD_NAME = 1.3;
-				FLUTTER_BUILD_NUMBER = 4;
+				FLUTTER_BUILD_NUMBER = 6;
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Shopease;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.5;

@@ -226,7 +226,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    if (!provider.profileData!.isInvited)
+                    if ((provider.profileListLength == 1)
+                        // || (provider.profileListLength > 1 &&
+                        //     provider.profileData!.isInvited == false)
+                        )
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         onTap: () => showDeleteMyAccountSheet(),
@@ -947,7 +950,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildTrailingRow(ProfileProvider provider, ProfileData user) {
     log(" provider.profileData?.isAdmin ==>0==> ${user.userId}");
-
+    log(user.isInvited.toString());
     return user.isInvited == true
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

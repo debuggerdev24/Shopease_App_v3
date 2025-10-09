@@ -117,6 +117,7 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  int profileListLength = 1;
   Future<void> getProfile({
     Function(String)? onError,
     VoidCallback? onSuccess,
@@ -164,6 +165,8 @@ class ProfileProvider extends ChangeNotifier {
         _groupProfiles.addAll(
           (res.data as List).map((e) => ProfileData.fromJson(e)),
         );
+        profileListLength = _groupProfiles.length;
+        log("Profile List Length : $profileListLength");
         _groupProfiles.removeWhere((e) => e.userId == profileData?.userId);
         SharedPrefs().setUserId(_profileData?.userId ?? '');
         onSuccess?.call();
@@ -317,6 +320,7 @@ class ProfileProvider extends ChangeNotifier {
 
       if (res.statusCode == 200) {
         onSuccess?.call();
+        getAllProfile();
       } else {
         onError?.call(res.data["message"] ?? Constants.commonErrMsg);
       }
