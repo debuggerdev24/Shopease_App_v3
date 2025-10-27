@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/profile_model.dart';
 import 'package:shopease_app_flutter/providers/auth_provider.dart';
 import 'package:shopease_app_flutter/providers/profile_provider.dart';
-import 'package:shopease_app_flutter/ui/screens/app_tour/app_tour.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_button.dart';
 import 'package:shopease_app_flutter/ui/widgets/app_txt_field.dart';
 import 'package:shopease_app_flutter/ui/widgets/global_text.dart';
@@ -29,6 +29,8 @@ import 'package:shopease_app_flutter/utils/shared_prefs.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import '../app_tour/app_tour.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -53,6 +55,133 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       },
     );
+  }
+
+  Future<void> checkAppVersion({required BuildContext context}) async {
+    try {
+      final newVersion = NewVersionPlus(androidId: "com.shopease.app");
+      final status = await newVersion.getVersionStatus();
+
+      if (status != null) {
+        if (status.canUpdate) {
+          newVersion.showUpdateDialog(
+            context: context,
+            versionStatus: status,
+            dialogTitle: "UPDATE!!!",
+            dismissButtonText: "Skip",
+            dialogText:
+                "Please update the app from ${status.localVersion} to ${status.storeVersion}",
+            dismissAction: () {
+              context.pop();
+            },
+            updateButtonText: "Lets update",
+          );
+          log("DEVICE : ${status.localVersion}");
+          log("STORE : ${status.storeVersion}");
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: const Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.green,
+                  size: 50,
+                ),
+                title: Text(
+                  "You're All Set!",
+                  style: textStyle20SemiBold,
+                  textAlign: TextAlign.center,
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "You're using the latest version (${status.localVersion})",
+                      style: textStyle16,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "No updates available at this time.",
+                      style: textStyle14.copyWith(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+          log("App is up to date: ${status.localVersion}");
+        }
+      } else {
+        log("No update information available.");
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              icon: const Icon(
+                Icons.info_outline,
+                color: Colors.orange,
+                size: 64,
+              ),
+              title: Text(
+                "Update Check Failed",
+                style: textStyle20SemiBold,
+                textAlign: TextAlign.center,
+              ),
+              content: Text(
+                "Unable to check for updates. Please try again later.",
+                style: textStyle16,
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: Text("OK", style: textStyle16SemiBold),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      log("Error checking version: $e");
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            icon: const Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 64,
+            ),
+            title: Text(
+              "Connection Error",
+              style: textStyle20SemiBold,
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              "Could not connect to update server. Please check your internet connection.",
+              style: textStyle16,
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: Text("OK", style: textStyle16SemiBold),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void showProfileTour() {
@@ -225,6 +354,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      onTap: () => checkAppVersion(context: context),
+                      title: GlobalText(
+                        'App Update',
+                        textStyle:
+                            textStyle16.copyWith(fontWeight: FontWeight.w500),
+                      ),
                     ),
                     if ((provider.profileListLength == 1)
                         // || (provider.profileListLength > 1 &&

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,10 @@ Future<void> main() async {
   if (SharedPrefs().idToken != null) {
     BaseRepository().addToken(SharedPrefs().idToken!);
   }
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
 }
 
@@ -47,9 +52,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ThemeProvider>(
-          create: (_) => ThemeProvider(),
-        ),
+        ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(AuthService()),
         ),
@@ -76,7 +79,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ReceiptScanProvider>(
           create: (_) => ReceiptScanProvider(),
-        )
+        ),
       ],
       child: buildMyapp(),
     );
@@ -85,17 +88,18 @@ class MyApp extends StatelessWidget {
   Widget buildMyapp() => ScreenUtilInit(
         ensureScreenSize: true,
         designSize: const Size(390, 844),
-        builder: (context, child) =>
-            Consumer<ThemeProvider>(builder: (context, provider, _) {
-          return MaterialApp.router(
-            title: 'Shopease App',
-            theme: AppThemes.lightTheme,
-            darkTheme: AppThemes.darkTheme,
-            routerConfig: AppNavigator.router,
-            debugShowCheckedModeBanner: false,
-            themeMode: provider.currentThemeMode,
-          );
-        }),
+        builder: (context, child) => Consumer<ThemeProvider>(
+          builder: (context, provider, _) {
+            return MaterialApp.router(
+              title: 'Shopease App',
+              theme: AppThemes.lightTheme,
+              darkTheme: AppThemes.darkTheme,
+              routerConfig: AppNavigator.router,
+              debugShowCheckedModeBanner: false,
+              themeMode: provider.currentThemeMode,
+            );
+          },
+        ),
       );
 }
 
@@ -104,4 +108,7 @@ class MyApp extends StatelessWidget {
 //need to more explanation -> 2,7,9
 //fixed -> 5,3,6,11
 //Worked on added the dependencies for the push notification.
-//lutter cklWorked on
+//flutter cklWorked on
+/*
+ ->
+*/

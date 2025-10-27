@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_version_plus/new_version_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
 import 'package:shopease_app_flutter/providers/checklist_provider.dart';
@@ -37,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    checkAppVersion(context: context);
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         context.read<InventoryProvider>().getInventoryItems().then((_) {
@@ -44,6 +47,104 @@ class _HomeScreenState extends State<HomeScreen>
         });
       },
     );
+  }
+
+  Future<void> checkAppVersion({required BuildContext context}) async {
+    try {
+      late final newVersion;
+      if (Platform.isAndroid) {
+        newVersion = NewVersionPlus(androidId: "com.shopease.app");
+      } else {
+        newVersion = NewVersionPlus(iOSId: "com.app.shopeaseapp");
+      }
+
+      final status = await newVersion.getVersionStatus();
+
+      if (status != null) {
+        if (status.canUpdate) {
+          newVersion.showUpdateDialog(
+            context: context,
+            versionStatus: status,
+            dialogTitle: "UPDATE!!!",
+            dismissButtonText: "Skip",
+            dialogText:
+                "Please update the app from ${status.localVersion} to ${status.storeVersion}",
+            dismissAction: () {
+              context.pop();
+            },
+            updateButtonText: "Lets update",
+          );
+          log("DEVICE : ${status.localVersion}");
+          log("STORE : ${status.storeVersion}");
+        }
+      } else {
+        log("No update information available.");
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              icon: const Icon(
+                Icons.info_outline,
+                color: Colors.orange,
+                size: 64,
+              ),
+              title: Text(
+                "Update Check Failed",
+                style: textStyle20SemiBold,
+                textAlign: TextAlign.center,
+              ),
+              content: Text(
+                "Unable to check for updates. Please try again later.",
+                style: textStyle16,
+                textAlign: TextAlign.center,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: Text("OK", style: textStyle16SemiBold),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      log("Error checking version: $e");
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            icon: const Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 64,
+            ),
+            title: Text(
+              "Connection Error",
+              style: textStyle20SemiBold,
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              "Could not connect to update server. Please check your internet connection.",
+              style: textStyle16,
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => context.pop(),
+                child: Text("OK", style: textStyle16SemiBold),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void showInventoryTutorial() {

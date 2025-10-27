@@ -1,11 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shopease_app_flutter/utils/app_assets.dart';
 import 'package:shopease_app_flutter/utils/app_colors.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shopease_app_flutter/utils/styles.dart';
+
 import '../../../utils/routes/routes.dart';
 import '../../../utils/shared_prefs.dart';
 
@@ -53,11 +55,9 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         ),
         floatingActionButton: Text(
-          textAlign: TextAlign.center,
-          style: textStyle14,
-          "Version 1.3.0"
-          //'Version ${packageInfo.version.substring(0, packageInfo.version.length - 1)}${int.parse(packageInfo.buildNumber)}',
-        ), //1.0.04
+            textAlign: TextAlign.center, style: textStyle14, "Version 1.3.0"
+            //'Version ${packageInfo.version.substring(0, packageInfo.version.length - 1)}${int.parse(packageInfo.buildNumber)}',
+            ), //1.0.4
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
