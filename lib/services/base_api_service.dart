@@ -42,9 +42,8 @@ class BaseRepository {
       );
     }
     log('dio headers: ${_dio.options.headers}');
-    _dio.interceptors.add(
-      PrettyDioLogger(requestBody: true, requestHeader: true),
-    );
+    _dio.interceptors
+        .add(PrettyDioLogger(requestBody: true, requestHeader: true));
   }
 
   void addToken(String idToken) {

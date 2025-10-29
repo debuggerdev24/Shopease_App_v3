@@ -147,13 +147,14 @@ class InventoryProvider extends ChangeNotifier {
     log("--------------------> $quantity");
 
     final product = _products.firstWhere((e) => e.itemId == itemId);
-    product.changeQuantity(quantity);
+    // product.changeQuantity(quantity);
+    product.inStockQuantity = quantity;
     await putInventoryItem(
-      data: [product.toJson()],
+      data: [product.toJson(passImage: false)],
       isEdit: true,
     );
     await getInventoryItems();
-    log("--------------------> ${product.inStockQuantity}");
+    log("--------------------> ${product.requiredQuantity}");
   }
 
   void addToChecklist(
@@ -237,6 +238,7 @@ class InventoryProvider extends ChangeNotifier {
     try {
       log("-------------------------> data : $data");
       setLoading(true);
+
       final res = await services.putInventoryItem(data: data, isEdit: isEdit);
 
       if (res == null) {

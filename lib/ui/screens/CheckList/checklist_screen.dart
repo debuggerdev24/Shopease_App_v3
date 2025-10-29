@@ -266,6 +266,7 @@ class _ChecklistScreenState extends State<ChecklistScreen>
                           final product = provider.filteredChecklist[index];
                           log("in stock quantity : ${product.inStockQuantity}");
                           log("quantity : ${product.quantity}");
+                          log("image : ${product.itemImage}");
                           return ChecklistTile(
                             product: product,
                             onTap: () {

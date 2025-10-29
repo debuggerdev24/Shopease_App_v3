@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shopease_app_flutter/models/product_model.dart';
@@ -258,7 +259,7 @@ class ChecklistProvider extends ChangeNotifier {
     final product = _checklist.firstWhere((e) => e.itemId == itemId);
     product.changeQuantity(quantity);
     await putCheklistItems(
-      data: [product.toJson()],
+      data: [product.toJson(passImage: false)],
       isEdit: true,
     );
   }

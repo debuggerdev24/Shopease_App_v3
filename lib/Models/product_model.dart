@@ -136,24 +136,31 @@ class Product {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        "item_id": itemId,
-        "in_stock_quantity": inStockQuantity,
-        "product_name": productName,
-        "item_category": itemCategory,
-        'is_in_checklist': isInChecklist,
-        "product_description": productDescription,
-        "brand": brand,
-        "item_level": itemLevel,
-        "item_count": itemCount,
-        "location_id": locationId,
-        "item_image": itemImage,
-        'item_storage': itemStorage,
-        'barcode': barcode,
-        'is_selected_for_complete': isSelectedForComplete,
-        "last_updated_date": updatedDate?.toIso8601String(),
-        (isInChecklist == true ? 'required_quantity' : 'in_stock_quantity'):
-            quantity,
-        "expiry_date": expiryDate?.toIso8601String(),
-      };
+  Map<String, dynamic> toJson({bool? passImage}) {
+    final map = {
+      "item_id": itemId,
+      "in_stock_quantity": inStockQuantity,
+      "product_name": productName,
+      "item_category": itemCategory,
+      'is_in_checklist': isInChecklist,
+      "product_description": productDescription,
+      "brand": brand,
+      "item_level": itemLevel,
+      "item_count": itemCount,
+      "location_id": locationId,
+      'item_storage': itemStorage,
+      'barcode': barcode,
+      'is_selected_for_complete': isSelectedForComplete,
+      "last_updated_date": updatedDate?.toIso8601String(),
+      (isInChecklist == true ? 'required_quantity' : 'in_stock_quantity'):
+          quantity,
+      "expiry_date": expiryDate?.toIso8601String(),
+    };
+
+    if (passImage ?? true) {
+      map["item_image"] = itemImage;
+    }
+
+    return map;
+  }
 }
